@@ -1,12 +1,12 @@
-export type ViewType = 'dashboard' | 'goals' | 'tasks' | 'journal';
+export type ViewType = 'dashboard' | 'goals' | 'tasks' | 'journal' | 'review' | 'settings';
 
-export type Category = 'Personnel' | 'Professionnel' | 'Santé' | 'Loisirs' | 'Maison';
+export type LifeDomain = 'Santé & Bien-être' | 'Projet Personnel' | 'Relations & Famille' | 'Apprentissage' | 'Finances' | 'Spiritualité' | 'Autre';
 
 export interface Goal {
   id: string;
   title: string;
   why: string; // The "Why this is important" field to give intention
-  category: Category;
+  domain: LifeDomain;
   deadline?: string;
   status: 'En cours' | 'Atteint' | 'En pause';
   createdAt: string;
@@ -16,8 +16,10 @@ export interface Task {
   id: string;
   title: string;
   goalId?: string; // Links a task to a larger goal
+  domain?: LifeDomain; // Category/Tag for the task
   isCompleted: boolean;
   date: string;
+  isImportant?: boolean;
 }
 
 export interface JournalEntry {

@@ -1,18 +1,20 @@
 import { useState } from 'react';
-import { AppData, Goal, Category } from '../types';
-import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, MoreVertical, X } from 'lucide-react';
+import { AppData, Goal, LifeDomain } from '../types';
+import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, MoreVertical, X, Coins, Sparkles } from 'lucide-react';
 
 interface GoalsProps {
   data: AppData;
   updateData: (data: Partial<AppData>) => void;
 }
 
-const CATEGORIES: { label: Category; icon: any; color: string }[] = [
-  { label: 'Personnel', icon: Heart, color: 'text-stone-700 bg-stone-100 border-stone-200' },
-  { label: 'Professionnel', icon: Briefcase, color: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
-  { label: 'Santé', icon: Activity, color: 'text-amber-700 bg-amber-50 border-amber-100' },
-  { label: 'Loisirs', icon: Target, color: 'text-stone-700 bg-stone-100 border-stone-200' },
-  { label: 'Maison', icon: Home, color: 'text-stone-600 bg-stone-50 border-stone-200' },
+const DOMAINS: { label: LifeDomain; icon: any; color: string }[] = [
+  { label: 'Santé & Bien-être', icon: Activity, color: 'text-amber-700 bg-amber-50 border-amber-100' },
+  { label: 'Projet Personnel', icon: Target, color: 'text-stone-700 bg-stone-100 border-stone-200' },
+  { label: 'Relations & Famille', icon: Heart, color: 'text-rose-700 bg-rose-50 border-rose-100' },
+  { label: 'Apprentissage', icon: Briefcase, color: 'text-blue-700 bg-blue-50 border-blue-100' },
+  { label: 'Finances', icon: Coins, color: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
+  { label: 'Spiritualité', icon: Sparkles, color: 'text-indigo-700 bg-indigo-50 border-indigo-100' },
+  { label: 'Autre', icon: Home, color: 'text-stone-600 bg-stone-50 border-stone-200' },
 ];
 
 export function GoalsView({ data, updateData }: GoalsProps) {
@@ -20,7 +22,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
   const [newGoal, setNewGoal] = useState<Partial<Goal>>({
     title: '',
     why: '',
-    category: 'Personnel',
+    domain: 'Santé & Bien-être',
     status: 'En cours'
   });
 
@@ -31,18 +33,18 @@ export function GoalsView({ data, updateData }: GoalsProps) {
       id: Date.now().toString(),
       title: newGoal.title,
       why: newGoal.why,
-      category: newGoal.category as Category,
+      domain: newGoal.domain as LifeDomain,
       status: 'En cours',
       createdAt: new Date().toISOString(),
     };
 
     updateData({ goals: [goal, ...data.goals] });
     setIsAdding(false);
-    setNewGoal({ title: '', why: '', category: 'Personnel', status: 'En cours' });
+    setNewGoal({ title: '', why: '', domain: 'Santé & Bien-être', status: 'En cours' });
   };
 
-  const getCategoryTheme = (catLabel: string) => {
-    return CATEGORIES.find(c => c.label === catLabel) || CATEGORIES[0];
+  const getDomainTheme = (domainLabel: string) => {
+    return DOMAINS.find(c => c.label === domainLabel) || DOMAINS[0];
   };
 
   return (
@@ -95,21 +97,21 @@ export function GoalsView({ data, updateData }: GoalsProps) {
             </div>
 
             <div>
-               <label className="block text-xs font-bold text-stone-400 uppercase tracking-wide mb-3">Catégorie</label>
+               <label className="block text-xs font-bold text-stone-400 uppercase tracking-wide mb-3">Domaine de vie</label>
                <div className="flex flex-wrap gap-3">
-                 {CATEGORIES.map(cat => {
-                   const Icon = cat.icon;
-                   const isSelected = newGoal.category === cat.label;
+                 {DOMAINS.map(dom => {
+                   const Icon = dom.icon;
+                   const isSelected = newGoal.domain === dom.label;
                    return (
                      <button
-                       key={cat.label}
-                       onClick={() => setNewGoal({...newGoal, category: cat.label})}
+                       key={dom.label}
+                       onClick={() => setNewGoal({...newGoal, domain: dom.label})}
                        className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all text-sm ${
                          isSelected ? 'border-emerald-700 bg-emerald-50 text-emerald-800' : 'border-stone-200 text-stone-500 hover:bg-stone-50'
                        }`}
                      >
                        <Icon className="w-4 h-4" />
-                       <span className="font-bold">{cat.label}</span>
+                       <span className="font-bold">{dom.label}</span>
                      </button>
                    )
                  })}
@@ -150,7 +152,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {data.goals.map(goal => {
-            const theme = getCategoryTheme(goal.category);
+            const theme = getDomainTheme(goal.domain);
             const Icon = theme.icon;
 
             return (
@@ -158,7 +160,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                 <div className="flex justify-between items-start mb-4">
                   <div className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 w-max ${theme.color}`}>
                     <Icon className="w-4 h-4" />
-                    <span className="text-[10px] font-sans font-bold uppercase tracking-wider">{goal.category}</span>
+                    <span className="text-[10px] font-sans font-bold uppercase tracking-wider">{goal.domain}</span>
                   </div>
                   <button className="text-stone-300 hover:text-stone-500 p-1 transition-colors">
                     <MoreVertical className="w-5 h-5" />

@@ -1,16 +1,22 @@
 import { useState } from 'react';
 import { useStorage } from './hooks/useStorage';
-import { ViewType } from './types';
+import { ViewType, AppData } from './types';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './views/DashboardView';
 import { GoalsView } from './views/GoalsView';
 import { TasksView } from './views/TasksView';
 import { JournalView } from './views/JournalView';
+import { ReviewView } from './views/ReviewView';
+import { SettingsView } from './views/SettingsView';
 import { NotificationToast } from './components/NotificationToast';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const { data, updateData } = useStorage();
+
+  const handleImportData = (importedData: AppData) => {
+    updateData(importedData);
+  };
 
   const renderView = () => {
     switch (currentView) {
@@ -22,6 +28,10 @@ export default function App() {
         return <TasksView data={data} updateData={updateData} />;
       case 'journal':
         return <JournalView data={data} updateData={updateData} />;
+      case 'review':
+        return <ReviewView data={data} />;
+      case 'settings':
+        return <SettingsView data={data} onImportData={handleImportData} />;
       default:
         return <DashboardView data={data} onChangeView={setCurrentView} />;
     }

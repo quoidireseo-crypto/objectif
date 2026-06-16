@@ -1,18 +1,63 @@
-import { useState, FormEvent } from 'react';
-import { AppData, Task } from '../types';
-import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight } from 'lucide-react';
+import { useState, FormEvent, useEffect, useRef } from 'react';
+import { AppData, Task, LifeDomain } from '../types';
+import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag } from 'lucide-react';
 
 interface TasksProps {
   data: AppData;
   updateData: (data: Partial<AppData>) => void;
 }
 
+const DOMAINS: LifeDomain[] = [
+  'Santé & Bien-être',
+  'Projet Personnel',
+  'Relations & Famille',
+  'Apprentissage',
+  'Finances',
+  'Spiritualité',
+  'Autre'
+];
+
 export function TasksView({ data, updateData }: TasksProps) {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [selectedGoalId, setSelectedGoalId] = useState<string>('');
+  const [selectedDomain, setSelectedDomain] = useState<LifeDomain | ''>('');
+  const [isNewTaskImportant, setIsNewTaskImportant] = useState(false);
+  const notifiedTasksRef = useRef<Set<string>>(new Set());
 
   const todayDate = new Date().toISOString().split('T')[0];
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
+
+  // Demander la permission au chargement
+  useEffect(() => {
+    if ('Notification' in window) {
+      if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+        Notification.requestPermission();
+      }
+    }
+  }, []);
+
+  // Simuler le rappel (toutes les X minutes) pour les tâches importantes non complétées.
+  // Pour la démo, on vérifie après l'ajout ou au clic.
+  const triggerLocalNotification = (taskTitle: string) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.showNotification("Rappel Important", {
+            body: `N'oublie pas : ${taskTitle}`,
+            icon: '/apple-touch-icon.png',
+            badge: '/mask-icon.svg',
+            vibrate: [200, 100, 200]
+          });
+        });
+      } else {
+        new Notification("Rappel Important", { body: `N'oublie pas : ${taskTitle}` });
+      }
+    } else if ('Notification' in window && Notification.permission !== 'denied') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') triggerLocalNotification(taskTitle);
+      });
+    }
+  };
 
   const handleAddTask = (e: FormEvent) => {
     e.preventDefault();
@@ -23,17 +68,47 @@ export function TasksView({ data, updateData }: TasksProps) {
       title: newTaskTitle.trim(),
       isCompleted: false,
       date: todayDate,
-      ...(selectedGoalId ? { goalId: selectedGoalId } : {})
+      isImportant: isNewTaskImportant,
+      ...(selectedGoalId ? { goalId: selectedGoalId } : {}),
+      ...(selectedDomain ? { domain: selectedDomain as LifeDomain } : {})
     };
 
     updateData({ tasks: [task, ...data.tasks] });
     setNewTaskTitle('');
     setSelectedGoalId('');
+    setSelectedDomain('');
+    setIsNewTaskImportant(false);
+    
+    // Test notification for important tasks
+    if (task.isImportant) {
+      triggerLocalNotification(task.title);
+    }
   };
 
   const toggleTask = (id: string) => {
     const newTasks = data.tasks.map(t => 
       t.id === id ? { ...t, isCompleted: !t.isCompleted } : t
+    );
+    updateData({ tasks: newTasks });
+  };
+
+  const toggleImportant = (id: string) => {
+    const task = data.tasks.find(t => t.id === id);
+    if (!task) return;
+    
+    // Demander la permission si on active l'importance
+    if (!task.isImportant && 'Notification' in window && Notification.permission !== 'granted') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          triggerLocalNotification(task.title);
+        }
+      });
+    } else if (!task.isImportant) {
+       triggerLocalNotification(task.title);
+    }
+
+    const newTasks = data.tasks.map(t => 
+      t.id === id ? { ...t, isImportant: !t.isImportant } : t
     );
     updateData({ tasks: newTasks });
   };
@@ -64,9 +139,18 @@ export function TasksView({ data, updateData }: TasksProps) {
           onChange={e => setNewTaskTitle(e.target.value)}
         />
         
+        <button
+          type="button"
+          onClick={() => setIsNewTaskImportant(!isNewTaskImportant)}
+          className={`p-2 rounded-xl transition ${isNewTaskImportant ? 'bg-amber-100 text-amber-600' : 'text-stone-400 hover:bg-stone-50'}`}
+          title="Marquer comme important pour recevoir un rappel"
+        >
+          {isNewTaskImportant ? <BellRing className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
+        </button>
+
         {data.goals.length > 0 && (
           <select 
-            className="bg-stone-50 border border-stone-200 text-stone-600 font-sans text-xs py-3 px-3 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 md:max-w-[200px] truncate w-full md:w-auto md:mx-0"
+            className="bg-stone-50 border border-stone-200 text-stone-600 font-sans text-xs py-3 px-3 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 md:max-w-[150px] truncate w-full md:w-auto md:mx-0"
             value={selectedGoalId}
             onChange={(e) => setSelectedGoalId(e.target.value)}
           >
@@ -76,6 +160,18 @@ export function TasksView({ data, updateData }: TasksProps) {
             ))}
           </select>
         )}
+
+        {/* Domaine / Catégorie selector */}
+        <select 
+          className="bg-stone-50 border border-stone-200 text-stone-600 font-sans text-xs py-3 px-3 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 w-full md:w-auto md:min-w-[140px]"
+          value={selectedDomain}
+          onChange={(e) => setSelectedDomain(e.target.value as LifeDomain)}
+        >
+          <option value="">Pilier de vie ?</option>
+          {DOMAINS.map(domain => (
+            <option key={domain} value={domain}>{domain}</option>
+          ))}
+        </select>
         
         <button 
           type="submit"
@@ -117,14 +213,31 @@ export function TasksView({ data, updateData }: TasksProps) {
                     <Circle className="w-6 h-6" />
                   </button>
                   <div className="flex-1">
-                    <p className="text-stone-800 font-sans font-bold">{task.title}</p>
-                    {linkedGoal && (
-                      <div className="flex items-center gap-1 text-[10px] text-emerald-800 mt-2 font-sans font-bold uppercase tracking-wider bg-emerald-50 border border-emerald-100 w-max px-2 py-1 rounded-md">
-                        <ChevronRight className="w-3 h-3" />
-                        {linkedGoal.title}
-                      </div>
-                    )}
+                    <p className={`font-sans font-bold ${task.isImportant ? 'text-amber-700' : 'text-stone-800'}`}>
+                      {task.title}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {linkedGoal && (
+                        <div className="flex items-center gap-1 text-[10px] text-emerald-800 font-sans font-bold uppercase tracking-wider bg-emerald-50 border border-emerald-100 w-max px-2 py-1 rounded-md">
+                          <ChevronRight className="w-3 h-3" />
+                          {linkedGoal.title}
+                        </div>
+                      )}
+                      {(task.domain || (linkedGoal && linkedGoal.domain)) && (
+                        <div className="flex items-center gap-1 text-[9px] text-stone-500 font-sans font-bold uppercase tracking-widest bg-white border border-stone-200 w-max px-2 py-1 rounded-md">
+                          <Tag className="w-3 h-3" />
+                          {task.domain || (linkedGoal && linkedGoal.domain)}
+                        </div>
+                      )}
+                    </div>
                   </div>
+                  <button 
+                    onClick={() => toggleImportant(task.id)}
+                    className={`shrink-0 p-2 transition-colors ${task.isImportant ? 'text-amber-500' : 'text-stone-300 hover:text-amber-500 opacity-0 group-hover:opacity-100'}`}
+                    title="Rappel Push activé / désactivé"
+                  >
+                    {task.isImportant ? <BellRing className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
+                  </button>
                   <button 
                     onClick={() => deleteTask(task.id)}
                     className="text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2"
