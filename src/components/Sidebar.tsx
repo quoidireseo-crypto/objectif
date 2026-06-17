@@ -1,5 +1,6 @@
-import { Target, LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon } from 'lucide-react';
+import { LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon } from 'lucide-react';
 import { ViewType } from '../types';
+import { SkoposLogo } from './SkoposLogo';
 
 interface SidebarProps {
   currentView: ViewType;
@@ -22,7 +23,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
       <aside className="hidden md:flex w-64 bg-stone-900 text-stone-200 h-screen flex-col fixed left-0 top-0 border-r border-stone-800 z-50">
         <div className="p-6 border-b border-stone-800">
           <h1 className="text-2xl font-sans tracking-widest font-bold text-white flex items-center gap-3">
-            <Target className="text-[#6EE7B7] w-7 h-7 shrink-0" />
+            <SkoposLogo className="text-[#6EE7B7] shrink-0" size={28} />
             SKOPOS
           </h1>
           <p className="text-xs text-stone-400 mt-2 font-sans font-medium tracking-wide uppercase">Mon Espace Personnel</p>

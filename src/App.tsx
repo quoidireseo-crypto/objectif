@@ -11,6 +11,7 @@ import { CalendarView } from './views/CalendarView';
 import { SettingsView } from './views/SettingsView';
 import { NotificationToast } from './components/NotificationToast';
 import { useReminder } from './hooks/useReminder';
+import { SkoposLogo } from './components/SkoposLogo';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
@@ -47,48 +48,59 @@ export default function App() {
     <div className="flex min-h-screen bg-[#F5F5F0] font-serif text-stone-800 selection:bg-emerald-200 selection:text-emerald-900">
       <Sidebar currentView={currentView} onChangeView={setCurrentView} />
       
-      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 lg:p-12 pb-24 md:pb-8 lg:pb-12 overflow-y-auto relative h-[100dvh]">
-        <div className="max-w-[1024px] mx-auto h-full flex flex-col">
-          {shouldRemindExport && (
-            <div className="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 shadow-sm animate-in fade-in">
-              <p className="text-amber-900 font-sans font-medium text-sm">
-                💾 Il y a plus de 7 jours que tu n'as pas sauvegardé tes données. 
-              </p>
-              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                <button 
-                  onClick={() => {
-                    const dataStr = JSON.stringify(data, null, 2);
-                    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-                    const exportFileDefaultName = `skopos_export_${new Date().toISOString().split('T')[0]}.json`;
-                    
-                    const linkElement = document.createElement('a');
-                    linkElement.setAttribute('href', dataUri);
-                    linkElement.setAttribute('download', exportFileDefaultName);
-                    linkElement.click();
-                    
-                    window.localStorage.setItem('didier_last_export_date', new Date().toISOString());
-                    window.dispatchEvent(new Event('didier_export_occurred'));
-                    dismissExportReminder();
-                  }}
-                  className="bg-amber-100 text-amber-900 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-amber-200 transition shrink-0"
-                >
-                  Télécharger ma sauvegarde
-                </button>
-                <button 
-                  onClick={dismissExportReminder}
-                  className="text-amber-700/80 hover:text-amber-900 text-xs font-bold uppercase tracking-wider px-2 py-2 shrink-0"
-                >
-                  Me rappeler plus tard
-                </button>
-              </div>
-            </div>
-          )}
-          
-          <div className="flex-1">
-            {renderView()}
+      <div className="flex-1 flex flex-col h-[100dvh] md:ml-64 relative overflow-hidden">
+        {/* Mobile Top Header */}
+        <header className="md:hidden flex items-center justify-between px-5 py-4 bg-white border-b border-stone-200 shrink-0 z-40 shadow-xs">
+          <div className="flex items-center gap-3">
+            <SkoposLogo className="text-[#047857]" size={26} />
+            <span className="text-lg font-sans font-bold tracking-widest text-[#1C1917]">SKOPOS</span>
           </div>
-        </div>
-      </main>
+          <span className="text-[10px] font-sans font-bold tracking-widest text-[#047857] uppercase bg-emerald-50 px-3 py-1 rounded-full">Mon Espace</span>
+        </header>
+
+        <main className="flex-1 px-4 py-6 sm:p-6 md:p-8 lg:p-12 pb-36 md:pb-8 lg:pb-12 overflow-y-auto relative h-full">
+          <div className="max-w-[1024px] mx-auto min-h-full flex flex-col">
+            {shouldRemindExport && (
+              <div className="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 shadow-sm animate-in fade-in">
+                <p className="text-amber-900 font-sans font-medium text-sm">
+                  💾 Il y a plus de 7 jours que tu n'as pas sauvegardé tes données. 
+                </p>
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                  <button 
+                    onClick={() => {
+                      const dataStr = JSON.stringify(data, null, 2);
+                      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                      const exportFileDefaultName = `skopos_export_${new Date().toISOString().split('T')[0]}.json`;
+                      
+                      const linkElement = document.createElement('a');
+                      linkElement.setAttribute('href', dataUri);
+                      linkElement.setAttribute('download', exportFileDefaultName);
+                      linkElement.click();
+                      
+                      window.localStorage.setItem('didier_last_export_date', new Date().toISOString());
+                      window.dispatchEvent(new Event('didier_export_occurred'));
+                      dismissExportReminder();
+                    }}
+                    className="bg-amber-100 text-amber-900 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-amber-200 transition shrink-0"
+                  >
+                    Télécharger ma sauvegarde
+                  </button>
+                  <button 
+                    onClick={dismissExportReminder}
+                    className="text-amber-700/80 hover:text-amber-900 text-xs font-bold uppercase tracking-wider px-2 py-2 shrink-0"
+                  >
+                    Me rappeler plus tard
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex-1">
+              {renderView()}
+            </div>
+          </div>
+        </main>
+      </div>
 
       <NotificationToast data={data} />
     </div>
