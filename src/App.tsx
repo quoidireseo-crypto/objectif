@@ -50,13 +50,10 @@ export default function App() {
       
       <div className="flex-1 flex flex-col h-[100dvh] md:ml-64 relative overflow-hidden">
         {/* Mobile Top Header */}
-        <header className="md:hidden flex flex-col px-5 py-3 bg-white border-b border-stone-200 shrink-0 z-40 shadow-xs">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-3">
-              <SkoposLogo className="text-[#047857]" size={26} />
-              <span className="text-lg font-sans font-bold tracking-widest text-[#1C1917]">SKOPOS</span>
-            </div>
-            <span className="text-[10px] font-sans font-bold tracking-widest text-[#047857] uppercase bg-emerald-50 px-3 py-1 rounded-full">Mon Espace</span>
+        <header className="md:hidden flex flex-col items-center justify-center px-5 py-3.5 bg-white border-b border-stone-200 shrink-0 z-40 shadow-xs text-center">
+          <div className="flex items-center gap-3">
+            <SkoposLogo className="text-[#047857]" size={26} />
+            <span className="text-lg font-sans font-bold tracking-widest text-[#1C1917]">SKOPOS</span>
           </div>
           <p className="text-[11px] text-[#047857] font-serif italic mt-1">chaque jour son nouveau départ</p>
         </header>
