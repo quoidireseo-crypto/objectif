@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { AppData } from '../types';
-import { Target, CheckCircle2, Sparkles, Flame } from 'lucide-react';
+import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
 import { GoalDomainChart } from '../components/GoalDomainChart';
 import { useStreak } from '../hooks/useStreak';
@@ -17,7 +17,23 @@ const QUOTES = [
   { text: "Le meilleur moment pour planter un arbre était il y a 20 ans. Le deuxième meilleur moment est maintenant.", author: "Proverbe chinois" },
   { text: "Chaque jour est une nouvelle chance d'être acteur de sa vie.", author: "Anonyme" },
   { text: "Il n'y a pas d'âge pour se réinventer.", author: "Anonyme" },
-  { text: "La vie ce n'est pas d'attendre que les orages passent, c'est d'apprendre à danser sous la pluie.", author: "Sénèque" }
+  { text: "La vie ce n'est pas d'attendre que les orages passent, c'est d'apprendre à danser sous la pluie.", author: "Sénèque" },
+  { text: "La bienveillance envers soi-même est le premier pas vers l'harmonie.", author: "Anonyme" },
+  { text: "Prends le temps de faire ce qui rend ton âme heureuse.", author: "Anonyme" },
+  { text: "Nul besoin de courir, il suffit d'avancer à son rythme.", author: "Anonyme" }
+];
+
+const WEEKLY_CHALLENGES = [
+  "Prendre 10 minutes pour observer la nature sans téléphone.",
+  "Envoyer un message à une personne chère juste pour lui dire qu'on pense à elle.",
+  "Cuisiner un repas inédit ou tester un nouvel ingrédient.",
+  "Lire 15 pages d'un livre qui traîne sur la table de chevet.",
+  "Sourire à un inconnu dans la rue.",
+  "Prendre 5 minutes pour écrire 3 choses positives de la journée.",
+  "Marcher dans un quartier ou un endroit qu'on ne connaît pas bien.",
+  "Ranger ou désencombrer un petit espace de la maison pendant 15 minutes.",
+  "Écouter attentivement quelqu'un sans chercher à préparer sa réponse.",
+  "Se coucher 30 minutes plus tôt avec un livre plutôt qu'un écran."
 ];
 
 export function DashboardView({ data, onChangeView }: DashboardProps) {
@@ -26,6 +42,52 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
   const completedToday = todayTasks.filter(t => t.isCompleted).length;
   const { currentStreak } = useStreak(data.tasks);
+
+  const [weeklyChallenge, setWeeklyChallenge] = useState<{ text: string, date: string } | null>(null);
+
+  useEffect(() => {
+    const currentChallengeStr = window.localStorage.getItem('didier_weekly_challenge');
+    const now = new Date();
+    let isCurrentValid = false;
+
+    if (currentChallengeStr) {
+      try {
+        const current = JSON.parse(currentChallengeStr);
+        const challengeDate = new Date(current.date);
+        const diffTime = now.getTime() - challengeDate.getTime();
+        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        
+        if (diffDays <= 7) {
+          setWeeklyChallenge(current);
+          isCurrentValid = true;
+        }
+      } catch (e) {
+        // invalid JSON
+      }
+    }
+
+    if (!isCurrentValid) {
+      const newWeekly = {
+        text: WEEKLY_CHALLENGES[Math.floor(Math.random() * WEEKLY_CHALLENGES.length)],
+        date: now.toISOString()
+      };
+      window.localStorage.setItem('didier_weekly_challenge', JSON.stringify(newWeekly));
+      setWeeklyChallenge(newWeekly);
+    }
+  }, []);
+
+  const refreshChallenge = () => {
+    let newChallengeIndex = Math.floor(Math.random() * WEEKLY_CHALLENGES.length);
+    while (weeklyChallenge && WEEKLY_CHALLENGES[newChallengeIndex] === weeklyChallenge.text) {
+      newChallengeIndex = Math.floor(Math.random() * WEEKLY_CHALLENGES.length);
+    }
+    const newWeekly = {
+      text: WEEKLY_CHALLENGES[newChallengeIndex],
+      date: new Date().toISOString()
+    };
+    window.localStorage.setItem('didier_weekly_challenge', JSON.stringify(newWeekly));
+    setWeeklyChallenge(newWeekly);
+  };
 
   const formattedDate = new Intl.DateTimeFormat('fr-FR', { 
     weekday: 'long', 
@@ -135,7 +197,7 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
           </div>
           <div className="relative z-10 flex flex-col h-full justify-between">
             <div>
-              <h3 className="font-sans text-[10px] uppercase tracking-widest text-emerald-300 font-bold mb-3">Inspiration Quotidienne</h3>
+              <h3 className="font-sans text-[10px] uppercase tracking-widest text-emerald-300 font-bold mb-3">Inspiration du Jour</h3>
               <p className="text-sm opacity-90 italic leading-relaxed">
                 "{dailyQuote.text}"
               </p>
@@ -149,6 +211,35 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
         <ProgressChart tasks={data.tasks} />
         {data.goals.length > 0 && <GoalDomainChart goals={data.goals} />}
       </div>
+
+      {weeklyChallenge && (
+        <div className="bg-stone-50 border border-stone-200 rounded-3xl p-6 md:p-8 mb-8 relative overflow-hidden group w-full">
+          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
+            <div className="flex items-start gap-4">
+              <div className="p-3.5 bg-white shadow-sm border border-stone-100 rounded-2xl text-stone-600 shrink-0">
+                <Feather className="w-6 h-6 z-10 relative" />
+              </div>
+              <div>
+                <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-500 mb-1.5 flex items-center gap-2">
+                  Défi de la semaine
+                </h3>
+                <p className="text-lg md:text-xl font-light text-stone-800 leading-snug max-w-2xl">
+                  {weeklyChallenge.text}
+                </p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={refreshChallenge}
+              className="px-4 py-2 bg-white hover:bg-stone-100 text-stone-500 text-xs font-sans font-bold uppercase tracking-wider rounded-xl transition border border-stone-200 flex items-center gap-2 shrink-0"
+              title="Changer de défi"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Nouveau
+            </button>
+          </div>
+        </div>
+      )}
 
       {data.goals.length === 0 && (
         <div className="bg-[#EAE7E2] rounded-3xl p-6 md:p-8 text-center max-w-2xl mx-auto border border-stone-200 w-full shrink-0">

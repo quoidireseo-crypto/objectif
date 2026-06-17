@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { AppData, JournalEntry } from '../types';
-import { BookHeart, Send, Smile, Meh, Frown, Sparkles, Trash2 } from 'lucide-react';
+import { BookHeart, Send, Smile, Meh, Frown, Sparkles, Trash2, CloudLightning } from 'lucide-react';
 
 interface JournalProps {
   data: AppData;
@@ -13,6 +13,19 @@ const MOODS = [
   { label: 'Moyen', icon: Meh, color: 'text-stone-600 bg-stone-100 border-stone-200 hover:bg-stone-200' },
   { label: 'Difficile', icon: Frown, color: 'text-amber-900 bg-amber-100 border-amber-300 hover:bg-amber-200' },
 ] as const;
+
+const FRENCH_STOP_WORDS = new Set([
+  'le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'd', 'l', 'à', 'au', 'aux',
+  'et', 'ou', 'mais', 'donc', 'or', 'ni', 'car', 'pour', 'par', 'sur', 'sous', 'avec', 'sans', 'dans', 'en', 'vers',
+  'qui', 'que', 'quoi', 'dont', 'où', 'je', 'tu', 'il', 'elle', 'on', 'nous', 'vous', 'ils', 'elles',
+  'me', 'te', 'se', 'y', 'ce', 'cet', 'cette', 'ces', 'mon', 'ton', 'son', 'ma', 'ta', 'sa', 'mes', 'tes', 'ses',
+  'est', 'sont', 'suis', 'es', 'a', 'ont', 'ai', 'as', 'pas', 'plus', 'très', 'trop', 'bien', 'fait', 'faire', 'être', 'avoir',
+  'tout', 'tous', 'c', 'j', 'm', 't', 's', 'qu', 'peu', 'beaucoup', 'comme', 'comment', 'quand', 'pourquoi', 'ça', 'cela', 'ceci',
+  'ne', 'ici', 'là', 'rien', 'quelque', 'toujours', 'jamais', 'aussi', 'encore', 'oui', 'non', 'même', 'autre', 'autres', 'après', 'avant',
+  'jour', 'aujourd', 'hui', 'alors', 'vraiment', 'trop', 'dire', 'dit', 'aller', 'vais', 'vas', 'va', 'vont',
+  'été', 'peuvent', 'peut', 'peux', 'voir', 'vu', 'temps', 'fois', 'journée', 'matin', 'soir', 'nuit',
+  'cette', 'cet', 'ces', 'ceux', 'celles', 'celui', 'celle', 'votre', 'vos', 'notre', 'nos', 'leur', 'leurs'
+]);
 
 export function JournalView({ data, updateData }: JournalProps) {
   const [content, setContent] = useState('');
@@ -39,6 +52,48 @@ export function JournalView({ data, updateData }: JournalProps) {
     if (confirm("Supprimer cette réflexion ?")) {
       updateData({ journal: data.journal.filter(j => j.id !== id) });
     }
+  };
+
+  const wordCloud = useMemo(() => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const recentEntries = data.journal.filter(j => new Date(j.date) >= thirtyDaysAgo);
+    
+    if (recentEntries.length === 0) return [];
+
+    const wordsCounter: Record<string, number> = {};
+    
+    recentEntries.forEach(entry => {
+      if (entry.mood) {
+         const moodWord = entry.mood.toLowerCase();
+         wordsCounter[moodWord] = (wordsCounter[moodWord] || 0) + 2;
+      }
+  
+      const words = entry.content.toLowerCase().split(/[\s,.;:!?()'"’]+/);
+      words.forEach(w => {
+        if (w.length > 3 && !FRENCH_STOP_WORDS.has(w)) {
+          wordsCounter[w] = (wordsCounter[w] || 0) + 1;
+        }
+      });
+    });
+  
+    const sortedWords = Object.entries(wordsCounter)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 25);
+  
+    // Pseudo-randomizing output order based on word string itself for stability between re-renders
+    return sortedWords.sort((a, b) => {
+        return (a[0].charCodeAt(0) % 3) - (b[0].charCodeAt(0) % 3);
+    });
+  }, [data.journal]);
+
+  const getWordStyle = (count: number) => {
+    if (count === 1) return 'text-stone-400 text-xs md:text-sm font-light opacity-60';
+    if (count === 2) return 'text-stone-500 text-sm md:text-base font-medium opacity-80';
+    if (count === 3) return 'text-emerald-700 text-base md:text-lg font-bold';
+    if (count === 4) return 'text-emerald-800 text-lg md:text-xl font-bold tracking-tight';
+    return 'text-amber-700 text-xl md:text-2xl font-black tracking-tighter';
   };
 
   return (
@@ -89,6 +144,22 @@ export function JournalView({ data, updateData }: JournalProps) {
               <Send className="w-4 h-4" />
               Enregistrer ma journée
             </button>
+          </div>
+        </div>
+      )}
+
+      {wordCloud.length > 0 && (
+        <div className="bg-stone-50 border border-stone-100 rounded-3xl p-6 md:p-8 mb-10 shadow-sm animate-in fade-in duration-700">
+          <div className="flex items-center gap-2 text-stone-500 mb-6">
+            <CloudLightning className="w-5 h-5 text-emerald-600" />
+            <h3 className="text-xs font-sans uppercase tracking-widest font-bold">Mots-clés des 30 derniers jours</h3>
+          </div>
+          <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-4 px-4 py-2">
+            {wordCloud.map(([word, count]) => (
+              <span key={word} className={`transition-all duration-300 hover:scale-110 cursor-default ${getWordStyle(count)}`}>
+                {word}
+              </span>
+            ))}
           </div>
         </div>
       )}
