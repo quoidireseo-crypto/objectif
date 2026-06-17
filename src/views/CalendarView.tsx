@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, FormEvent } from 'react';
 import { AppData, Task, LifeDomain } from '../types';
 import { ChevronLeft, ChevronRight, CheckCircle2, Circle, Plus, Tag, Trash2 } from 'lucide-react';
 
@@ -42,7 +42,7 @@ export function CalendarView({ data, updateData }: CalendarProps) {
   const selectedDayTasks = data.tasks.filter(t => t.date === selectedDateStr);
   const selectedDayJournal = data.journal.find(j => j.date === selectedDateStr);
 
-  const handleAddTask = (e: React.FormEvent) => {
+  const handleAddTask = (e: FormEvent) => {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
 
@@ -198,7 +198,10 @@ export function CalendarView({ data, updateData }: CalendarProps) {
             {selectedDayTasks.length === 0 ? (
               <p className="text-stone-400 text-sm italic py-4 text-center">Aucune tâche prévue.</p>
             ) : (
-              selectedDayTasks.map(task => (
+              selectedDayTasks.map(task => {
+                const linkedGoal = data.goals.find(g => g.id === task.goalId);
+                const linkedMilestone = task.milestoneId ? data.milestones?.find(m => m.id === task.milestoneId) : undefined;
+                return (
                 <div key={task.id} className="flex items-start gap-3 p-3 bg-stone-50 rounded-xl border border-stone-100 group">
                   <button onClick={() => toggleTask(task.id)} className="shrink-0 mt-0.5">
                     {task.isCompleted ? (
@@ -211,12 +214,20 @@ export function CalendarView({ data, updateData }: CalendarProps) {
                     <p className={`font-sans text-sm font-bold ${task.isCompleted ? 'text-stone-400 line-through' : 'text-stone-800'}`}>
                       {task.title}
                     </p>
-                    {task.domain && (
-                      <div className="flex items-center gap-1 text-[9px] text-stone-500 font-sans font-bold uppercase tracking-widest mt-1">
-                        <Tag className="w-3 h-3" />
-                        {task.domain}
-                      </div>
-                    )}
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {linkedGoal && (
+                        <div className="flex items-center gap-1 text-[9px] text-emerald-800 font-sans font-bold uppercase tracking-wider bg-emerald-50 border border-emerald-100 w-max px-1.5 py-0.5 rounded">
+                          {linkedGoal.title}
+                          {linkedMilestone && ` ➔ ${linkedMilestone.title}`}
+                        </div>
+                      )}
+                      {task.domain && (
+                        <div className="flex items-center gap-1 text-[9px] text-stone-500 font-sans font-bold uppercase tracking-widest bg-white border border-stone-100 w-max px-1.5 py-0.5 rounded">
+                          <Tag className="w-3 h-3" />
+                          {task.domain}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <button 
                     onClick={() => deleteTask(task.id)}
@@ -225,7 +236,7 @@ export function CalendarView({ data, updateData }: CalendarProps) {
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-              ))
+              )})
             )}
 
             {selectedDayJournal && (

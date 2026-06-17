@@ -25,7 +25,7 @@ export function GoalDomainChart({ goals }: GoalDomainChartProps) {
       
       const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
       
-      let shortName = domain;
+      let shortName: string = domain;
       if (domain === 'Santé & Bien-être') shortName = 'Santé';
       if (domain === 'Projet Personnel') shortName = 'Projets';
       if (domain === 'Relations & Famille') shortName = 'Relations';

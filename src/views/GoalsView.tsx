@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { AppData, Goal, LifeDomain } from '../types';
-import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles } from 'lucide-react';
+import { AppData, Goal, LifeDomain, Milestone, Task } from '../types';
+import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square } from 'lucide-react';
 
 interface GoalsProps {
   data: AppData;
@@ -17,45 +17,207 @@ const DOMAINS: { label: LifeDomain; icon: any; color: string }[] = [
   { label: 'Autre', icon: Home, color: 'text-stone-600 bg-stone-50 border-stone-200' },
 ];
 
+const VERBS = [
+  { id: 'Reprendre', label: 'Reprendre', placeholder: '...le sport / la lecture / le contact avec mes enfants' },
+  { id: 'Apprendre', label: 'Apprendre', placeholder: '...une langue / un instrument / la cuisine' },
+  { id: 'Créer', label: 'Créer', placeholder: '...un potager / mon entreprise / un album photo' },
+  { id: 'Améliorer', label: 'Améliorer', placeholder: '...mon sommeil / mon organisation / mes finances' },
+  { id: 'Arrêter', label: 'Arrêter', placeholder: '...de fumer / de procrastiner / de scroller' },
+  { id: 'Commencer', label: 'Commencer', placeholder: '...la méditation / un journal / à épargner' },
+  { id: 'Autre...', label: 'Autre...', placeholder: 'Ex: Retrouver la forme...' }
+];
+
+const addMonths = (date: Date, months: number) => {
+  const d = new Date(date);
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().split('T')[0];
+};
+
+const addWeeks = (date: Date, weeks: number) => {
+  const d = new Date(date);
+  d.setDate(d.getDate() + weeks * 7);
+  return d.toISOString().split('T')[0];
+};
+
+const DEADLINE_OPTIONS = [
+  { label: 'Dans 1 semaine', getValue: () => addWeeks(new Date(), 1) },
+  { label: 'Dans 1 mois', getValue: () => addMonths(new Date(), 1) },
+  { label: 'Dans 3 mois', getValue: () => addMonths(new Date(), 3) },
+  { label: 'Dans 6 mois', getValue: () => addMonths(new Date(), 6) },
+];
+
 export function GoalsView({ data, updateData }: GoalsProps) {
   const [isAdding, setIsAdding] = useState(false);
+  const [selectedVerb, setSelectedVerb] = useState(VERBS[0].id);
+  const [goalComplement, setGoalComplement] = useState('');
+  const [firstAction, setFirstAction] = useState('');
+  const [newMilestoneTitles, setNewMilestoneTitles] = useState<{ [goalId: string]: string }>({});
+  
   const [newGoal, setNewGoal] = useState<Partial<Goal>>({
-    title: '',
     why: '',
     domain: 'Santé & Bien-être',
+    deadline: '',
     status: 'En cours'
   });
 
-  const handleSave = () => {
-    if (!newGoal.title || !newGoal.why) return;
+  const getFinalTitle = () => {
+    const comp = goalComplement.trim();
+    if (!comp) return '';
+    if (selectedVerb === 'Autre...') return comp;
+    return `Je veux ${selectedVerb.toLowerCase()} ${comp}`;
+  };
 
+  const handleSave = () => {
+    const finalTitle = getFinalTitle();
+    if (!finalTitle || !newGoal.why) return;
+
+    const goalId = Date.now().toString();
     const goal: Goal = {
-      id: Date.now().toString(),
-      title: newGoal.title,
+      id: goalId,
+      title: finalTitle,
       why: newGoal.why,
       domain: newGoal.domain as LifeDomain,
+      deadline: newGoal.deadline,
       status: 'En cours',
       createdAt: new Date().toISOString(),
     };
 
-    updateData({ goals: [goal, ...data.goals] });
+    const newTasks: Task[] = [...data.tasks];
+    
+    if (firstAction.trim()) {
+      const todayDate = new Date().toISOString().split('T')[0];
+      newTasks.push({
+        id: 'task_' + Date.now().toString(),
+        title: firstAction.trim(),
+        goalId: goal.id,
+        isCompleted: false,
+        date: todayDate,
+        domain: goal.domain
+      });
+    }
+
+    updateData({ 
+      goals: [goal, ...data.goals],
+      tasks: newTasks
+    });
+    
     setIsAdding(false);
-    setNewGoal({ title: '', why: '', domain: 'Santé & Bien-être', status: 'En cours' });
+    setFirstAction('');
+    setSelectedVerb(VERBS[0].id);
+    setGoalComplement('');
+    setNewGoal({ why: '', domain: 'Santé & Bien-être', deadline: '', status: 'En cours' });
   };
 
   const deleteGoal = (id: string) => {
     if (confirm("Supprimer cet objectif ?")) {
       updateData({ 
         goals: data.goals.filter(g => g.id !== id),
-        // Also remove tasks linked to this goal? Or just leave them unlinked?
-        // Let's leave them or unlink them. Here we can just remove the goal.
-        tasks: data.tasks.map(t => t.goalId === id ? { ...t, goalId: undefined } : t)
+        tasks: data.tasks.map(t => t.goalId === id ? { ...t, goalId: undefined, milestoneId: undefined } : t),
+        milestones: data.milestones.filter(m => m.goalId !== id)
       });
     }
   };
 
+  const addMilestone = (goalId: string) => {
+    const title = newMilestoneTitles[goalId]?.trim();
+    if (!title) return;
+
+    const goalMilestones = data.milestones.filter(m => m.goalId === goalId);
+    if (goalMilestones.length >= 4) return;
+
+    const newMilestone: Milestone = {
+      id: 'ms_' + Date.now().toString(),
+      goalId,
+      title,
+      isCompleted: false,
+      order: goalMilestones.length + 1
+    };
+
+    updateData({
+      milestones: [...data.milestones, newMilestone]
+    });
+
+    setNewMilestoneTitles(prev => ({ ...prev, [goalId]: '' }));
+  };
+
+  const toggleMilestone = (id: string) => {
+    updateData({
+      milestones: data.milestones.map(m => m.id === id ? { ...m, isCompleted: !m.isCompleted } : m)
+    });
+  };
+
+  const deleteMilestone = (id: string) => {
+    updateData({
+      milestones: data.milestones.filter(m => m.id !== id),
+      tasks: data.tasks.map(t => t.milestoneId === id ? { ...t, milestoneId: undefined } : t)
+    });
+  };
+
   const getDomainTheme = (domainLabel: string) => {
     return DOMAINS.find(c => c.label === domainLabel) || DOMAINS[0];
+  };
+
+  const getDeadlineBadge = (goal: Goal) => {
+    if (goal.status === 'Atteint') {
+      return (
+        <div className="flex items-center gap-2 text-xs text-emerald-800 font-sans uppercase font-bold tracking-wider bg-emerald-50 border border-emerald-100 w-max px-3 py-1.5 rounded-full">
+          <Target className="w-3.5 h-3.5" />
+          Atteint
+        </div>
+      );
+    }
+
+    if (goal.status === 'En pause') {
+      return (
+        <div className="flex items-center gap-2 text-xs text-stone-500 font-sans uppercase font-bold tracking-wider bg-stone-100 border border-stone-200 w-max px-3 py-1.5 rounded-full">
+          <Clock className="w-3.5 h-3.5" />
+          En pause
+        </div>
+      );
+    }
+
+    if (!goal.deadline) {
+       return (
+         <div className="flex items-center gap-2 text-xs text-amber-800 font-sans uppercase font-bold tracking-wider bg-amber-50 border border-amber-100 w-max px-3 py-1.5 rounded-full">
+           <Clock className="w-3.5 h-3.5" />
+           En cours
+         </div>
+       );
+    }
+    
+    // Check deadline
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const deadlineDate = new Date(goal.deadline);
+    deadlineDate.setHours(0,0,0,0);
+    
+    const diffTime = deadlineDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) {
+      return (
+        <div className="flex items-center gap-2 text-xs text-red-800 font-sans uppercase font-bold tracking-wider bg-red-50 border border-red-100 px-3 py-1.5 rounded-full">
+          <Clock className="w-3.5 h-3.5" />
+          Échéance dépassée
+        </div>
+      );
+    } 
+    
+    if (diffDays === 0) {
+      return (
+        <div className="flex items-center gap-2 text-xs text-amber-800 font-sans uppercase font-bold tracking-wider bg-amber-50 border border-amber-100 px-3 py-1.5 rounded-full">
+          <Clock className="w-3.5 h-3.5" />
+          Aujourd'hui
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center gap-2 text-xs text-blue-800 font-sans uppercase font-bold tracking-wider bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full">
+        <Clock className="w-3.5 h-3.5" />
+        Dans {diffDays} jour{diffDays > 1 ? 's' : ''}
+      </div>
+    );
   };
 
   return (
@@ -86,15 +248,66 @@ export function GoalsView({ data, updateData }: GoalsProps) {
           <h3 className="text-2xl font-light mb-6 text-stone-900">Définir un nouvel objectif</h3>
           
           <div className="space-y-6 font-sans">
-            <div>
-              <label className="block text-xs font-bold text-stone-400 uppercase tracking-wide mb-2">Quel est l'objectif ?</label>
+            <div className="bg-[#F5F5F0]/50 p-5 rounded-2xl border border-stone-200/60">
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-wide mb-3">Étape 1 : Choisir une action</label>
+              <div className="flex flex-wrap gap-2 mb-6">
+                {VERBS.map(v => (
+                  <button
+                    key={v.id}
+                    onClick={() => setSelectedVerb(v.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-sans transition-all ${
+                      selectedVerb === v.id 
+                        ? 'bg-emerald-600 text-white shadow-md' 
+                        : 'bg-stone-100 text-stone-600 border border-stone-200 hover:bg-stone-200'
+                    }`}
+                  >
+                    {v.label}
+                  </button>
+                ))}
+              </div>
+
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-wide mb-2">Étape 2 : Compléter l'objectif</label>
+              {selectedVerb !== 'Autre...' && (
+                <p className="text-emerald-700 italic font-medium mb-3 font-serif text-lg">
+                  "Je veux {selectedVerb.toLowerCase()} <span className={goalComplement ? 'text-emerald-700' : 'text-stone-400'}>{goalComplement || '[...]'}</span>"
+                </p>
+              )}
               <input
                 type="text"
-                placeholder="Ex: Retrouver la forme, Écrire un livre, Rénover la cuisine..."
-                className="w-full px-4 py-3 rounded-xl border border-stone-200 outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 transition"
-                value={newGoal.title}
-                onChange={e => setNewGoal({...newGoal, title: e.target.value})}
+                placeholder={VERBS.find(v => v.id === selectedVerb)?.placeholder}
+                className="w-full px-4 py-3 rounded-xl border border-stone-200 outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 transition shadow-inner bg-white"
+                value={goalComplement}
+                onChange={e => setGoalComplement(e.target.value)}
               />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-wide mb-3">Étape 3 : Échéance (Optionnel)</label>
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <div className="flex flex-wrap gap-2">
+                  {DEADLINE_OPTIONS.map(opt => {
+                    const val = opt.getValue();
+                    const isSelected = newGoal.deadline === val;
+                    return (
+                      <button
+                        key={opt.label}
+                        onClick={() => setNewGoal({...newGoal, deadline: val})}
+                        className={`px-3 py-1.5 rounded-xl border text-xs font-sans transition-all ${
+                          isSelected ? 'border-emerald-700 bg-emerald-50 text-emerald-800 font-bold' : 'border-stone-200 text-stone-500 hover:bg-stone-50'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    )
+                  })}
+                </div>
+                <input
+                  type="date"
+                  className="w-full sm:w-auto px-4 py-2 rounded-xl border border-stone-200 outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 transition font-sans text-sm"
+                  value={newGoal.deadline || ''}
+                  onChange={e => setNewGoal({...newGoal, deadline: e.target.value})}
+                />
+              </div>
             </div>
 
             <div>
@@ -129,6 +342,19 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                </div>
             </div>
 
+            <div>
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-wide mb-2">
+                Quelle est la toute première petite chose que tu pourrais faire cette semaine pour avancer vers cet objectif ? <span className="text-stone-300 normal-case font-normal italic">(Optionnel)</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Ex : Marcher 15 minutes demain matin..."
+                className="w-full px-4 py-3 rounded-xl border border-stone-200 outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 transition shadow-inner bg-[#F5F5F0]/50"
+                value={firstAction}
+                onChange={e => setFirstAction(e.target.value)}
+              />
+            </div>
+
             <div className="pt-6 flex justify-end gap-3 border-t border-stone-100 mt-2">
               <button 
                 onClick={() => setIsAdding(false)}
@@ -138,7 +364,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
               </button>
               <button 
                 onClick={handleSave}
-                disabled={!newGoal.title || !newGoal.why}
+                disabled={!getFinalTitle() || !newGoal.why}
                 className="bg-stone-800 text-white px-6 py-2.5 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-stone-900 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
                 Valider l'objectif
@@ -182,14 +408,78 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                 
                 <div className="bg-[#F5F5F0] p-4 rounded-2xl mt-2 flex-grow border border-stone-200/50">
                   <p className="text-[10px] font-bold font-sans text-stone-500 uppercase tracking-widest mb-2">L'intention</p>
-                  <p className="text-stone-700 italic leading-snug">"{goal.why}"</p>
+                  <p className="text-stone-700 italic leading-snug mb-4">"{goal.why}"</p>
+                  
+                  <div className="border-t border-stone-200/50 pt-4 mt-2">
+                    <p className="text-[10px] font-bold font-sans text-stone-500 uppercase tracking-widest mb-3">Mes prochaines étapes</p>
+                    
+                    {(() => {
+                      const goalMilestones = (data.milestones || []).filter(m => m.goalId === goal.id).sort((a,b) => a.order - b.order);
+                      const completedCount = goalMilestones.filter(m => m.isCompleted).length;
+                      
+                      return (
+                        <div className="space-y-3">
+                          {goalMilestones.length > 0 && (
+                            <div className="w-full bg-stone-200 rounded-full h-1.5 mb-4 overflow-hidden">
+                              <div 
+                                className="bg-emerald-500 h-1.5 rounded-full transition-all duration-500 ease-out" 
+                                style={{ width: `${(completedCount / goalMilestones.length) * 100}%` }}
+                              />
+                            </div>
+                          )}
+
+                          {goalMilestones.map(ms => (
+                            <div key={ms.id} className="flex items-start gap-2 group">
+                              <button 
+                                onClick={() => toggleMilestone(ms.id)}
+                                className={`mt-0.5 shrink-0 transition-colors ${ms.isCompleted ? 'text-emerald-500' : 'text-stone-300 hover:text-stone-400'}`}
+                              >
+                                {ms.isCompleted ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                              </button>
+                              <span className={`text-sm font-sans flex-1 transition-all ${ms.isCompleted ? 'text-stone-400 line-through' : 'text-stone-700'}`}>
+                                {ms.title}
+                              </span>
+                              <button 
+                                onClick={() => deleteMilestone(ms.id)}
+                                className="text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+
+                          {goalMilestones.length < 4 && (
+                            <div className="flex flex-col gap-2 mt-2">
+                              <div className="flex items-end gap-2">
+                                <input 
+                                  type="text"
+                                  placeholder="+ Ajouter une étape..."
+                                  value={newMilestoneTitles[goal.id] || ''}
+                                  onChange={e => setNewMilestoneTitles({...newMilestoneTitles, [goal.id]: e.target.value})}
+                                  onKeyDown={e => {
+                                    if (e.key === 'Enter') addMilestone(goal.id);
+                                  }}
+                                  className="flex-1 bg-transparent border-b border-stone-200 text-sm py-1 outline-none focus:border-emerald-500 transition-colors font-sans placeholder:text-stone-400"
+                                />
+                                {newMilestoneTitles[goal.id]?.trim() && (
+                                  <button 
+                                    onClick={() => addMilestone(goal.id)}
+                                    className="text-[10px] font-sans font-bold uppercase tracking-widest text-emerald-600 hover:text-emerald-800 transition"
+                                  >
+                                    Ajouter
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
                 </div>
 
                 <div className="mt-5 flex items-center justify-between border-t border-stone-100 pt-5">
-                  <div className="flex items-center gap-2 text-xs text-amber-800 font-sans uppercase font-bold tracking-wider bg-amber-50 px-3 py-1.5 rounded-full">
-                    <Clock className="w-4 h-4" />
-                    {goal.status}
-                  </div>
+                  {getDeadlineBadge(goal)}
                   <span className="text-[10px] text-stone-400 font-sans uppercase">
                     Créé le {new Intl.DateTimeFormat('fr-FR').format(new Date(goal.createdAt))}
                   </span>

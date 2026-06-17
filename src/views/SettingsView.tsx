@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, ChangeEvent } from 'react';
 import { AppData } from '../types';
 import { Download, Upload, AlertCircle, CheckCircle2 } from 'lucide-react';
 
@@ -23,7 +23,7 @@ export function SettingsView({ data, onImportData }: SettingsProps) {
     linkElement.click();
   };
 
-  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImport = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 

@@ -2,6 +2,14 @@ export type ViewType = 'dashboard' | 'goals' | 'tasks' | 'journal' | 'review' | 
 
 export type LifeDomain = 'Santé & Bien-être' | 'Projet Personnel' | 'Relations & Famille' | 'Apprentissage' | 'Finances' | 'Spiritualité' | 'Autre';
 
+export interface Milestone {
+  id: string;
+  goalId: string;
+  title: string;
+  isCompleted: boolean;
+  order: number; // 1, 2, 3, 4 max
+}
+
 export interface Goal {
   id: string;
   title: string;
@@ -16,6 +24,7 @@ export interface Task {
   id: string;
   title: string;
   goalId?: string; // Links a task to a larger goal
+  milestoneId?: string; // Links a task to a specific milestone
   domain?: LifeDomain; // Category/Tag for the task
   isCompleted: boolean;
   date: string;
@@ -31,6 +40,7 @@ export interface JournalEntry {
 
 export interface AppData {
   goals: Goal[];
+  milestones: Milestone[];
   tasks: Task[];
   journal: JournalEntry[];
 }

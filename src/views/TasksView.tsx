@@ -19,7 +19,7 @@ const DOMAINS: LifeDomain[] = [
 
 export function TasksView({ data, updateData }: TasksProps) {
   const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [selectedGoalId, setSelectedGoalId] = useState<string>('');
+  const [selectedReference, setSelectedReference] = useState<string>(''); // format: goalId or goalId|milestoneId
   const [selectedDomain, setSelectedDomain] = useState<LifeDomain | ''>('');
   const [isNewTaskImportant, setIsNewTaskImportant] = useState(false);
   const notifiedTasksRef = useRef<Set<string>>(new Set());
@@ -47,7 +47,7 @@ export function TasksView({ data, updateData }: TasksProps) {
             icon: '/apple-touch-icon.png',
             badge: '/mask-icon.svg',
             vibrate: [200, 100, 200]
-          });
+          } as any);
         });
       } else {
         new Notification("Rappel Important", { body: `N'oublie pas : ${taskTitle}` });
@@ -63,19 +63,31 @@ export function TasksView({ data, updateData }: TasksProps) {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
 
+    let goalId: string | undefined;
+    let milestoneId: string | undefined;
+
+    if (selectedReference) {
+      const parts = selectedReference.split('|');
+      goalId = parts[0];
+      if (parts.length > 1) {
+        milestoneId = parts[1];
+      }
+    }
+
     const task: Task = {
       id: Date.now().toString(),
       title: newTaskTitle.trim(),
       isCompleted: false,
       date: todayDate,
       isImportant: isNewTaskImportant,
-      ...(selectedGoalId ? { goalId: selectedGoalId } : {}),
+      ...(goalId ? { goalId } : {}),
+      ...(milestoneId ? { milestoneId } : {}),
       ...(selectedDomain ? { domain: selectedDomain as LifeDomain } : {})
     };
 
     updateData({ tasks: [task, ...data.tasks] });
     setNewTaskTitle('');
-    setSelectedGoalId('');
+    setSelectedReference('');
     setSelectedDomain('');
     setIsNewTaskImportant(false);
     
@@ -150,14 +162,26 @@ export function TasksView({ data, updateData }: TasksProps) {
 
         {data.goals.length > 0 && (
           <select 
-            className="bg-stone-50 border border-stone-200 text-stone-600 font-sans text-xs py-3 px-3 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 md:max-w-[150px] truncate w-full md:w-auto md:mx-0"
-            value={selectedGoalId}
-            onChange={(e) => setSelectedGoalId(e.target.value)}
+            className="bg-stone-50 border border-stone-200 text-stone-600 font-sans text-xs py-3 px-3 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 md:max-w-xs w-full md:w-auto md:mx-0 shrink-0"
+            value={selectedReference}
+            onChange={(e) => setSelectedReference(e.target.value)}
           >
             <option value="">Lier à un objectif ?</option>
-            {data.goals.filter(g => g.status === 'En cours').map(g => (
-              <option key={g.id} value={g.id}>{g.title}</option>
-            ))}
+            {data.goals.filter(g => g.status === 'En cours').map(g => {
+              const milestones = (data.milestones || []).filter(m => m.goalId === g.id && !m.isCompleted);
+              
+              if (milestones.length > 0) {
+                return (
+                  <optgroup key={g.id} label={g.title}>
+                    <option value={g.id}>Objectif global</option>
+                    {milestones.sort((a,b) => a.order - b.order).map(m => (
+                      <option key={m.id} value={`${g.id}|${m.id}`}>→ Étape {m.order} : {m.title}</option>
+                    ))}
+                  </optgroup>
+                );
+              }
+              return <option key={g.id} value={g.id}>{g.title}</option>;
+            })}
           </select>
         )}
 
@@ -203,6 +227,7 @@ export function TasksView({ data, updateData }: TasksProps) {
           <div className="space-y-4">
             {todayTasks.filter(t => !t.isCompleted).map(task => {
               const linkedGoal = data.goals.find(g => g.id === task.goalId);
+              const linkedMilestone = task.milestoneId ? data.milestones?.find(m => m.id === task.milestoneId) : undefined;
               
               return (
                 <div key={task.id} className="group bg-stone-50/50 border border-stone-100 p-5 rounded-2xl flex items-center gap-4 hover:border-emerald-300 hover:shadow-sm transition-all">
@@ -217,10 +242,11 @@ export function TasksView({ data, updateData }: TasksProps) {
                       {task.title}
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                      {linkedGoal && (
+                       {linkedGoal && (
                         <div className="flex items-center gap-1 text-[10px] text-emerald-800 font-sans font-bold uppercase tracking-wider bg-emerald-50 border border-emerald-100 w-max px-2 py-1 rounded-md">
                           <ChevronRight className="w-3 h-3" />
                           {linkedGoal.title}
+                          {linkedMilestone && ` ➔ ${linkedMilestone.title}`}
                         </div>
                       )}
                       {(task.domain || (linkedGoal && linkedGoal.domain)) && (
@@ -253,7 +279,10 @@ export function TasksView({ data, updateData }: TasksProps) {
               <div className="mt-10 pt-8 border-t border-stone-200">
                 <h4 className="text-xs font-bold font-sans text-stone-400 mb-5 uppercase tracking-widest">Accomplies</h4>
                 <div className="space-y-3 opacity-60">
-                  {todayTasks.filter(t => t.isCompleted).map(task => (
+                  {todayTasks.filter(t => t.isCompleted).map(task => {
+                    const linkedGoal = data.goals.find(g => g.id === task.goalId);
+                    const linkedMilestone = task.milestoneId ? data.milestones?.find(m => m.id === task.milestoneId) : undefined;
+                    return (
                     <div key={task.id} className="bg-transparent border border-stone-200 p-4 rounded-2xl flex items-center gap-4">
                       <button 
                         onClick={() => toggleTask(task.id)}
@@ -261,15 +290,24 @@ export function TasksView({ data, updateData }: TasksProps) {
                       >
                         <CheckCircle2 className="w-6 h-6" />
                       </button>
-                      <p className="text-stone-500 line-through flex-1 font-sans font-medium">{task.title}</p>
+                      <div className="flex-1">
+                        <p className="text-stone-500 line-through font-sans font-medium">{task.title}</p>
+                        {linkedGoal && (
+                          <div className="flex items-center gap-1 text-[10px] text-stone-400 font-sans font-bold uppercase tracking-wider w-max pt-1 mt-1">
+                            <ChevronRight className="w-3 h-3" />
+                            {linkedGoal.title}
+                            {linkedMilestone && ` ➔ ${linkedMilestone.title}`}
+                          </div>
+                        )}
+                      </div>
                       <button 
                         onClick={() => deleteTask(task.id)}
                         className="text-stone-400 hover:text-red-500 p-2"
                       >
-                        ×
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
-                  ))}
+                  )})}
                 </div>
               </div>
             )}
