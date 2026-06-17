@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { AppData } from '../types';
 
 const STORAGE_KEY = 'didier_boussole_data';
+const BACKUP_KEY_1 = 'didier_boussole_backup_1';
+const BACKUP_KEY_2 = 'didier_boussole_backup_2';
 
 const defaultData: AppData = {
   goals: [],
@@ -54,8 +56,68 @@ export function useStorage() {
     }
   });
 
+  const [shouldRemindExport, setShouldRemindExport] = useState(false);
+
+  useEffect(() => {
+    const checkExport = () => {
+      const lastExportStr = window.localStorage.getItem('didier_last_export_date');
+      let shouldRemind = false;
+      
+      if (!lastExportStr) {
+         shouldRemind = true;
+      } else {
+         const lastExport = new Date(lastExportStr);
+         const diffTime = Date.now() - lastExport.getTime();
+         const diffDays = diffTime / (1000 * 60 * 60 * 24);
+         if (diffDays > 7) {
+            shouldRemind = true;
+         }
+      }
+
+      const dismissedStr = window.localStorage.getItem('didier_export_reminder_dismissed');
+      if (dismissedStr) {
+          const dismissedDate = new Date(dismissedStr);
+          const today = new Date();
+          if (dismissedDate.toDateString() === today.toDateString()) {
+              shouldRemind = false;
+          }
+      }
+
+      if (shouldRemind && (data.goals.length >= 1 || data.tasks.length >= 5)) {
+         setShouldRemindExport(true);
+      } else {
+         setShouldRemindExport(false);
+      }
+    };
+
+    checkExport();
+
+    window.addEventListener('didier_export_occurred', checkExport);
+    return () => window.removeEventListener('didier_export_occurred', checkExport);
+  }, [data.goals.length, data.tasks.length]);
+
   useEffect(() => {
     try {
+      const currentRaw = window.localStorage.getItem(STORAGE_KEY);
+      
+      const lastRotation = window.localStorage.getItem('didier_last_rotation');
+      const now = Date.now();
+      const ONE_HOUR = 60 * 60 * 1000;
+      
+      if (currentRaw && (!lastRotation || now - parseInt(lastRotation, 10) > ONE_HOUR)) {
+        const backup1 = window.localStorage.getItem(BACKUP_KEY_1);
+        const backup1Date = window.localStorage.getItem(BACKUP_KEY_1 + '_date');
+        if (backup1) {
+          window.localStorage.setItem(BACKUP_KEY_2, backup1);
+          if (backup1Date) {
+              window.localStorage.setItem(BACKUP_KEY_2 + '_date', backup1Date);
+          }
+        }
+        window.localStorage.setItem(BACKUP_KEY_1, currentRaw);
+        window.localStorage.setItem(BACKUP_KEY_1 + '_date', new Date().toISOString());
+        window.localStorage.setItem('didier_last_rotation', now.toString());
+      }
+
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
       console.warn('Error saving to localStorage', error);
@@ -66,5 +128,10 @@ export function useStorage() {
     setData(prev => ({ ...prev, ...newData }));
   };
 
-  return { data, updateData };
+  const dismissExportReminder = () => {
+    window.localStorage.setItem('didier_export_reminder_dismissed', new Date().toISOString());
+    setShouldRemindExport(false);
+  };
+
+  return { data, updateData, shouldRemindExport, dismissExportReminder };
 }

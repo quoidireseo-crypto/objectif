@@ -24,6 +24,52 @@ export function SettingsView({ data, onImportData }: SettingsProps) {
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
+
+    window.localStorage.setItem('didier_last_export_date', new Date().toISOString());
+    window.dispatchEvent(new Event('didier_export_occurred'));
+  };
+
+  const [backup1] = useState<{data: AppData, date: string} | null>(() => {
+      const raw = window.localStorage.getItem('didier_boussole_backup_1');
+      const date = window.localStorage.getItem('didier_boussole_backup_1_date');
+      return raw ? { data: JSON.parse(raw), date: date || 'Inconnue' } : null;
+  });
+
+  const [backup2] = useState<{data: AppData, date: string} | null>(() => {
+      const raw = window.localStorage.getItem('didier_boussole_backup_2');
+      const date = window.localStorage.getItem('didier_boussole_backup_2_date');
+      return raw ? { data: JSON.parse(raw), date: date || 'Inconnue' } : null;
+  });
+
+  const handleRestore = (backupData: AppData) => {
+    if (window.confirm("Cette action remplacera tes données actuelles avec cette sauvegarde. Es-tu sûr ?")) {
+      onImportData(backupData);
+      setImportStatus('success');
+      setTimeout(() => setImportStatus('idle'), 3000);
+    }
+  };
+
+  const renderBackupInfo = (label: string, backup: {data: AppData, date: string}) => {
+    const backupDate = backup.date !== 'Inconnue' 
+        ? new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(backup.date))
+        : 'Inconnue';
+
+    return (
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-stone-50 p-4 rounded-xl border border-stone-100 mb-3">
+        <div>
+          <h4 className="font-bold text-stone-800 text-sm font-sans mb-1">{label} - {backupDate}</h4>
+          <p className="text-xs text-stone-500 font-sans">
+            {backup.data.goals?.length || 0} objectif(s), {backup.data.tasks?.length || 0} tâche(s)
+          </p>
+        </div>
+        <button 
+          onClick={() => handleRestore(backup.data)}
+          className="bg-white border border-stone-200 text-stone-700 px-4 py-2 rounded-lg text-xs font-bold font-sans uppercase tracking-wider hover:bg-stone-100 transition whitespace-nowrap"
+        >
+          Restaurer
+        </button>
+      </div>
+    );
   };
 
   const handleImport = (event: ChangeEvent<HTMLInputElement>) => {
@@ -127,6 +173,14 @@ export function SettingsView({ data, onImportData }: SettingsProps) {
             <div className="mt-4 p-4 bg-rose-50 text-rose-800 rounded-xl flex items-center gap-3 text-sm font-bold font-sans">
               <AlertCircle className="w-5 h-5" />
               Erreur lors de l'importation. Le fichier semble invalide.
+            </div>
+          )}
+
+          {(backup1 || backup2) && (
+            <div className="mt-8 pt-8 border-t border-stone-200">
+               <h3 className="text-sm font-bold font-sans uppercase tracking-widest text-stone-800 mb-4">Restaurer une version précédente</h3>
+               {backup1 && renderBackupInfo('Sauvegarde 1 (Récente)', backup1)}
+               {backup2 && renderBackupInfo('Sauvegarde 2 (Ancienne)', backup2)}
             </div>
           )}
         </div>
