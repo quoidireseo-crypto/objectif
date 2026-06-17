@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AppData, Goal, LifeDomain, Milestone, Task } from '../types';
-import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square } from 'lucide-react';
+import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle } from 'lucide-react';
 
 interface GoalsProps {
   data: AppData;
@@ -52,6 +52,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
   const [goalComplement, setGoalComplement] = useState('');
   const [firstAction, setFirstAction] = useState('');
   const [newMilestoneTitles, setNewMilestoneTitles] = useState<{ [goalId: string]: string }>({});
+  const [celebrationMessage, setCelebrationMessage] = useState<{title: string} | null>(null);
   
   const [newGoal, setNewGoal] = useState<Partial<Goal>>({
     why: '',
@@ -116,6 +117,20 @@ export function GoalsView({ data, updateData }: GoalsProps) {
         milestones: data.milestones.filter(m => m.goalId !== id)
       });
     }
+  };
+
+  const markAsAchieved = (id: string) => {
+    const goal = data.goals.find(g => g.id === id);
+    if (!goal) return;
+
+    setCelebrationMessage({ title: goal.title });
+    setTimeout(() => {
+      setCelebrationMessage(null);
+    }, 3000);
+
+    updateData({
+      goals: data.goals.map(g => g.id === id ? { ...g, status: 'Atteint' } : g)
+    });
   };
 
   const addMilestone = (goalId: string) => {
@@ -220,8 +235,29 @@ export function GoalsView({ data, updateData }: GoalsProps) {
     );
   };
 
+  const activeGoals = data.goals.filter(g => g.status !== 'Atteint');
+  const achievedGoals = data.goals.filter(g => g.status === 'Atteint');
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {celebrationMessage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-emerald-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm text-center animate-in zoom-in-95 duration-500 border border-emerald-100">
+            <div className="bg-emerald-50 text-emerald-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5">
+              <Target className="w-8 h-8" />
+            </div>
+            <h3 className="text-2xl font-light text-stone-900 mb-2">Bravo !</h3>
+            <p className="text-emerald-800 font-medium mb-4 italic text-lg leading-tight">
+              Tu as atteint : "{celebrationMessage.title}"
+            </p>
+            <p className="text-stone-500 text-sm leading-relaxed mb-6 font-light">
+              Ce cap est désormais derrière toi. <br/>
+              Qu'est-ce que tu choisis maintenant ?
+            </p>
+          </div>
+        </div>
+      )}
+
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-stone-200 pb-6">
         <div>
           <h2 className="text-3xl md:text-4xl font-light text-stone-900">Mes Objectifs</h2>
@@ -388,20 +424,25 @@ export function GoalsView({ data, updateData }: GoalsProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {data.goals.map(goal => {
+          {activeGoals.map(goal => {
             const theme = getDomainTheme(goal.domain);
             const Icon = theme.icon;
 
             return (
-              <div key={goal.id} className="bg-white border text-left border-stone-100 rounded-3xl p-6 shadow-sm hover:shadow-md transition duration-300 flex flex-col h-full">
+              <div key={goal.id} className="bg-white border text-left border-stone-100 rounded-3xl p-6 shadow-sm hover:shadow-md transition duration-300 flex flex-col h-full group">
                 <div className="flex justify-between items-start mb-4">
                   <div className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 w-max ${theme.color}`}>
                     <Icon className="w-4 h-4" />
                     <span className="text-[10px] font-sans font-bold uppercase tracking-wider">{goal.domain}</span>
                   </div>
-                  <button onClick={() => deleteGoal(goal.id)} className="text-stone-300 hover:text-red-500 p-1 transition-colors">
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => markAsAchieved(goal.id)} className="text-stone-300 hover:text-emerald-600 p-1.5 rounded-lg hover:bg-emerald-50 transition-colors" title="Marquer comme atteint">
+                      <CheckCircle className="w-5 h-5" />
+                    </button>
+                    <button onClick={() => deleteGoal(goal.id)} className="text-stone-300 hover:text-red-500 p-1.5 rounded-lg hover:bg-stone-50 transition-colors" title="Supprimer">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
                 
                 <h3 className="text-2xl font-light text-stone-900 mb-3">{goal.title}</h3>
@@ -487,6 +528,36 @@ export function GoalsView({ data, updateData }: GoalsProps) {
               </div>
             )
           })}
+        </div>
+      )}
+
+      {achievedGoals.length > 0 && (
+        <div className="mt-16 pt-10 border-t border-stone-200">
+          <h3 className="text-lg font-light text-stone-500 mb-6 flex items-center gap-2">
+            <Target className="w-5 h-5 text-emerald-600" />
+            Caps honorés
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {achievedGoals.map(goal => {
+              const theme = getDomainTheme(goal.domain);
+              
+              return (
+                <div key={goal.id} className="bg-stone-50/50 border border-stone-100 rounded-2xl p-5 opacity-70 hover:opacity-100 transition-opacity flex flex-col h-full group">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-[9px] font-sans font-bold text-emerald-800 uppercase tracking-wider">{goal.domain}</span>
+                    <button onClick={() => deleteGoal(goal.id)} className="text-stone-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <h4 className="text-lg font-medium text-stone-800 line-through mb-2">{goal.title}</h4>
+                  <div className="mt-auto pt-3 flex items-center gap-2 text-xs text-emerald-700 font-sans uppercase font-bold tracking-wider">
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    Atteint
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

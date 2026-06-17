@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { AppData } from '../types';
-import { Target, CheckCircle2, Sparkles } from 'lucide-react';
+import { Target, CheckCircle2, Sparkles, Flame } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
 import { GoalDomainChart } from '../components/GoalDomainChart';
+import { useStreak } from '../hooks/useStreak';
 
 interface DashboardProps {
   data: AppData;
@@ -24,6 +25,7 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
   const todayDate = new Date().toISOString().split('T')[0];
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
   const completedToday = todayTasks.filter(t => t.isCompleted).length;
+  const { currentStreak } = useStreak(data.tasks);
 
   const formattedDate = new Intl.DateTimeFormat('fr-FR', { 
     weekday: 'long', 
@@ -37,6 +39,26 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
     const dayOfYear = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
     return QUOTES[dayOfYear % QUOTES.length];
   }, []);
+
+  let streakColor = 'bg-stone-50 text-stone-500 border-stone-200';
+  let streakIconColor = 'text-stone-400 bg-white border-stone-100';
+  let streakMessage = "Commence aujourd'hui.";
+  let streakValueColor = 'text-stone-900';
+
+  if (currentStreak >= 7) {
+    streakColor = 'bg-emerald-50 text-emerald-800 border-emerald-100';
+    streakIconColor = 'text-emerald-600 bg-white border-emerald-50';
+    streakMessage = "Remarquable constance.";
+  } else if (currentStreak >= 3) {
+    streakColor = 'bg-amber-50 text-amber-800 border-amber-100';
+    streakIconColor = 'text-amber-600 bg-white border-amber-50';
+    streakMessage = "Tu tiens le rythme !";
+  } else if (currentStreak > 0) {
+    // 1 or 2 days
+    streakColor = 'bg-stone-50 text-stone-600 border-stone-100';
+    streakIconColor = 'text-amber-500 bg-white border-stone-100';
+    streakMessage = "Continue sur ta lancée.";
+  }
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col min-h-full">
@@ -55,7 +77,7 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-stone-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 text-stone-800">
         <div className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-center gap-4 mb-4">
             <div className="p-3 bg-emerald-50 text-emerald-700 rounded-xl">
@@ -90,6 +112,21 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
           >
             Voir mon quotidien &rarr;
           </button>
+        </div>
+
+        <div className={`rounded-3xl p-6 border shadow-sm flex flex-col justify-between ${streakColor}`}>
+          <div className="flex items-center gap-4 mb-4">
+            <div className={`p-3 rounded-xl border ${streakIconColor}`}>
+              <Flame className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs uppercase font-sans font-bold leading-tight opacity-70">Régularité</p>
+              <p className={`text-2xl font-light ${streakValueColor}`}>{currentStreak} jour{currentStreak > 1 ? 's' : ''}</p>
+            </div>
+          </div>
+          <p className="text-left text-sm font-sans uppercase tracking-widest font-medium opacity-90">
+            {streakMessage}
+          </p>
         </div>
 
         <div className="bg-emerald-900 text-stone-100 rounded-3xl p-6 shadow-md flex flex-col justify-center relative overflow-hidden group">
