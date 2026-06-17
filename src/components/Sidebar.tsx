@@ -1,4 +1,4 @@
-import { Compass, Target, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon } from 'lucide-react';
+import { Target, LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon } from 'lucide-react';
 import { ViewType } from '../types';
 
 interface SidebarProps {
@@ -8,8 +8,8 @@ interface SidebarProps {
 
 export function Sidebar({ currentView, onChangeView }: SidebarProps) {
   const navItems: { id: ViewType; label: string; icon: any }[] = [
-    { id: 'dashboard', label: 'Tableau de bord', icon: Compass },
-    { id: 'goals', label: 'Mes Objectifs', icon: Target },
+    { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+    { id: 'goals', label: 'Mes Objectifs', icon: Flag },
     { id: 'tasks', label: 'Mon Quotidien', icon: CheckSquare },
     { id: 'calendar', label: 'Calendrier', icon: CalendarIcon },
     { id: 'journal', label: 'Journal de bord', icon: BookHeart },
@@ -21,11 +21,11 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     <>
       <aside className="hidden md:flex w-64 bg-stone-900 text-stone-200 h-screen flex-col fixed left-0 top-0 border-r border-stone-800 z-50">
         <div className="p-6 border-b border-stone-800">
-          <h1 className="text-xl font-light text-white flex items-center gap-3">
-            <Compass className="text-emerald-500 w-6 h-6 shrink-0" />
-            La Boussole
+          <h1 className="text-2xl font-sans tracking-widest font-bold text-white flex items-center gap-3">
+            <Target className="text-[#6EE7B7] w-7 h-7 shrink-0" />
+            SKOPOS
           </h1>
-          <p className="text-xs text-stone-400 mt-2 font-sans font-medium tracking-wide uppercase">Espace de Didier</p>
+          <p className="text-xs text-stone-400 mt-2 font-sans font-medium tracking-wide uppercase">Mon Espace Personnel</p>
         </div>
 
         <nav className="flex-1 py-6 px-4 space-y-2 font-sans">

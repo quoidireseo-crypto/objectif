@@ -59,7 +59,7 @@ export default function App() {
                   onClick={() => {
                     const dataStr = JSON.stringify(data, null, 2);
                     const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-                    const exportFileDefaultName = `boussole_didier_${new Date().toISOString().split('T')[0]}.json`;
+                    const exportFileDefaultName = `skopos_export_${new Date().toISOString().split('T')[0]}.json`;
                     
                     const linkElement = document.createElement('a');
                     linkElement.setAttribute('href', dataUri);

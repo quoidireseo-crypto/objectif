@@ -127,10 +127,10 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 border-b border-stone-200 pb-6 w-full">
         <div>
           <h2 className="text-3xl md:text-4xl font-light text-stone-900 flex items-center gap-3">
-            Bonjour, Didier
+            Bonjour
           </h2>
           <p className="text-stone-500 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 md:mt-3 italic max-w-sm">
-            L'art de l'intention — 60 ans, le nouveau départ
+            L'art de l'intention — à chaque jour son nouveau départ
           </p>
         </div>
         <div className="text-left md:text-right w-full md:w-auto">

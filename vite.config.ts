@@ -13,20 +13,20 @@ export default defineConfig(() => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
         manifest: {
-          name: "La Boussole de Didier - Boussole Personnelle",
-          short_name: "La Boussole",
-          description: "Un outil personnel de gestion de vie, d'objectifs et de quotidien conçu spécialement pour Didier.",
+          name: "SKOPOS - L'Essentiel",
+          short_name: "SKOPOS",
+          description: "Un outil pour reprendre le cap, fixer des intentions et devenir l'acteur de ses journées.",
           theme_color: "#1C1917",
           background_color: "#F5F5F0",
           display: "standalone",
           icons: [
             {
-              src: "https://img.icons8.com/isometric/100/compass.png",
+              src: "https://img.icons8.com/color/100/defined-location.png",
               sizes: "100x100",
               type: "image/png"
             },
             {
-              src: "https://img.icons8.com/isometric/512/compass.png",
+              src: "https://img.icons8.com/color/512/defined-location.png",
               sizes: "512x512",
               type: "image/png",
               purpose: "any maskable"
