@@ -22,7 +22,6 @@ export function TasksView({ data, updateData }: TasksProps) {
   const [selectedReference, setSelectedReference] = useState<string>(''); // format: goalId or goalId|milestoneId
   const [selectedDomain, setSelectedDomain] = useState<LifeDomain | ''>('');
   const [isNewTaskImportant, setIsNewTaskImportant] = useState(false);
-  const notifiedTasksRef = useRef<Set<string>>(new Set());
 
   const todayDate = new Date().toISOString().split('T')[0];
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
@@ -35,29 +34,6 @@ export function TasksView({ data, updateData }: TasksProps) {
       }
     }
   }, []);
-
-  // Simuler le rappel (toutes les X minutes) pour les tâches importantes non complétées.
-  // Pour la démo, on vérifie après l'ajout ou au clic.
-  const triggerLocalNotification = (taskTitle: string) => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then((registration) => {
-          registration.showNotification("Rappel Important", {
-            body: `N'oublie pas : ${taskTitle}`,
-            icon: '/apple-touch-icon.png',
-            badge: '/mask-icon.svg',
-            vibrate: [200, 100, 200]
-          } as any);
-        });
-      } else {
-        new Notification("Rappel Important", { body: `N'oublie pas : ${taskTitle}` });
-      }
-    } else if ('Notification' in window && Notification.permission !== 'denied') {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') triggerLocalNotification(taskTitle);
-      });
-    }
-  };
 
   const handleAddTask = (e: FormEvent) => {
     e.preventDefault();
@@ -90,11 +66,6 @@ export function TasksView({ data, updateData }: TasksProps) {
     setSelectedReference('');
     setSelectedDomain('');
     setIsNewTaskImportant(false);
-    
-    // Test notification for important tasks
-    if (task.isImportant) {
-      triggerLocalNotification(task.title);
-    }
   };
 
   const toggleTask = (id: string) => {
@@ -107,17 +78,6 @@ export function TasksView({ data, updateData }: TasksProps) {
   const toggleImportant = (id: string) => {
     const task = data.tasks.find(t => t.id === id);
     if (!task) return;
-    
-    // Demander la permission si on active l'importance
-    if (!task.isImportant && 'Notification' in window && Notification.permission !== 'granted') {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          triggerLocalNotification(task.title);
-        }
-      });
-    } else if (!task.isImportant) {
-       triggerLocalNotification(task.title);
-    }
 
     const newTasks = data.tasks.map(t => 
       t.id === id ? { ...t, isImportant: !t.isImportant } : t

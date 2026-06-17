@@ -1,4 +1,4 @@
-import { useRef, useState, ChangeEvent } from 'react';
+import { useRef, useState, ChangeEvent, useEffect } from 'react';
 import { AppData } from '../types';
 import { Download, Upload, AlertCircle, CheckCircle2 } from 'lucide-react';
 
@@ -10,6 +10,9 @@ interface SettingsProps {
 export function SettingsView({ data, onImportData }: SettingsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const [reminderEnabled, setReminderEnabled] = useState(() => window.localStorage.getItem('didier_reminder_enabled') === 'true');
+  const [reminderTime, setReminderTime] = useState(() => window.localStorage.getItem('didier_reminder_time') || '09:00');
 
   const handleExport = () => {
     const dataStr = JSON.stringify(data, null, 2);
@@ -54,6 +57,24 @@ export function SettingsView({ data, onImportData }: SettingsProps) {
       }
     };
     reader.readAsText(file);
+  };
+
+  const handleToggleReminder = (enabled: boolean) => {
+    setReminderEnabled(enabled);
+    window.localStorage.setItem('didier_reminder_enabled', enabled.toString());
+    window.dispatchEvent(new Event('didier_reminder_changed'));
+    
+    if (enabled && 'Notification' in window) {
+      if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+        Notification.requestPermission();
+      }
+    }
+  };
+
+  const handleTimeChange = (time: string) => {
+    setReminderTime(time);
+    window.localStorage.setItem('didier_reminder_time', time);
+    window.dispatchEvent(new Event('didier_reminder_changed'));
   };
 
   return (
@@ -108,6 +129,42 @@ export function SettingsView({ data, onImportData }: SettingsProps) {
               Erreur lors de l'importation. Le fichier semble invalide.
             </div>
           )}
+        </div>
+
+        <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm">
+          <h3 className="text-lg font-bold font-sans uppercase tracking-widest text-stone-800 mb-2">Rappels Bienveillants</h3>
+          <p className="text-stone-500 leading-relaxed mb-6 font-light">
+            Chaque jour à l'heure choisie, tu recevras un petit mot pour t'inviter à consulter ton cap du jour.
+          </p>
+
+          <div className="flex flex-col gap-6">
+            <label className="flex items-center gap-3 cursor-pointer w-max">
+              <div className="relative">
+                <input 
+                  type="checkbox" 
+                  className="sr-only" 
+                  checked={reminderEnabled} 
+                  onChange={(e) => handleToggleReminder(e.target.checked)} 
+                />
+                <div className={`block w-14 h-8 rounded-full transition-colors ${reminderEnabled ? 'bg-emerald-500' : 'bg-stone-200'}`}></div>
+                <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${reminderEnabled ? 'transform translate-x-6' : ''}`}></div>
+              </div>
+              <span className="font-sans font-bold text-stone-700">Activer les rappels quotidiens</span>
+            </label>
+
+            {reminderEnabled && (
+              <div className="flex items-center gap-3 bg-stone-50 p-4 rounded-xl border border-stone-100">
+                <label htmlFor="reminderTime" className="font-sans font-medium text-stone-600 text-sm">Me rappeler à</label>
+                <input 
+                  type="time" 
+                  id="reminderTime"
+                  value={reminderTime}
+                  onChange={(e) => handleTimeChange(e.target.value)}
+                  className="bg-white border border-stone-200 px-3 py-2 rounded-lg font-sans text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Bell, X } from 'lucide-react';
+import { AppData } from '../types';
 
-export function NotificationToast() {
+interface NotificationToastProps {
+  data?: AppData;
+}
+
+export function NotificationToast({ data }: NotificationToastProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const lastNotified = window.localStorage.getItem('didier_last_notified');
@@ -10,6 +16,25 @@ export function NotificationToast() {
 
     // Only show once per day
     if (lastNotified !== today) {
+      // Determine message contextually
+      let contextualMessage = "Bonjour, as-tu pris un instant pour consulter tes objectifs aujourd'hui ?";
+      
+      if (data) {
+        const todayTasks = data.tasks.filter(t => t.date === today);
+        if (todayTasks.length === 0) {
+          contextualMessage = "Tu n'as encore rien planifié pour aujourd'hui.";
+        } else {
+          const pendingCount = todayTasks.filter(t => !t.isCompleted).length;
+          if (pendingCount > 0) {
+            contextualMessage = `Tu as ${pendingCount} action${pendingCount > 1 ? 's' : ''} en attente aujourd'hui.`;
+          } else {
+            contextualMessage = "Bravo, tu as honoré tous tes engagements du jour ! 🎉";
+          }
+        }
+      }
+      
+      setMessage(contextualMessage);
+
       const timer = setTimeout(() => {
         setIsVisible(true);
         window.localStorage.setItem('didier_last_notified', today);
@@ -24,7 +49,7 @@ export function NotificationToast() {
         clearTimeout(hideTimer);
       };
     }
-  }, []);
+  }, [data]);
 
   if (!isVisible) return null;
 
@@ -36,7 +61,7 @@ export function NotificationToast() {
       <div className="flex-1">
         <h4 className="font-sans font-bold text-sm text-white mb-1.5 uppercase tracking-wider">Petit rappel</h4>
         <p className="text-sm text-stone-300 font-serif italic leading-snug">
-          Bonjour Didier, as-tu pris un instant pour consulter tes objectifs aujourd'hui ?
+          {message}
         </p>
       </div>
       <button 

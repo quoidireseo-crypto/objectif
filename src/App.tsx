@@ -10,10 +10,13 @@ import { ReviewView } from './views/ReviewView';
 import { CalendarView } from './views/CalendarView';
 import { SettingsView } from './views/SettingsView';
 import { NotificationToast } from './components/NotificationToast';
+import { useReminder } from './hooks/useReminder';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const { data, updateData } = useStorage();
+
+  useReminder();
 
   const handleImportData = (importedData: AppData) => {
     updateData(importedData);
@@ -50,7 +53,7 @@ export default function App() {
         </div>
       </main>
 
-      <NotificationToast />
+      <NotificationToast data={data} />
     </div>
   );
 }
