@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AppData, Goal, LifeDomain } from '../types';
-import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, MoreVertical, X, Coins, Sparkles } from 'lucide-react';
+import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles } from 'lucide-react';
 
 interface GoalsProps {
   data: AppData;
@@ -41,6 +41,17 @@ export function GoalsView({ data, updateData }: GoalsProps) {
     updateData({ goals: [goal, ...data.goals] });
     setIsAdding(false);
     setNewGoal({ title: '', why: '', domain: 'Santé & Bien-être', status: 'En cours' });
+  };
+
+  const deleteGoal = (id: string) => {
+    if (confirm("Supprimer cet objectif ?")) {
+      updateData({ 
+        goals: data.goals.filter(g => g.id !== id),
+        // Also remove tasks linked to this goal? Or just leave them unlinked?
+        // Let's leave them or unlink them. Here we can just remove the goal.
+        tasks: data.tasks.map(t => t.goalId === id ? { ...t, goalId: undefined } : t)
+      });
+    }
   };
 
   const getDomainTheme = (domainLabel: string) => {
@@ -162,8 +173,8 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                     <Icon className="w-4 h-4" />
                     <span className="text-[10px] font-sans font-bold uppercase tracking-wider">{goal.domain}</span>
                   </div>
-                  <button className="text-stone-300 hover:text-stone-500 p-1 transition-colors">
-                    <MoreVertical className="w-5 h-5" />
+                  <button onClick={() => deleteGoal(goal.id)} className="text-stone-300 hover:text-red-500 p-1 transition-colors">
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
                 

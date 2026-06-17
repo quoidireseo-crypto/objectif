@@ -1,6 +1,6 @@
 import { useState, FormEvent, useEffect, useRef } from 'react';
 import { AppData, Task, LifeDomain } from '../types';
-import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag } from 'lucide-react';
+import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag, Trash2 } from 'lucide-react';
 
 interface TasksProps {
   data: AppData;
@@ -242,7 +242,7 @@ export function TasksView({ data, updateData }: TasksProps) {
                     onClick={() => deleteTask(task.id)}
                     className="text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2"
                   >
-                    ×
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
               );

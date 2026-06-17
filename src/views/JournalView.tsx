@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AppData, JournalEntry } from '../types';
-import { BookHeart, Send, Smile, Meh, Frown, Sparkles } from 'lucide-react';
+import { BookHeart, Send, Smile, Meh, Frown, Sparkles, Trash2 } from 'lucide-react';
 
 interface JournalProps {
   data: AppData;
@@ -33,6 +33,12 @@ export function JournalView({ data, updateData }: JournalProps) {
 
     updateData({ journal: [entry, ...data.journal] });
     setContent('');
+  };
+
+  const deleteJournalEntry = (id: string) => {
+    if (confirm("Supprimer cette réflexion ?")) {
+      updateData({ journal: data.journal.filter(j => j.id !== id) });
+    }
   };
 
   return (
@@ -100,9 +106,14 @@ export function JournalView({ data, updateData }: JournalProps) {
                   <span className="text-xs font-sans uppercase tracking-widest font-bold text-stone-400">
                     {new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(entry.date))}
                   </span>
-                  <div className={`px-3 py-1.5 rounded-full text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-1.5 ${moodData.color.split(' ').slice(0,2).join(' ')}`}>
-                    <MoodIcon className="w-3.5 h-3.5" />
-                    {entry.mood}
+                  <div className="flex items-center gap-3">
+                    <div className={`px-3 py-1.5 rounded-full text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-1.5 ${moodData.color.split(' ').slice(0,2).join(' ')}`}>
+                      <MoodIcon className="w-3.5 h-3.5" />
+                      {entry.mood}
+                    </div>
+                    <button onClick={() => deleteJournalEntry(entry.id)} className="text-stone-300 hover:text-red-500 p-1 transition-colors" title="Supprimer">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
                 <p className="text-stone-800 text-lg whitespace-pre-wrap leading-snug font-light italic">"{entry.content}"</p>

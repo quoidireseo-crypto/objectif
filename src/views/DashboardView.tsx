@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { AppData } from '../types';
 import { Target, CheckCircle2, Sparkles } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
+import { GoalDomainChart } from '../components/GoalDomainChart';
 
 interface DashboardProps {
   data: AppData;
@@ -107,8 +108,9 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
         </div>
       </div>
 
-      <div className="mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <ProgressChart tasks={data.tasks} />
+        {data.goals.length > 0 && <GoalDomainChart goals={data.goals} />}
       </div>
 
       {data.goals.length === 0 && (
