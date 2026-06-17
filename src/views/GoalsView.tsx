@@ -347,7 +347,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-stone-400 uppercase tracking-wide mb-2">Pourquoi est-ce important pour moi ? (L'intention)</label>
+              <label className="block text-xs font-bold text-stone-400 uppercase tracking-wide mb-2">Pourquoi est-ce important pour moi ? (Le sens profond / motivation)</label>
               <textarea
                 placeholder="Je veux faire cela parce que..."
                 className="w-full px-4 py-3 rounded-xl border border-stone-200 outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 transition min-h-[100px] resize-y"
@@ -448,7 +448,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                 <h3 className="text-2xl font-light text-stone-900 mb-3">{goal.title}</h3>
                 
                 <div className="bg-[#F5F5F0] p-4 rounded-2xl mt-2 flex-grow border border-stone-200/50">
-                  <p className="text-[10px] font-bold font-sans text-stone-500 uppercase tracking-widest mb-2">L'intention</p>
+                  <p className="text-[10px] font-bold font-sans text-stone-500 uppercase tracking-widest mb-2">Le sens profond</p>
                   <p className="text-stone-700 italic leading-snug mb-4">"{goal.why}"</p>
                   
                   <div className="border-t border-stone-200/50 pt-4 mt-2">

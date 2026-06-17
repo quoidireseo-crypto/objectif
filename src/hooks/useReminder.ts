@@ -4,7 +4,7 @@ const REMINDER_MESSAGES = [
   "Bonjour ! Une petite action vers ton cap t'attend aujourd'hui. 🧭",
   "C'est l'heure de ton rendez-vous avec toi-même. Qu'est-ce que tu choisis ?",
   "Un pas, même petit, c'est déjà avancer. Qu'est-ce que tu fais aujourd'hui ?",
-  "Ta boussole t'attend. Jette un œil à tes intentions du jour.",
+  "Ta boussole t'attend. Jette un œil à tes objectifs du jour.",
   "Rappel bienveillant : tu as des caps à honorer. Sans pression, juste un regard."
 ];
 

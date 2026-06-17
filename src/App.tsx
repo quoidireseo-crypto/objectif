@@ -12,10 +12,29 @@ import { SettingsView } from './views/SettingsView';
 import { NotificationToast } from './components/NotificationToast';
 import { useReminder } from './hooks/useReminder';
 import { SkoposLogo } from './components/SkoposLogo';
+import { LandingView } from './views/LandingView';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const { data, updateData, shouldRemindExport, dismissExportReminder } = useStorage();
+
+  const [userProfile, setUserProfile] = useState<{ name: string; ageGroup?: string; focusArea?: string } | null>(() => {
+    const raw = window.localStorage.getItem('skopos_user_profile');
+    try {
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const handleUpdateProfile = (profile: { name: string; ageGroup?: string; focusArea?: string } | null) => {
+    if (profile === null) {
+      window.localStorage.removeItem('skopos_user_profile');
+    } else {
+      window.localStorage.setItem('skopos_user_profile', JSON.stringify(profile));
+    }
+    setUserProfile(profile);
+  };
 
   useReminder();
 
@@ -26,7 +45,7 @@ export default function App() {
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
-        return <DashboardView data={data} onChangeView={setCurrentView} />;
+        return <DashboardView data={data} onChangeView={setCurrentView} userProfile={userProfile} />;
       case 'goals':
         return <GoalsView data={data} updateData={updateData} />;
       case 'tasks':
@@ -38,11 +57,15 @@ export default function App() {
       case 'review':
         return <ReviewView data={data} />;
       case 'settings':
-        return <SettingsView data={data} onImportData={handleImportData} />;
+        return <SettingsView data={data} onImportData={handleImportData} userProfile={userProfile} onUpdateProfile={handleUpdateProfile} />;
       default:
-        return <DashboardView data={data} onChangeView={setCurrentView} />;
+        return <DashboardView data={data} onChangeView={setCurrentView} userProfile={userProfile} />;
     }
   };
+
+  if (!userProfile) {
+    return <LandingView onComplete={handleUpdateProfile} />;
+  }
 
   return (
     <div className="flex min-h-screen bg-[#F5F5F0] font-serif text-stone-800 selection:bg-emerald-200 selection:text-emerald-900">

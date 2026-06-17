@@ -34,7 +34,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     { 
       id: 'journal', 
       label: 'Journal de bord', 
-      description: 'Écrire vos pensées et intentions', 
+      description: 'Consigner vos réflexions et vos progrès', 
       icon: BookHeart,
       colorClass: 'bg-rose-50 text-rose-700 border-rose-100',
       iconColor: 'text-rose-600'

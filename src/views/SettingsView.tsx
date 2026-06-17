@@ -1,15 +1,40 @@
 import { useRef, useState, ChangeEvent, useEffect } from 'react';
 import { AppData } from '../types';
-import { Download, Upload, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw } from 'lucide-react';
 
 interface SettingsProps {
   data: AppData;
   onImportData: (data: AppData) => void;
+  userProfile: { name: string; ageGroup?: string; focusArea?: string } | null;
+  onUpdateProfile: (profile: { name: string; ageGroup?: string; focusArea?: string } | null) => void;
 }
 
-export function SettingsView({ data, onImportData }: SettingsProps) {
+export function SettingsView({ data, onImportData, userProfile, onUpdateProfile }: SettingsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const [profileName, setProfileName] = useState(userProfile?.name || '');
+  const [profileAgeGroup, setProfileAgeGroup] = useState(userProfile?.ageGroup || '');
+  const [profileFocusArea, setProfileFocusArea] = useState(userProfile?.focusArea || '');
+  const [saveProfileSuccess, setSaveProfileSuccess] = useState(false);
+
+  const handleSaveProfile = () => {
+    if (profileName.trim()) {
+      onUpdateProfile({
+        name: profileName.trim(),
+        ageGroup: profileAgeGroup || undefined,
+        focusArea: profileFocusArea || undefined,
+      });
+      setSaveProfileSuccess(true);
+      setTimeout(() => setSaveProfileSuccess(false), 3000);
+    }
+  };
+
+  const handleResetProfile = () => {
+    if (window.confirm("Es-tu sûr de vouloir réinitialiser ton profil ? Cette action te renverra vers l'écran d'accueil d'onboarding (tes objectifs et tâches actuels ne seront pas supprimés).")) {
+      onUpdateProfile(null);
+    }
+  };
 
   const [reminderEnabled, setReminderEnabled] = useState(() => window.localStorage.getItem('didier_reminder_enabled') === 'true');
   const [reminderTime, setReminderTime] = useState(() => window.localStorage.getItem('didier_reminder_time') || '09:00');
@@ -131,6 +156,89 @@ export function SettingsView({ data, onImportData }: SettingsProps) {
       </header>
 
       <div className="space-y-6">
+        {/* PROFILE SECTION */}
+        <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm">
+          <h3 className="text-lg font-bold font-sans uppercase tracking-widest text-stone-800 mb-2 flex items-center gap-2">
+            <User className="w-5 h-5 text-emerald-700" />
+            Mon Profil Local
+          </h3>
+          <p className="text-stone-500 leading-relaxed mb-6 font-light">
+            Modifie les informations de ton espace de vie. Ces données restent stockées localement sur ton navigateur.
+          </p>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 block">
+                  Prénom / Pseudonyme
+                </label>
+                <input
+                  type="text"
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 font-sans text-sm transition"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 block">
+                  Décennie / Tranche de vie
+                </label>
+                <select
+                  value={profileAgeGroup}
+                  onChange={(e) => setProfileAgeGroup(e.target.value)}
+                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-700 font-sans text-sm transition cursor-pointer appearance-none"
+                >
+                  <option value="">Non déterminé</option>
+                  <option value="Trente">La trentaine</option>
+                  <option value="Quarante">La quarantaine</option>
+                  <option value="Cinquante">La cinquantaine</option>
+                  <option value="Soixante">La soixantaine</option>
+                  <option value="SoixanteDix">La soixante-dizaine et plus</option>
+                  <option value="Autre">Autre</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 block">
+                Point d'ancrage principal
+              </label>
+              <input
+                type="text"
+                value={profileFocusArea}
+                onChange={(e) => setProfileFocusArea(e.target.value)}
+                placeholder="Ex: Santé & Bien-être, Projets Personnels..."
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 font-sans text-sm transition"
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-stone-100">
+              <button
+                onClick={handleSaveProfile}
+                disabled={!profileName.trim()}
+                className="flex-1 bg-stone-800 text-white py-3 px-6 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 transition-all cursor-pointer disabled:opacity-40"
+              >
+                Sauvegarder les modifications
+              </button>
+              <button
+                onClick={handleResetProfile}
+                className="flex-1 bg-white border border-rose-200 text-rose-700 py-3 px-6 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-rose-50 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Réinitialiser le profil
+              </button>
+            </div>
+
+            {saveProfileSuccess && (
+              <div className="p-3 bg-emerald-50 text-emerald-800 rounded-xl flex items-center gap-2 text-xs font-bold font-sans mt-2">
+                <CheckCircle2 className="w-4 h-4" />
+                Mise à jour du profil effectuée !
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm">
           <h3 className="text-lg font-bold font-sans uppercase tracking-widest text-stone-800 mb-2">Sauvegarde Manuelle</h3>
           <p className="text-stone-500 leading-relaxed mb-6 font-light">

@@ -100,14 +100,16 @@ export function JournalView({ data, updateData }: JournalProps) {
     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="mb-6 md:mb-8 border-b border-stone-200 pb-6">
         <h2 className="text-3xl md:text-4xl font-light text-stone-900 flex items-center gap-3">
-          Journal de bord
+          Vos sentiments et impressions du jour !
         </h2>
-        <p className="text-stone-500 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Un instant pour réfléchir, sans jugement.</p>
+        <p className="text-stone-500 font-sans tracking-wide text-xs md:text-sm mt-3 leading-relaxed max-w-2xl font-light">
+          Prenez un moment pour vous. Cet espace est fait pour noter vos impressions, vos ressentis, ce qui a fonctionné ou qui n'a pas marché aujourd'hui.
+        </p>
       </header>
 
       {!hasEntryToday && (
         <div className="bg-[#EAE7E2] rounded-3xl p-8 mb-10 border border-stone-200">
-          <h3 className="text-sm uppercase tracking-widest text-stone-500 mb-6 font-sans">Journal d'Intention</h3>
+          <h3 className="text-xs uppercase tracking-widest text-[#047857] mb-6 font-sans font-bold">Mon état d'esprit & impressions</h3>
           
           <div className="flex flex-wrap gap-3 mb-6 font-sans">
             {MOODS.map(mood => {

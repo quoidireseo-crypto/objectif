@@ -8,6 +8,7 @@ import { useStreak } from '../hooks/useStreak';
 interface DashboardProps {
   data: AppData;
   onChangeView: (view: any) => void;
+  userProfile: { name: string; ageGroup?: string; focusArea?: string } | null;
 }
 
 const QUOTES = [
@@ -36,7 +37,7 @@ const WEEKLY_CHALLENGES = [
   "Se coucher 30 minutes plus tôt avec un livre plutôt qu'un écran."
 ];
 
-export function DashboardView({ data, onChangeView }: DashboardProps) {
+export function DashboardView({ data, onChangeView, userProfile }: DashboardProps) {
   const activeGoals = data.goals.filter(g => g.status === 'En cours').length;
   const todayDate = new Date().toISOString().split('T')[0];
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
@@ -173,6 +174,24 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col min-h-full py-2">
 
+      {/* Greeting Banner */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-stone-200/55 pb-6">
+        <div>
+          <h2 className="text-3xl font-light text-stone-900">
+            Bonjour, <span className="font-serif italic text-[#047857]">{userProfile?.name}</span>
+          </h2>
+          <p className="text-stone-500 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">
+            Chaque jour est un nouveau départ.
+          </p>
+        </div>
+        <div className="text-left md:text-right">
+          <p className="text-[10px] md:text-xs text-stone-400 font-sans uppercase tracking-widest leading-none capitalize mb-1">
+            {new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}
+          </p>
+          <p className="text-sm font-serif italic text-[#047857] leading-snug">Se donner la direction pour ne pas subir.</p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 text-stone-800">
         <div className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-center gap-4 mb-4">
@@ -258,7 +277,7 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
             </div>
             <div>
               <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-400">
-                L'Intention du Soir
+                Le Bilan du Soir
               </h3>
               <p className="text-lg font-serif italic text-stone-800">
                 Le Bilan des Réussites

@@ -1,0 +1,203 @@
+import { useState } from 'react';
+import { SkoposLogo } from '../components/SkoposLogo';
+import { ArrowRight, User, Compass, Sparkles, Target, BookmarkCheck } from 'lucide-react';
+import { motion } from 'motion/react';
+
+interface LandingViewProps {
+  onComplete: (profile: { name: string; ageGroup?: string; focusArea?: string }) => void;
+}
+
+export function LandingView({ onComplete }: LandingViewProps) {
+  const [name, setName] = useState('');
+  const [ageGroup, setAgeGroup] = useState('');
+  const [focusArea, setFocusArea] = useState('');
+  const [step, setStep] = useState(1);
+
+  const focusOptions = [
+    { id: 'Sante', label: 'Santé & Bien-être', desc: 'Prendre soin de son corps, de son esprit et de son énergie.' },
+    { id: 'Projet', label: 'Projets Personnels', desc: 'Concrétiser un rêve, une passion ou une nouvelle activité.' },
+    { id: 'Relations', label: 'Relations & Famille', desc: 'Consolider les liens essentiels avec ses proches.' },
+    { id: 'Apprentissage', label: 'Nouveaux Apprentissages', desc: 'Nourrir sa curiosité d’esprit et acquérir de nouvelles postures.' },
+  ];
+
+  const handleNext = () => {
+    if (step === 1 && name.trim().length >= 2) {
+      setStep(2);
+    } else if (step === 2) {
+      // Complete profile and save
+      onComplete({
+        name: name.trim(),
+        ageGroup: ageGroup || undefined,
+        focusArea: focusArea || undefined,
+      });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F5F5F0] flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden font-serif selection:bg-emerald-200 selection:text-emerald-900">
+      
+      {/* Soft ethereal ambient background lights */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-100/40 rounded-full blur-3xl pointer-events-none" />
+
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="w-full max-w-xl bg-white border border-stone-200/50 rounded-3xl p-8 md:p-12 shadow-md relative z-10"
+      >
+        {/* LOGO & TITLE */}
+        <div className="flex flex-col items-center text-center mb-8">
+          <motion.div
+            initial={{ scale: 0.9, rotate: -5 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: 'spring', stiffness: 100 }}
+            className="p-3 bg-emerald-50 rounded-2xl mb-4 text-[#047857]"
+          >
+            <SkoposLogo size={36} />
+          </motion.div>
+          
+          <h1 className="text-3xl font-sans tracking-widest font-bold text-stone-900">
+            SKOPOS
+          </h1>
+          <p className="text-xs text-[#047857] uppercase tracking-widest font-sans font-bold mt-1">
+            Chaque jour son nouveau départ
+          </p>
+        </div>
+
+        {/* STEP 1: WELCOME & IDENTITY */}
+        {step === 1 ? (
+          <motion.div 
+            key="step1"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            className="space-y-6"
+          >
+            <div className="text-center space-y-2">
+              <h2 className="text-xl md:text-2xl font-light text-stone-800 leading-snug">
+                Bienvenue dans votre nouvel espace d'alignement.
+              </h2>
+              <p className="text-stone-500 font-sans text-xs md:text-sm leading-relaxed max-w-md mx-auto">
+                Skopos est un outil bienveillant conçu pour vous aider à fixer des objectifs porteurs de sens et avancer sereinement à votre rythme.
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-4 border-t border-stone-100">
+              <div className="space-y-1">
+                <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 block">
+                  Quel est votre prénom ?
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">
+                    <User className="w-4 h-4" />
+                  </span>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Ex: Claire, Robert, Marc..."
+                    className="w-full pl-11 pr-4 py-3.5 bg-stone-50 border border-stone-200 rounded-2xl outline-none focus:ring-1 focus:ring-[#047857] focus:border-[#047857] text-stone-800 font-sans text-sm transition"
+                    maxLength={20}
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 block">
+                  Tranche de vie / Décennie (Optionnel)
+                </label>
+                <select
+                  value={ageGroup}
+                  onChange={(e) => setAgeGroup(e.target.value)}
+                  className="w-full px-4 py-3.5 bg-stone-50 border border-stone-200 rounded-2xl outline-none focus:ring-1 focus:ring-[#047857] focus:border-[#047857] text-stone-700 font-sans text-sm transition cursor-pointer appearance-none"
+                >
+                  <option value="">Sélectionner (ou laisser vide)...</option>
+                  <option value="Trente">La trentaine — Consolider mes bases</option>
+                  <option value="Quarante">La quarantaine — Vivre pleinement</option>
+                  <option value="Cinquante">La cinquantaine — Nouveaux horizons</option>
+                  <option value="Soixante">La soixantaine — Un nouveau chapitre</option>
+                  <option value="SoixanteDix">La soixante-dizaine et plus — Sagesse & transmission</option>
+                  <option value="Autre">Autre – Évolution personnelle</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              onClick={handleNext}
+              disabled={name.trim().length < 2}
+              className="w-full mt-6 bg-[#047857] text-amber-100 py-4 px-6 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] active:scale-98 disabled:opacity-45 disabled:hover:bg-[#047857] transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+            >
+              Suivant
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </motion.div>
+        ) : (
+          /* STEP 2: MOTIVATION / ANCHOR */
+          <motion.div 
+            key="step2"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-6"
+          >
+            <div className="text-center space-y-2">
+              <h2 className="text-xl md:text-2xl font-light text-stone-800 leading-snug">
+                Ravi de faire votre connaissance, {name}.
+              </h2>
+              <p className="text-stone-500 font-sans text-xs md:text-sm leading-relaxed max-w-sm mx-auto">
+                Quel est votre point d'ancrage prioritaire en ce moment ? Cela nous aidera à personnaliser votre tableau de bord.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 max-h-[280px] overflow-y-auto pr-1">
+              {focusOptions.map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => setFocusArea(opt.label)}
+                  className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex gap-3.5 ${
+                    focusArea === opt.label 
+                      ? 'bg-[#FFFBEB] border-amber-300 shadow-sm' 
+                      : 'bg-stone-50/50 hover:bg-stone-50 border-stone-200/60'
+                  }`}
+                >
+                  <div className={`p-2 rounded-xl border shrink-0 ${
+                    focusArea === opt.label ? 'bg-amber-100 text-amber-700' : 'bg-white text-stone-400'
+                  }`}>
+                    <Compass className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-sans font-bold text-stone-800">{opt.label}</h4>
+                    <p className="text-[11px] font-sans text-stone-500 leading-normal mt-0.5">{opt.desc}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t border-stone-100">
+              <button
+                onClick={() => setStep(1)}
+                className="flex-1 border-2 border-stone-150 py-3.5 px-6 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold text-stone-500 hover:bg-stone-50 active:scale-98 transition-all cursor-pointer"
+              >
+                Retour
+              </button>
+              <button
+                onClick={handleNext}
+                className="flex-[2] bg-[#047857] text-[#FFFBEB] py-3.5 px-6 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] active:scale-98 transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+              >
+                Créer mon espace
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Philosophy Footnote */}
+        <p className="text-center text-[10px] text-stone-400 mt-8 font-sans leading-relaxed">
+          🔒 Stockage local privé. Aucune donnée ne quitte votre ordinateur.
+        </p>
+
+      </motion.div>
+    </div>
+  );
+}
