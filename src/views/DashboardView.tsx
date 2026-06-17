@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { AppData } from '../types';
-import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather } from 'lucide-react';
+import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award, Pencil } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
 import { GoalDomainChart } from '../components/GoalDomainChart';
 import { useStreak } from '../hooks/useStreak';
@@ -44,6 +44,61 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
   const { currentStreak } = useStreak(data.tasks);
 
   const [weeklyChallenge, setWeeklyChallenge] = useState<{ text: string, date: string } | null>(null);
+
+  const [successInput, setSuccessInput] = useState('');
+  const [todaySuccess, setTodaySuccess] = useState(() => {
+    return window.localStorage.getItem('skopos_success_' + todayDate) || '';
+  });
+  const [isSaved, setIsSaved] = useState(() => {
+    return window.localStorage.getItem('skopos_success_saved_' + todayDate) === 'true';
+  });
+  const [successUpdateTicket, setSuccessUpdateTicket] = useState(0);
+
+  // Synchronize input with saved value if editing
+  useEffect(() => {
+    if (!isSaved) {
+      setSuccessInput(todaySuccess);
+    }
+  }, [isSaved, todaySuccess]);
+
+  const handleSaveSuccess = () => {
+    if (successInput.trim()) {
+      window.localStorage.setItem('skopos_success_' + todayDate, successInput.trim());
+      window.localStorage.setItem('skopos_success_saved_' + todayDate, 'true');
+      setTodaySuccess(successInput.trim());
+      setIsSaved(true);
+      setSuccessUpdateTicket(prev => prev + 1);
+    }
+  };
+
+  const handleEditSuccess = () => {
+    setIsSaved(false);
+  };
+
+  // Get recent 7 days (including today) to display their badge statuses
+  const recentDays = useMemo(() => {
+    const list = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const success = window.localStorage.getItem('skopos_success_' + dateStr) || '';
+      
+      const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '');
+      // Capitalize first letter of day name
+      const dayNameCap = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+      
+      list.push({
+        dateStr,
+        dayName: dayNameCap,
+        success,
+        isToday: dateStr === todayDate,
+        formattedDate: d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+      });
+    }
+    return list;
+  }, [todayDate, successUpdateTicket]);
 
   useEffect(() => {
     const currentChallengeStr = window.localStorage.getItem('didier_weekly_challenge');
@@ -89,13 +144,6 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
     setWeeklyChallenge(newWeekly);
   };
 
-  const formattedDate = new Intl.DateTimeFormat('fr-FR', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  }).format(new Date());
-
   const dailyQuote = useMemo(() => {
     // We can use the current day of the year to pick a consistent quote for the day
     const dayOfYear = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
@@ -123,21 +171,7 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
   }
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col min-h-full">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 border-b border-stone-200 pb-6 w-full">
-        <div>
-          <h2 className="text-3xl md:text-4xl font-light text-stone-900 flex items-center gap-3">
-            Bonjour
-          </h2>
-          <p className="text-stone-500 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 md:mt-3 italic max-w-sm">
-            L'art de l'intention — à chaque jour son nouveau départ
-          </p>
-        </div>
-        <div className="text-left md:text-right w-full md:w-auto">
-          <p className="text-[10px] md:text-sm text-stone-400 font-sans uppercase tracking-tighter capitalize mb-1 md:mb-0">{formattedDate}</p>
-          <p className="text-xl md:text-2xl font-light text-emerald-800 mt-0 md:mt-1">Choisir plutôt que subir.</p>
-        </div>
-      </header>
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col min-h-full py-2">
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 text-stone-800">
         <div className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm flex flex-col justify-between">
@@ -212,6 +246,165 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
         {data.goals.length > 0 && <GoalDomainChart goals={data.goals} />}
       </div>
 
+      {/* BILAN DU SOIR SECTION */}
+      <div className="bg-white border border-stone-200 rounded-3xl p-6 md:p-8 mb-8 shadow-xs relative overflow-hidden">
+        {/* Decorative Top Line/Indicator */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500/10"></div>
+        
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-stone-100">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
+              <Moon className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-400">
+                L'Intention du Soir
+              </h3>
+              <p className="text-lg font-serif italic text-stone-800">
+                Le Bilan des Réussites
+              </p>
+            </div>
+          </div>
+          
+          {/* Badge Count Subtitle */}
+          <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full">
+            <Award className="w-4 h-4 text-amber-500 animate-pulse" />
+            <span className="text-xs font-sans font-semibold text-amber-700">
+              {recentDays.filter(d => d.success).length} badge{recentDays.filter(d => d.success).length > 1 ? 's' : ''} cette semaine
+            </span>
+          </div>
+        </div>
+
+        {/* Dynamic Inner Container */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Main Success Area: Form vs Display Badge */}
+          <div className="lg:col-span-8 flex flex-col justify-center h-full">
+            {!isSaved ? (
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <h4 className="text-base font-sans font-semibold text-stone-800">
+                    Quelle est votre victoire d'aujourd'hui ?
+                  </h4>
+                  <p className="text-xs text-stone-500">
+                    Notez ici un seul fait, une action, un moment précieux ou un accomplissement dont vous êtes fier(e) aujourd'hui, aussi modeste soit-il.
+                  </p>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="text"
+                    value={successInput}
+                    onChange={(e) => setSuccessInput(e.target.value)}
+                    placeholder="Ex: J'ai pris le temps de marcher 20 minutes en pleine conscience..."
+                    className="flex-1 px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-stone-800 font-sans text-sm transition"
+                    maxLength={140}
+                  />
+                  <button
+                    onClick={handleSaveSuccess}
+                    disabled={!successInput.trim()}
+                    className="px-6 py-3 bg-stone-900 text-amber-300 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-800 disabled:opacity-55 disabled:hover:bg-stone-900 transition flex items-center justify-center gap-2 shadow-xs shrink-0 cursor-pointer"
+                  >
+                    Célébrer &rarr;
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-[#FFFBEB] border border-amber-200/50 rounded-3xl p-6 relative flex flex-col items-center text-center animate-in zoom-in-95 duration-500">
+                {/* Visual Amber Badge Award */}
+                <div className="relative mb-4 flex items-center justify-center">
+                  {/* Glowing Amber Circles */}
+                  <div className="absolute w-16 h-16 bg-amber-400/20 rounded-full animate-ping opacity-60"></div>
+                  <div className="absolute w-12 h-12 bg-amber-400/30 rounded-full"></div>
+                  <div className="relative p-2.5 bg-amber-500 text-white rounded-full shadow-md z-10">
+                    <Award className="w-8 h-8" />
+                  </div>
+                </div>
+
+                <span className="text-[10px] uppercase tracking-widest text-amber-700 font-sans font-bold bg-amber-100 px-3 py-1 rounded-full mb-3">
+                  Victoire Célébrée • Badge Obtenu
+                </span>
+
+                <p className="font-serif italic text-lg md:text-xl text-stone-900 max-w-xl px-2 leading-relaxed">
+                  « {todaySuccess} »
+                </p>
+
+                <p className="text-xs text-stone-500 font-sans mt-4 max-w-sm">
+                  Chaque réussite, petite ou grande, conforte votre direction. Chaque jour est votre nouveau départ.
+                </p>
+
+                {/* Adjust/Edit Button */}
+                <button
+                  onClick={handleEditSuccess}
+                  className="mt-6 flex items-center gap-2 text-stone-400 hover:text-stone-600 text-xs font-sans font-medium hover:underline transition cursor-pointer"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  Modifier ma réussite
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {/* History / Weekly Badge Progress Tracking Sidebar inside the card */}
+          <div className="lg:col-span-4 bg-stone-50 rounded-2xl p-5 border border-stone-100">
+            <h4 className="text-[10px] uppercase tracking-wider font-sans font-bold text-stone-400 mb-4 text-center lg:text-left">
+              Vos Badges Hebdomadaires
+            </h4>
+            
+            <div className="grid grid-cols-7 lg:grid-cols-1 gap-2.5">
+              {recentDays.map((day) => (
+                <div 
+                  key={day.dateStr} 
+                  className={`flex flex-col lg:flex-row items-center lg:justify-between gap-1.5 lg:gap-3 p-1 rounded-xl transition ${
+                    day.isToday ? 'bg-white/80 shadow-2xs border border-stone-200/50' : ''
+                  }`}
+                  title={day.success ? `Réussite : ${day.success}` : "Pas de réussite notée pour ce jour"}
+                >
+                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2.5">
+                    {/* The small Amber visual badge circle */}
+                    {day.success ? (
+                      <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-xs shrink-0 relative group">
+                        <Award className="w-3.5 h-3.5" />
+                        
+                        {/* Tooltip for hover success view */}
+                        <div className="hidden lg:group-hover:block absolute left-full ml-2 w-48 bg-stone-900 text-white text-xs p-2 rounded-lg shadow-lg z-50 pointer-events-none font-sans">
+                          {day.success}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-6 h-6 bg-stone-200 text-stone-400 rounded-full flex items-center justify-center shrink-0 border border-stone-300/30">
+                        <span className="text-[9px] font-sans font-bold">{day.isToday ? '•' : ''}</span>
+                      </div>
+                    )}
+                    
+                    <div className="text-center lg:text-left">
+                      <p className={`text-[10px] font-sans font-semibold leading-none ${
+                        day.isToday ? 'text-stone-800' : 'text-stone-500'
+                      }`}>
+                        {day.dayName}
+                      </p>
+                      <p className="text-[8px] text-stone-400 font-sans leading-none mt-0.5 max-lg:hidden">
+                        {day.formattedDate}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Mini label indicator */}
+                  <span className={`text-[9px] font-sans max-lg:hidden px-2 py-0.5 rounded-full ${
+                    day.success 
+                      ? 'bg-amber-50 text-amber-700 border border-amber-100/50' 
+                      : 'text-stone-400'
+                  }`}>
+                    {day.success ? 'Obtenu' : 'À venir'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       {weeklyChallenge && (
         <div className="bg-stone-50 border border-stone-200 rounded-3xl p-6 md:p-8 mb-8 relative overflow-hidden group w-full">
           <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
@@ -243,13 +436,13 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
 
       {data.goals.length === 0 && (
         <div className="bg-[#EAE7E2] rounded-3xl p-6 md:p-8 text-center max-w-2xl mx-auto border border-stone-200 w-full shrink-0">
-          <h3 className="text-xs md:text-sm uppercase tracking-widest text-stone-500 mb-4 font-sans">La première étape</h3>
-          <p className="text-base md:text-lg leading-snug font-light italic mb-6">
-            60 ans, c'est le début d'un nouveau chapitre. Cet outil est là pour t'aider à définir ce que tu veux vraiment, sans pression, juste avec de l'intention.
+          <h3 className="text-xs md:text-sm uppercase tracking-widest text-[#047857] mb-4 font-sans font-bold">La première étape</h3>
+          <p className="text-base md:text-lg leading-snug font-light italic text-stone-700 mb-6 font-serif">
+            Chaque voyage commence par une première direction. Définissez ce qui résonne en vous, sans pression, simplement guidé par l'intention de donner du sens à votre quotidien.
           </p>
           <button 
             onClick={() => onChangeView('goals')}
-            className="bg-stone-800 w-full sm:w-auto flex justify-center mx-auto text-white px-6 py-3.5 md:py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 active:scale-95 transition-all shadow-sm"
+            className="bg-[#047857] w-full sm:w-auto flex justify-center mx-auto text-white px-6 py-3.5 md:py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] active:scale-95 transition-all shadow-sm cursor-pointer"
           >
             Fixer ma première intention
           </button>

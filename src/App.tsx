@@ -50,15 +50,18 @@ export default function App() {
       
       <div className="flex-1 flex flex-col h-[100dvh] md:ml-64 relative overflow-hidden">
         {/* Mobile Top Header */}
-        <header className="md:hidden flex items-center justify-between px-5 py-4 bg-white border-b border-stone-200 shrink-0 z-40 shadow-xs">
-          <div className="flex items-center gap-3">
-            <SkoposLogo className="text-[#047857]" size={26} />
-            <span className="text-lg font-sans font-bold tracking-widest text-[#1C1917]">SKOPOS</span>
+        <header className="md:hidden flex flex-col px-5 py-3 bg-white border-b border-stone-200 shrink-0 z-40 shadow-xs">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-3">
+              <SkoposLogo className="text-[#047857]" size={26} />
+              <span className="text-lg font-sans font-bold tracking-widest text-[#1C1917]">SKOPOS</span>
+            </div>
+            <span className="text-[10px] font-sans font-bold tracking-widest text-[#047857] uppercase bg-emerald-50 px-3 py-1 rounded-full">Mon Espace</span>
           </div>
-          <span className="text-[10px] font-sans font-bold tracking-widest text-[#047857] uppercase bg-emerald-50 px-3 py-1 rounded-full">Mon Espace</span>
+          <p className="text-[11px] text-[#047857] font-serif italic mt-1">chaque jour son nouveau départ</p>
         </header>
 
-        <main className="flex-1 px-4 py-6 sm:p-6 md:p-8 lg:p-12 pb-36 md:pb-8 lg:pb-12 overflow-y-auto relative h-full">
+        <main className="flex-1 px-4 py-6 sm:p-6 md:p-8 lg:p-12 pb-44 md:pb-8 lg:pb-12 overflow-y-auto relative h-full">
           <div className="max-w-[1024px] mx-auto min-h-full flex flex-col">
             {shouldRemindExport && (
               <div className="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 shadow-sm animate-in fade-in">
