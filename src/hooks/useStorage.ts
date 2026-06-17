@@ -17,14 +17,20 @@ export function useStorage() {
     try {
       const item = window.localStorage.getItem(STORAGE_KEY);
       if (item) {
-        const parsed: AppData = JSON.parse(item);
-        // Ensure backward compatibility
-        if (!parsed.milestones) parsed.milestones = [];
+        let parsed = JSON.parse(item);
+        if (!parsed || typeof parsed !== 'object') {
+          parsed = {};
+        }
+        // Ensure backward compatibility and guarantee arrays
+        if (!parsed.goals || !Array.isArray(parsed.goals)) parsed.goals = [];
+        if (!parsed.tasks || !Array.isArray(parsed.tasks)) parsed.tasks = [];
+        if (!parsed.journal || !Array.isArray(parsed.journal)) parsed.journal = [];
+        if (!parsed.milestones || !Array.isArray(parsed.milestones)) parsed.milestones = [];
         
         let hasChanges = false;
         
         // Auto-pause goals if deadline passed by more than 7 days
-        const updatedGoals = parsed.goals.map(g => {
+        const updatedGoals = parsed.goals.map((g: any) => {
           if (g.status === 'En cours' && g.deadline) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -125,7 +131,14 @@ export function useStorage() {
   }, [data]);
 
   const updateData = (newData: Partial<AppData>) => {
-    setData(prev => ({ ...prev, ...newData }));
+    setData(prev => {
+      const merged = { ...prev, ...newData };
+      if (!merged.goals || !Array.isArray(merged.goals)) merged.goals = [];
+      if (!merged.tasks || !Array.isArray(merged.tasks)) merged.tasks = [];
+      if (!merged.journal || !Array.isArray(merged.journal)) merged.journal = [];
+      if (!merged.milestones || !Array.isArray(merged.milestones)) merged.milestones = [];
+      return merged;
+    });
   };
 
   const dismissExportReminder = () => {

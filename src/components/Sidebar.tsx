@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon, LayoutGrid, X } from 'lucide-react';
+import { LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon, LayoutGrid, X, Network } from 'lucide-react';
 import { ViewType } from '../types';
 import { SkoposLogo } from './SkoposLogo';
 
@@ -17,6 +17,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     { id: 'tasks', label: 'Mon Quotidien', icon: CheckSquare },
     { id: 'calendar', label: 'Calendrier', icon: CalendarIcon },
     { id: 'journal', label: 'Journal de bord', icon: BookHeart },
+    { id: 'cartography', label: 'Cartographie', icon: Network },
     { id: 'review', label: 'Mon Bilan', icon: PieChart },
     { id: 'settings', label: 'Paramètres', icon: Settings },
   ];
@@ -38,6 +39,14 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
       icon: BookHeart,
       colorClass: 'bg-rose-50 text-rose-700 border-rose-100',
       iconColor: 'text-rose-600'
+    },
+    { 
+      id: 'cartography', 
+      label: 'Cartographie', 
+      description: 'Visualiser les liens objectifs et actions', 
+      icon: Network,
+      colorClass: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+      iconColor: 'text-indigo-600'
     },
     { 
       id: 'review', 
@@ -62,7 +71,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     setIsSpaceMenuOpen(false);
   };
 
-  const isMoreSpaceActive = ['calendar', 'journal', 'review', 'settings'].includes(currentView);
+  const isMoreSpaceActive = ['calendar', 'journal', 'review', 'settings', 'cartography'].includes(currentView);
 
   return (
     <>

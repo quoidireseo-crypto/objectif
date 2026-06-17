@@ -68,15 +68,35 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile 
   };
 
   const [backup1] = useState<{data: AppData, date: string} | null>(() => {
+    try {
       const raw = window.localStorage.getItem('didier_boussole_backup_1');
       const date = window.localStorage.getItem('didier_boussole_backup_1_date');
-      return raw ? { data: JSON.parse(raw), date: date || 'Inconnue' } : null;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          return { data: parsed, date: date || 'Inconnue' };
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
   });
 
   const [backup2] = useState<{data: AppData, date: string} | null>(() => {
+    try {
       const raw = window.localStorage.getItem('didier_boussole_backup_2');
       const date = window.localStorage.getItem('didier_boussole_backup_2_date');
-      return raw ? { data: JSON.parse(raw), date: date || 'Inconnue' } : null;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          return { data: parsed, date: date || 'Inconnue' };
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
   });
 
   const handleRestore = (backupData: AppData) => {

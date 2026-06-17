@@ -13,6 +13,7 @@ import { NotificationToast } from './components/NotificationToast';
 import { useReminder } from './hooks/useReminder';
 import { SkoposLogo } from './components/SkoposLogo';
 import { LandingView } from './views/LandingView';
+import { CartographyView } from './views/CartographyView';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
@@ -56,6 +57,8 @@ export default function App() {
         return <CalendarView data={data} updateData={updateData} />;
       case 'review':
         return <ReviewView data={data} />;
+      case 'cartography':
+        return <CartographyView data={data} userProfile={userProfile} />;
       case 'settings':
         return <SettingsView data={data} onImportData={handleImportData} userProfile={userProfile} onUpdateProfile={handleUpdateProfile} />;
       default:
