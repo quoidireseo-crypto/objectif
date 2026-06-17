@@ -16,19 +16,32 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile 
   const [profileName, setProfileName] = useState(userProfile?.name || '');
   const [profileAgeGroup, setProfileAgeGroup] = useState(userProfile?.ageGroup || '');
   const [profileFocusArea, setProfileFocusArea] = useState(userProfile?.focusArea || '');
-  const [saveProfileSuccess, setSaveProfileSuccess] = useState(false);
 
-  const handleSaveProfile = () => {
+  // Synchronise state with props if changed externally (safely without causing cursor jumps)
+  useEffect(() => {
+    if (userProfile) {
+      if (userProfile.name !== profileName && profileName.trim() === '') {
+        setProfileName(userProfile.name || '');
+      }
+      if (userProfile.ageGroup !== profileAgeGroup) {
+        setProfileAgeGroup(userProfile.ageGroup || '');
+      }
+      if (userProfile.focusArea !== profileFocusArea) {
+        setProfileFocusArea(userProfile.focusArea || '');
+      }
+    }
+  }, [userProfile]);
+
+  // Auto-save user profile changes instantly
+  useEffect(() => {
     if (profileName.trim()) {
       onUpdateProfile({
         name: profileName.trim(),
         ageGroup: profileAgeGroup || undefined,
         focusArea: profileFocusArea || undefined,
       });
-      setSaveProfileSuccess(true);
-      setTimeout(() => setSaveProfileSuccess(false), 3000);
     }
-  };
+  }, [profileName, profileAgeGroup, profileFocusArea]);
 
   const handleResetProfile = () => {
     if (window.confirm("Es-tu sûr de vouloir réinitialiser ton profil ? Cette action te renverra vers l'écran d'accueil d'onboarding (tes objectifs et tâches actuels ne seront pas supprimés).")) {
@@ -214,13 +227,10 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile 
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-stone-100">
-              <button
-                onClick={handleSaveProfile}
-                disabled={!profileName.trim()}
-                className="flex-1 bg-stone-800 text-white py-3 px-6 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 transition-all cursor-pointer disabled:opacity-40"
-              >
-                Sauvegarder les modifications
-              </button>
+              <div className="flex-1 flex items-center justify-center gap-2.5 px-5 py-3.5 bg-emerald-50/70 border border-emerald-100 rounded-xl text-[#047857] font-sans text-xs uppercase tracking-widest font-bold">
+                <CheckCircle2 className="w-4 h-4" />
+                Sauvegardé automatiquement !
+              </div>
               <button
                 onClick={handleResetProfile}
                 className="flex-1 bg-white border border-rose-200 text-rose-700 py-3 px-6 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-rose-50 transition-all flex items-center justify-center gap-2 cursor-pointer"
@@ -229,13 +239,6 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile 
                 Réinitialiser le profil
               </button>
             </div>
-
-            {saveProfileSuccess && (
-              <div className="p-3 bg-emerald-50 text-emerald-800 rounded-xl flex items-center gap-2 text-xs font-bold font-sans mt-2">
-                <CheckCircle2 className="w-4 h-4" />
-                Mise à jour du profil effectuée !
-              </div>
-            )}
           </div>
         </div>
 
