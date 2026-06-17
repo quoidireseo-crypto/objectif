@@ -1,4 +1,4 @@
-export type ViewType = 'dashboard' | 'goals' | 'tasks' | 'journal' | 'review' | 'settings';
+export type ViewType = 'dashboard' | 'goals' | 'tasks' | 'journal' | 'review' | 'calendar' | 'settings';
 
 export type LifeDomain = 'Santé & Bien-être' | 'Projet Personnel' | 'Relations & Famille' | 'Apprentissage' | 'Finances' | 'Spiritualité' | 'Autre';
 

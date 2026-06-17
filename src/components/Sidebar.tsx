@@ -1,4 +1,4 @@
-import { Compass, Target, CheckSquare, BookHeart, PieChart, Settings } from 'lucide-react';
+import { Compass, Target, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon } from 'lucide-react';
 import { ViewType } from '../types';
 
 interface SidebarProps {
@@ -11,6 +11,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     { id: 'dashboard', label: 'Tableau de bord', icon: Compass },
     { id: 'goals', label: 'Mes Objectifs', icon: Target },
     { id: 'tasks', label: 'Mon Quotidien', icon: CheckSquare },
+    { id: 'calendar', label: 'Calendrier', icon: CalendarIcon },
     { id: 'journal', label: 'Journal de bord', icon: BookHeart },
     { id: 'review', label: 'Mon Bilan', icon: PieChart },
     { id: 'settings', label: 'Paramètres', icon: Settings },

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { AppData, JournalEntry } from '../types';
-import { BookHeart, Send, Smile, Meh, Frown, Sparkles } from 'lucide-react';
+import { BookHeart, Send, Smile, Meh, Frown, Sparkles, Mic, Square, Loader2 } from 'lucide-react';
 
 interface JournalProps {
   data: AppData;
@@ -17,9 +17,70 @@ const MOODS = [
 export function JournalView({ data, updateData }: JournalProps) {
   const [content, setContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<JournalEntry['mood']>('Bien');
+  
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const todayDate = new Date().toISOString().split('T')[0];
   const hasEntryToday = data.journal.some(j => j.date === todayDate);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = async () => {
+          const base64data = reader.result?.toString().split(',')[1];
+          if (base64data) {
+            setIsTranscribing(true);
+            try {
+              const res = await fetch('/api/transcribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ audioData: base64data, mimeType: 'audio/webm' })
+              });
+              const data = await res.json();
+              if (data.text) {
+                setContent(prev => prev ? prev + '\\n\\n' + data.text : data.text);
+              }
+            } catch(e) {
+              console.error(e);
+            } finally {
+              setIsTranscribing(false);
+            }
+          }
+        };
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error("Microphone access denied", err);
+      alert("Accès au microphone refusé ou indisponible.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      setIsRecording(false);
+    }
+  };
 
   const handleSave = () => {
     if (!content.trim()) return;
@@ -74,10 +135,41 @@ export function JournalView({ data, updateData }: JournalProps) {
             onChange={(e) => setContent(e.target.value)}
           />
 
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={isTranscribing}
+                className={`flex items-center gap-2 px-4 py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold transition ${
+                  isRecording 
+                    ? 'bg-red-100 text-red-600 border border-red-200 animate-pulse' 
+                    : isTranscribing
+                    ? 'bg-stone-100 text-stone-500 border border-stone-200 cursor-not-allowed'
+                    : 'bg-white border-2 border-stone-200 text-stone-600 hover:bg-stone-50'
+                }`}
+              >
+                {isRecording ? (
+                  <>
+                    <Square className="w-4 h-4 fill-current" />
+                    Enregistrement...
+                  </>
+                ) : isTranscribing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Transcription...
+                  </>
+                ) : (
+                  <>
+                    <Mic className="w-4 h-4" />
+                    Mémo vocal
+                  </>
+                )}
+              </button>
+            </div>
+
             <button
               onClick={handleSave}
-              disabled={!content.trim()}
+              disabled={!content.trim() || isTranscribing}
               className="bg-stone-800 text-white px-6 py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 disabled:opacity-50 flex items-center gap-2 transition"
             >
               <Send className="w-4 h-4" />

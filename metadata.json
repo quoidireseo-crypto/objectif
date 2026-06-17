@@ -1,6 +1,6 @@
 {
   "name": "La Boussole de Didier",
   "description": "Un outil personnel de gestion de vie, d'objectifs et de quotidien conçu spécialement pour Didier, afin de reprendre le cap, fixer des intentions et devenir l'acteur de ses journées.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -7,6 +7,7 @@ import { GoalsView } from './views/GoalsView';
 import { TasksView } from './views/TasksView';
 import { JournalView } from './views/JournalView';
 import { ReviewView } from './views/ReviewView';
+import { CalendarView } from './views/CalendarView';
 import { SettingsView } from './views/SettingsView';
 import { NotificationToast } from './components/NotificationToast';
 
@@ -28,6 +29,8 @@ export default function App() {
         return <TasksView data={data} updateData={updateData} />;
       case 'journal':
         return <JournalView data={data} updateData={updateData} />;
+      case 'calendar':
+        return <CalendarView data={data} updateData={updateData} />;
       case 'review':
         return <ReviewView data={data} />;
       case 'settings':
