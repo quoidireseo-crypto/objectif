@@ -55,23 +55,25 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 flex justify-around items-center p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-50">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = currentView === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onChangeView(item.id)}
-              className={`flex flex-col items-center justify-center p-2 min-w-[4rem] transition-all duration-200 ${
-                isActive ? 'text-emerald-400' : 'text-stone-500'
-              }`}
-            >
-              <Icon className={`w-5 h-5 mb-1 ${isActive ? 'text-emerald-400' : 'text-stone-500'}`} />
-              <span className="text-[10px] font-sans font-medium leading-none">{item.label}</span>
-            </button>
-          );
-        })}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 flex overflow-x-auto hidden-scrollbar p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-50">
+        <div className="flex justify-between min-w-max w-full px-2 gap-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentView === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => onChangeView(item.id)}
+                className={`flex flex-col items-center justify-center shrink-0 p-2 min-w-[4.5rem] transition-all duration-200 ${
+                  isActive ? 'text-emerald-400' : 'text-stone-500'
+                }`}
+              >
+                <Icon className={`w-5 h-5 mb-1 ${isActive ? 'text-emerald-400' : 'text-stone-500'}`} />
+                <span className="text-[10px] font-sans font-medium leading-none">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </nav>
     </>
   );

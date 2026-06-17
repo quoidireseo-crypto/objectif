@@ -1,11 +1,22 @@
+import { useMemo } from 'react';
 import { AppData } from '../types';
-import { Target, CheckCircle2 } from 'lucide-react';
+import { Target, CheckCircle2, Sparkles } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
 
 interface DashboardProps {
   data: AppData;
   onChangeView: (view: any) => void;
 }
+
+const QUOTES = [
+  { text: "Il n'est jamais trop tard pour devenir ce que l'on aurait pu être.", author: "George Eliot" },
+  { text: "La meilleure façon de prédire l'avenir est de le créer.", author: "Peter Drucker" },
+  { text: "Ce n'est pas le vent qui décide de ta destination, c'est l'orientation que tu donnes à ta voile.", author: "Jim Rohn" },
+  { text: "Le meilleur moment pour planter un arbre était il y a 20 ans. Le deuxième meilleur moment est maintenant.", author: "Proverbe chinois" },
+  { text: "Chaque jour est une nouvelle chance d'être acteur de sa vie.", author: "Anonyme" },
+  { text: "Il n'y a pas d'âge pour se réinventer.", author: "Anonyme" },
+  { text: "La vie ce n'est pas d'attendre que les orages passent, c'est d'apprendre à danser sous la pluie.", author: "Sénèque" }
+];
 
 export function DashboardView({ data, onChangeView }: DashboardProps) {
   const activeGoals = data.goals.filter(g => g.status === 'En cours').length;
@@ -19,6 +30,12 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
     month: 'long', 
     day: 'numeric' 
   }).format(new Date());
+
+  const dailyQuote = useMemo(() => {
+    // We can use the current day of the year to pick a consistent quote for the day
+    const dayOfYear = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
+    return QUOTES[dayOfYear % QUOTES.length];
+  }, []);
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col min-h-full">
@@ -74,13 +91,18 @@ export function DashboardView({ data, onChangeView }: DashboardProps) {
           </button>
         </div>
 
-        <div className="bg-emerald-900 text-stone-100 rounded-3xl p-6 shadow-md flex flex-col justify-center relative overflow-hidden">
-          <div className="relative z-10">
-            <h3 className="font-light text-lg mb-2">Le Rappel</h3>
-            <p className="text-sm opacity-80 italic leading-relaxed">
-              "Il n'est jamais trop tard pour devenir ce que l'on aurait pu être."
-            </p>
-            <p className="text-xs text-right mt-4 opacity-50 font-sans">— George Eliot</p>
+        <div className="bg-emerald-900 text-stone-100 rounded-3xl p-6 shadow-md flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Sparkles className="w-16 h-16" />
+          </div>
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div>
+              <h3 className="font-sans text-[10px] uppercase tracking-widest text-emerald-300 font-bold mb-3">Inspiration Quotidienne</h3>
+              <p className="text-sm opacity-90 italic leading-relaxed">
+                "{dailyQuote.text}"
+              </p>
+            </div>
+            <p className="text-xs text-right mt-4 opacity-50 font-sans font-bold">— {dailyQuote.author}</p>
           </div>
         </div>
       </div>
