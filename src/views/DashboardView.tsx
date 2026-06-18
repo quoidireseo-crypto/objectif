@@ -10,6 +10,7 @@ import { OrphansPanel } from '../components/OrphansPanel';
 import { SkoposLogo } from '../components/SkoposLogo';
 import { HelpTooltip } from '../components/HelpTooltip';
 import { TodayCommandCenter } from '../components/TodayCommandCenter';
+import { NextActionNudge } from '../components/NextActionNudge';
 
 interface DashboardProps {
   data: AppData;
@@ -637,6 +638,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
 
       {/* ===================== ZONE 2 — MA PROGRESSION ===================== */}
       <SectionLabel help="Une vue d'ensemble de tes objectifs en cours et de ta constance dans la durée.">Ma progression</SectionLabel>
+
+      {/* Rappel doux : objectifs en cours sans prochaine action */}
+      <NextActionNudge data={data} onChangeView={onChangeView} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Objectifs en cours */}
