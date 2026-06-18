@@ -1,6 +1,7 @@
 import { useRef, useState, ChangeEvent, useEffect } from 'react';
 import { AppData } from '../types';
 import { ThemeMode } from '../hooks/useTheme';
+import { SkoposLogo } from '../components/SkoposLogo';
 import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw, Smartphone, Info, Sun, Moon, Clock, Lock, LogOut, KeyRound } from 'lucide-react';
 
 interface SettingsProps {
@@ -594,6 +595,24 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile,
                 </span>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* À PROPOS — origine du nom (discret) */}
+        <div className="pt-2 pb-2">
+          <div className="flex items-start gap-4 px-2">
+            <SkoposLogo className="text-stone-300 dark:text-stone-600 shrink-0 mt-0.5" size={26} />
+            <div className="space-y-2">
+              <h4 className="text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-stone-400 dark:text-stone-500">
+                À propos de Skopos
+              </h4>
+              <p className="text-sm text-stone-500 dark:text-stone-400 font-serif italic leading-relaxed max-w-xl">
+                Skopos (σκοπός) : en grec ancien, le point que l'on garde en vue — ce que vise l'archer, ce que guette le veilleur. Au centre du logo, ce point, c'est ce qui compte pour toi.
+              </p>
+              <p className="text-xs text-stone-400 dark:text-stone-500 font-sans">
+                Garder en vue l'essentiel, avancer un pas à la fois.
+              </p>
+            </div>
           </div>
         </div>
       </div>

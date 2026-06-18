@@ -48,6 +48,9 @@ export function WelcomeBackScreen({ name, hasPassword, onUnlock }: WelcomeBackSc
           <p className="text-xs text-[#047857] dark:text-emerald-400 uppercase tracking-widest font-sans font-bold mt-1">
             Chaque jour son nouveau départ
           </p>
+          <p className="text-[11px] text-stone-400 dark:text-stone-500 font-serif italic mt-2">
+            Garder en vue ce qui compte.
+          </p>
         </div>
 
         <div className="text-center mb-6">
