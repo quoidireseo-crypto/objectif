@@ -9,6 +9,7 @@ import { GraphView } from './GraphView';
 import { OrphansPanel } from '../components/OrphansPanel';
 import { SkoposLogo } from '../components/SkoposLogo';
 import { HelpTooltip } from '../components/HelpTooltip';
+import { TodayCommandCenter } from '../components/TodayCommandCenter';
 
 interface DashboardProps {
   data: AppData;
@@ -223,6 +224,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
 
   const todayLabel = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
 
+  // Le tableau de bord s'adapte au moment de la journée : le soir (à partir de
+  // 18h), le bilan « Ma réussite du jour » remonte avant l'agenda du jour.
+  const isEvening = new Date().getHours() >= 18;
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col min-h-full py-2">
 
@@ -399,7 +404,16 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         </div>
       </div>
 
+      {/* ZONE 1 (suite) — agenda, habitudes, bilan ; ordre adaptatif matin/soir */}
+      <div className="flex flex-col">
+
+        {/* Poste de commande « Aujourd'hui » : reprises, actions du jour, capture rapide */}
+        <div className={isEvening ? 'order-2' : 'order-1'}>
+          <TodayCommandCenter data={data} updateData={updateData} onChangeView={onChangeView} />
+        </div>
+
       {/* Habitudes du jour */}
+      <div className={isEvening ? 'order-3' : 'order-2'}>
       {todaysHabits.length > 0 && (
         <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center justify-between mb-5">
@@ -443,8 +457,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </div>
         </div>
       )}
+      </div>
 
-      {/* Ma réussite du jour (bilan du soir) */}
+      {/* Ma réussite du jour (bilan du soir) — remonte en premier le soir */}
+      <div className={isEvening ? 'order-1' : 'order-3'}>
       <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-2 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500/20"></div>
 
@@ -595,6 +611,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
 
         </div>
       </div>
+      </div>
+
+      </div>
+      {/* fin ZONE 1 adaptative */}
 
       {/* ===================== ZONE 2 — MA PROGRESSION ===================== */}
       <SectionLabel help="Une vue d'ensemble de tes objectifs en cours et de ta constance dans la durée.">Ma progression</SectionLabel>
