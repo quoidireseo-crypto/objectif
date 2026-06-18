@@ -51,6 +51,7 @@ export default function App() {
       journal: importedData.journal || [],
       morningRituals: importedData.morningRituals || [],
       goalsHistory: importedData.goalsHistory || [],
+      eveningReflections: importedData.eveningReflections || [],
     };
     updateData(sanitizedData);
   };
@@ -97,10 +98,11 @@ export default function App() {
         </header>
 
         {shouldShowRitual && (
-          <MorningRitualScreen 
-            data={data} 
-            onComplete={completeRitual} 
-            onSkip={skipRitual} 
+          <MorningRitualScreen
+            data={data}
+            userProfile={userProfile}
+            onComplete={completeRitual}
+            onSkip={skipRitual}
           />
         )}
 

@@ -11,7 +11,29 @@ const defaultData: AppData = {
   tasks: [],
   journal: [],
   morningRituals: [],
-  goalsHistory: []
+  goalsHistory: [],
+  eveningReflections: []
+};
+
+// One-time migration: the evening "Bilan du soir" used to live in standalone
+// localStorage keys (skopos_success_<date>), which meant it was never included
+// in exports/backups. We pull those into AppData so they're saved like the rest.
+const migrateEveningReflections = (parsed: AppData) => {
+  if (window.localStorage.getItem('skopos_evening_migrated') === 'true') return;
+
+  const existingDates = new Set((parsed.eveningReflections || []).map(r => r.date));
+  for (let i = 0; i < window.localStorage.length; i++) {
+    const key = window.localStorage.key(i);
+    if (key && key.startsWith('skopos_success_') && !key.endsWith('_saved')) {
+      const date = key.replace('skopos_success_', '');
+      const content = window.localStorage.getItem(key);
+      if (content && !existingDates.has(date)) {
+        parsed.eveningReflections.push({ date, content, createdAt: new Date().toISOString() });
+        existingDates.add(date);
+      }
+    }
+  }
+  window.localStorage.setItem('skopos_evening_migrated', 'true');
 };
 
 export function useStorage() {
@@ -27,7 +49,10 @@ export function useStorage() {
         if (!parsed.journal) parsed.journal = [];
         if (!parsed.morningRituals) parsed.morningRituals = [];
         if (!parsed.goalsHistory) parsed.goalsHistory = [];
-        
+        if (!parsed.eveningReflections) parsed.eveningReflections = [];
+
+        migrateEveningReflections(parsed);
+
         let hasChanges = false;
         
         // Auto-pause goals if deadline passed by more than 7 days

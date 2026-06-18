@@ -11,24 +11,25 @@ export default defineConfig(() => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+        includeAssets: ['skopos-icon.svg'],
         manifest: {
           name: "SKOPOS - L'Essentiel",
           short_name: "SKOPOS",
           description: "Un outil pour reprendre le cap, fixer des intentions et devenir l'acteur de ses journées.",
+          lang: "fr",
           theme_color: "#1C1917",
           background_color: "#F5F5F0",
           display: "standalone",
           icons: [
             {
-              src: "https://img.icons8.com/color/100/defined-location.png",
-              sizes: "100x100",
-              type: "image/png"
+              src: "/skopos-icon.svg",
+              sizes: "any",
+              type: "image/svg+xml"
             },
             {
-              src: "https://img.icons8.com/color/512/defined-location.png",
-              sizes: "512x512",
-              type: "image/png",
+              src: "/skopos-icon.svg",
+              sizes: "any",
+              type: "image/svg+xml",
               purpose: "any maskable"
             }
           ]

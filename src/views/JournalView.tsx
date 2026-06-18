@@ -30,6 +30,15 @@ const FRENCH_STOP_WORDS = new Set([
 export function JournalView({ data, updateData }: JournalProps) {
   const [content, setContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<JournalEntry['mood']>('Bien');
+  const [search, setSearch] = useState('');
+
+  const filteredJournal = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return data.journal;
+    return data.journal.filter(
+      j => j.content.toLowerCase().includes(q) || j.mood.toLowerCase().includes(q)
+    );
+  }, [data.journal, search]);
 
   const todayDate = new Date().toISOString().split('T')[0];
   const hasEntryToday = data.journal.some(j => j.date === todayDate);
@@ -168,8 +177,20 @@ export function JournalView({ data, updateData }: JournalProps) {
 
       {data.journal.length > 0 ? (
         <div className="space-y-6">
-          <h3 className="text-2xl font-light text-stone-800 pb-2">Mes réflexions passées</h3>
-          {data.journal.map(entry => {
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
+            <h3 className="text-2xl font-light text-stone-800">Mes réflexions passées</h3>
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher un mot, une humeur..."
+              className="w-full sm:w-64 px-4 py-2.5 bg-white border border-stone-200 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 font-sans text-sm transition"
+            />
+          </div>
+          {filteredJournal.length === 0 && (
+            <p className="text-stone-400 italic text-sm py-4">Aucune réflexion ne correspond à « {search} ».</p>
+          )}
+          {filteredJournal.map(entry => {
             const moodData = MOODS.find(m => m.label === entry.mood) || MOODS[1];
             const MoodIcon = moodData.icon;
             

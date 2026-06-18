@@ -1,6 +1,6 @@
 import { useRef, useState, ChangeEvent, useEffect } from 'react';
 import { AppData } from '../types';
-import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw } from 'lucide-react';
+import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw, Smartphone, Info } from 'lucide-react';
 
 interface SettingsProps {
   data: AppData;
@@ -51,6 +51,38 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile 
 
   const [reminderEnabled, setReminderEnabled] = useState(() => window.localStorage.getItem('didier_reminder_enabled') === 'true');
   const [reminderTime, setReminderTime] = useState(() => window.localStorage.getItem('didier_reminder_time') || '09:00');
+
+  // PWA install prompt handling (Ajouter à l'écran d'accueil)
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    const standalone = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as any).standalone === true;
+    setIsInstalled(standalone);
+
+    const onPrompt = (e: Event) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+    const onInstalled = () => {
+      setIsInstalled(true);
+      setInstallPrompt(null);
+    };
+    window.addEventListener('beforeinstallprompt', onPrompt);
+    window.addEventListener('appinstalled', onInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onPrompt);
+      window.removeEventListener('appinstalled', onInstalled);
+    };
+  }, []);
+
+  const handleInstall = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  };
 
   const handleExport = () => {
     const dataStr = JSON.stringify(data, null, 2);
@@ -169,6 +201,33 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile 
       </header>
 
       <div className="space-y-6">
+        {/* INSTALL APP SECTION */}
+        {(installPrompt || isInstalled) && (
+          <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm">
+            <h3 className="text-lg font-bold font-sans uppercase tracking-widest text-stone-800 mb-2 flex items-center gap-2">
+              <Smartphone className="w-5 h-5 text-emerald-700" />
+              Installer l'application
+            </h3>
+            <p className="text-stone-500 leading-relaxed mb-6 font-light">
+              Installe SKOPOS sur ton appareil pour l'ouvrir comme une vraie application, même hors connexion, directement depuis ton écran d'accueil.
+            </p>
+            {isInstalled ? (
+              <div className="flex items-center gap-2.5 px-5 py-3.5 bg-emerald-50/70 border border-emerald-100 rounded-xl text-[#047857] font-sans text-xs uppercase tracking-widest font-bold w-max">
+                <CheckCircle2 className="w-4 h-4" />
+                Déjà installée sur cet appareil
+              </div>
+            ) : (
+              <button
+                onClick={handleInstall}
+                className="bg-emerald-700 text-white flex items-center justify-center gap-3 px-6 py-4 rounded-xl hover:bg-emerald-800 transition-all font-sans font-bold uppercase tracking-widest text-xs w-full sm:w-auto"
+              >
+                <Download className="w-5 h-5" />
+                Ajouter à l'écran d'accueil
+              </button>
+            )}
+          </div>
+        )}
+
         {/* PROFILE SECTION */}
         <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm">
           <h3 className="text-lg font-bold font-sans uppercase tracking-widest text-stone-800 mb-2 flex items-center gap-2">
@@ -320,13 +379,22 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile 
             {reminderEnabled && (
               <div className="flex items-center gap-3 bg-stone-50 p-4 rounded-xl border border-stone-100">
                 <label htmlFor="reminderTime" className="font-sans font-medium text-stone-600 text-sm">Me rappeler à</label>
-                <input 
-                  type="time" 
+                <input
+                  type="time"
                   id="reminderTime"
                   value={reminderTime}
                   onChange={(e) => handleTimeChange(e.target.value)}
                   className="bg-white border border-stone-200 px-3 py-2 rounded-lg font-sans text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
+              </div>
+            )}
+
+            {reminderEnabled && (
+              <div className="flex items-start gap-2.5 text-xs text-stone-500 font-sans bg-stone-50/60 border border-stone-100 rounded-xl p-3.5 leading-relaxed">
+                <Info className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
+                <span>
+                  Pour des raisons techniques, ce rappel ne s'affiche que si l'application a été ouverte au moins une fois récemment et reste en arrière-plan. Si tu fermes complètement l'application, la notification du jour peut ne pas apparaître.
+                </span>
               </div>
             )}
           </div>

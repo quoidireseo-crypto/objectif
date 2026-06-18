@@ -4,6 +4,7 @@ import { Compass, Sparkles, Smile, Meh, Frown, Activity, Target, Heart, Briefcas
 
 interface MorningRitualScreenProps {
   data: AppData;
+  userProfile?: { name: string; ageGroup?: string; focusArea?: string } | null;
   onComplete: (ritual: { priority: string; goalId?: string; mood: 'Super' | 'Bien' | 'Moyen' | 'Difficile' }) => void;
   onSkip: () => void;
 }
@@ -25,7 +26,7 @@ const MOODS = [
   { label: 'Difficile', icon: Frown, color: 'text-amber-900 bg-amber-100 border-amber-300 hover:bg-amber-200' },
 ] as const;
 
-export function MorningRitualScreen({ data, onComplete, onSkip }: MorningRitualScreenProps) {
+export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: MorningRitualScreenProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [priority, setPriority] = useState('');
   const [selectedGoalId, setSelectedGoalId] = useState('');
@@ -91,7 +92,9 @@ export function MorningRitualScreen({ data, onComplete, onSkip }: MorningRitualS
           <div className="space-y-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Salutation & Date */}
             <div className="space-y-2">
-              <h1 className="font-serif text-4xl md:text-5xl font-light text-stone-900 leading-tight">Bonjour, Didier.</h1>
+              <h1 className="font-serif text-4xl md:text-5xl font-light text-stone-900 leading-tight">
+                Bonjour{userProfile?.name ? `, ${userProfile.name}` : ''}.
+              </h1>
               <p className="text-stone-400 font-sans text-sm capitalize font-light">{formattedDate}</p>
               {yesterdayTasksSummary && (
                 <p className="italic text-stone-500 text-sm mt-3 font-serif font-light">{yesterdayTasksSummary}</p>

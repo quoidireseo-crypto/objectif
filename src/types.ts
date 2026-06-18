@@ -38,6 +38,12 @@ export interface JournalEntry {
   mood: 'Super' | 'Bien' | 'Moyen' | 'Difficile';
 }
 
+export interface EveningReflection {
+  date: string; // format YYYY-MM-DD
+  content: string; // la victoire / réussite du jour
+  createdAt: string;
+}
+
 export interface AppData {
   goals: Goal[];
   milestones: Milestone[];
@@ -45,6 +51,7 @@ export interface AppData {
   journal: JournalEntry[];
   morningRituals: MorningRitual[];
   goalsHistory: GoalHistoryEntry[];
+  eveningReflections: EveningReflection[];
 }
 
 export type MorningRitualStatus = 'pending' | 'completed' | 'skipped';

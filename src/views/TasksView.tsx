@@ -24,6 +24,8 @@ export function TasksView({ data, updateData }: TasksProps) {
   const [isNewTaskImportant, setIsNewTaskImportant] = useState(false);
 
   const todayDate = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(todayDate);
+  const [plannedNotice, setPlannedNotice] = useState<string>('');
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
 
   // Demander la permission au chargement
@@ -54,7 +56,7 @@ export function TasksView({ data, updateData }: TasksProps) {
       id: Date.now().toString(),
       title: newTaskTitle.trim(),
       isCompleted: false,
-      date: todayDate,
+      date: selectedDate || todayDate,
       isImportant: isNewTaskImportant,
       ...(goalId ? { goalId } : {}),
       ...(milestoneId ? { milestoneId } : {}),
@@ -62,10 +64,21 @@ export function TasksView({ data, updateData }: TasksProps) {
     };
 
     updateData({ tasks: [task, ...data.tasks] });
+
+    if (task.date !== todayDate) {
+      const label = new Date(task.date + 'T00:00:00').toLocaleDateString('fr-FR', {
+        weekday: 'long', day: 'numeric', month: 'long'
+      });
+      setPlannedNotice(`Action planifiée pour ${label}. Retrouve-la dans ton calendrier le jour venu.`);
+    } else {
+      setPlannedNotice('');
+    }
+
     setNewTaskTitle('');
     setSelectedReference('');
     setSelectedDomain('');
     setIsNewTaskImportant(false);
+    setSelectedDate(todayDate);
   };
 
   const toggleTask = (id: string) => {
@@ -146,7 +159,7 @@ export function TasksView({ data, updateData }: TasksProps) {
         )}
 
         {/* Domaine / Catégorie selector */}
-        <select 
+        <select
           className="bg-stone-50 border border-stone-200 text-stone-600 font-sans text-xs py-3 px-3 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 w-full md:w-auto md:min-w-[140px]"
           value={selectedDomain}
           onChange={(e) => setSelectedDomain(e.target.value as LifeDomain)}
@@ -156,7 +169,17 @@ export function TasksView({ data, updateData }: TasksProps) {
             <option key={domain} value={domain}>{domain}</option>
           ))}
         </select>
-        
+
+        {/* Date selector (aujourd'hui par défaut, planification possible) */}
+        <input
+          type="date"
+          min={todayDate}
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          title="Planifier pour un autre jour (aujourd'hui par défaut)"
+          className="bg-stone-50 border border-stone-200 text-stone-600 font-sans text-xs py-3 px-3 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 w-full md:w-auto shrink-0"
+        />
+
         <button 
           type="submit"
           disabled={!newTaskTitle.trim()}
@@ -165,6 +188,13 @@ export function TasksView({ data, updateData }: TasksProps) {
           Ajouter
         </button>
       </form>
+
+      {plannedNotice && (
+        <div className="-mt-4 mb-8 bg-blue-50 border border-blue-100 text-blue-800 text-sm font-sans rounded-2xl px-4 py-3 flex items-center justify-between gap-3 animate-in fade-in">
+          <span>{plannedNotice}</span>
+          <button onClick={() => setPlannedNotice('')} className="text-blue-400 hover:text-blue-700 text-xs font-bold uppercase tracking-wider shrink-0">OK</button>
+        </div>
+      )}
 
       {/* Task List */}
       <div>

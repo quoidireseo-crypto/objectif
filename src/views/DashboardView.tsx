@@ -49,34 +49,33 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
 
   const [weeklyChallenge, setWeeklyChallenge] = useState<{ text: string, date: string } | null>(null);
 
-  const [successInput, setSuccessInput] = useState('');
-  const [todaySuccess, setTodaySuccess] = useState(() => {
-    return window.localStorage.getItem('skopos_success_' + todayDate) || '';
-  });
-  const [isSaved, setIsSaved] = useState(() => {
-    return window.localStorage.getItem('skopos_success_saved_' + todayDate) === 'true';
-  });
-  const [successUpdateTicket, setSuccessUpdateTicket] = useState(0);
+  const todayReflection = useMemo(
+    () => (data.eveningReflections || []).find(r => r.date === todayDate),
+    [data.eveningReflections, todayDate]
+  );
+  const todaySuccess = todayReflection?.content || '';
 
-  // Synchronize input with saved value if editing
-  useEffect(() => {
-    if (!isSaved) {
-      setSuccessInput(todaySuccess);
-    }
-  }, [isSaved, todaySuccess]);
+  const [successInput, setSuccessInput] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const isSaved = !!todaySuccess && !isEditing;
 
   const handleSaveSuccess = () => {
-    if (successInput.trim()) {
-      window.localStorage.setItem('skopos_success_' + todayDate, successInput.trim());
-      window.localStorage.setItem('skopos_success_saved_' + todayDate, 'true');
-      setTodaySuccess(successInput.trim());
-      setIsSaved(true);
-      setSuccessUpdateTicket(prev => prev + 1);
-    }
+    const value = successInput.trim();
+    if (!value) return;
+    const others = (data.eveningReflections || []).filter(r => r.date !== todayDate);
+    updateData({
+      eveningReflections: [
+        ...others,
+        { date: todayDate, content: value, createdAt: new Date().toISOString() },
+      ],
+    });
+    setIsEditing(false);
+    setSuccessInput('');
   };
 
   const handleEditSuccess = () => {
-    setIsSaved(false);
+    setSuccessInput(todaySuccess);
+    setIsEditing(true);
   };
 
   // Get recent 7 days (including today) to display their badge statuses
@@ -87,8 +86,8 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       const d = new Date(today);
       d.setDate(today.getDate() - i);
       const dateStr = d.toISOString().split('T')[0];
-      const success = window.localStorage.getItem('skopos_success_' + dateStr) || '';
-      
+      const success = (data.eveningReflections || []).find(r => r.date === dateStr)?.content || '';
+
       const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '');
       // Capitalize first letter of day name
       const dayNameCap = dayName.charAt(0).toUpperCase() + dayName.slice(1);
@@ -102,7 +101,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       });
     }
     return list;
-  }, [todayDate, successUpdateTicket]);
+  }, [todayDate, data.eveningReflections]);
 
   const recentRitualDays = useMemo(() => {
     const list = [];
