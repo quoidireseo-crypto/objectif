@@ -92,7 +92,7 @@ export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
             <SkoposLogo className="text-[#6EE7B7] shrink-0" size={28} />
             SKOPOS
           </h1>
-          <p className="text-xs text-emerald-300 mt-2 font-serif italic tracking-wide">chaque jour son nouveau départ</p>
+          <p className="text-xs text-emerald-300 mt-2 font-serif italic tracking-wide">garder en vue ce qui compte</p>
         </div>
 
         <nav className="flex-1 py-6 px-4 space-y-2 font-sans">
