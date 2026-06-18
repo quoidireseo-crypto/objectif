@@ -1,9 +1,10 @@
 import { useMemo, useState, useEffect } from 'react';
 import { AppData, ViewType } from '../types';
-import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award, Pencil } from 'lucide-react';
+import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award, Pencil, Repeat, Circle } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
 import { GoalDomainChart } from '../components/GoalDomainChart';
 import { useStreak } from '../hooks/useStreak';
+import { useHabits } from '../hooks/useHabits';
 import { GraphView } from './GraphView';
 import { OrphansPanel } from '../components/OrphansPanel';
 
@@ -46,6 +47,8 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
   const completedToday = todayTasks.filter(t => t.isCompleted).length;
   const { currentStreak } = useStreak(data.tasks);
+  const { todaysHabits, isCompletedOn, toggleCompletion } = useHabits(data, updateData);
+  const completedHabitsToday = todaysHabits.filter(h => isCompletedOn(h.id, todayDate)).length;
 
   const [weeklyChallenge, setWeeklyChallenge] = useState<{ text: string, date: string } | null>(null);
 
@@ -295,6 +298,51 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </div>
         </div>
       </div>
+
+      {/* Habitudes du jour */}
+      {todaysHabits.length > 0 && (
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
+                <Repeat className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Habitudes du jour</h3>
+                <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-0.5">
+                  {completedHabitsToday} / {todaysHabits.length} accomplie{todaysHabits.length > 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => onChangeView('habits')}
+              className="text-sm text-emerald-700 dark:text-emerald-400 font-sans uppercase tracking-widest hover:text-emerald-800 dark:hover:text-emerald-300 transition shrink-0"
+            >
+              Toutes &rarr;
+            </button>
+          </div>
+
+          <div className="space-y-2.5">
+            {todaysHabits.map(habit => {
+              const done = isCompletedOn(habit.id, todayDate);
+              return (
+                <button
+                  key={habit.id}
+                  onClick={() => toggleCompletion(habit.id, todayDate)}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-stone-50/70 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all text-left"
+                >
+                  <span className={`shrink-0 transition-colors ${done ? 'text-emerald-600 dark:text-emerald-400' : 'text-stone-300 dark:text-stone-600'}`}>
+                    {done ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
+                  </span>
+                  <span className={`font-sans text-sm font-bold ${done ? 'text-stone-400 dark:text-stone-500 line-through' : 'text-stone-700 dark:text-stone-200'}`}>
+                    {habit.title}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Rituels du matin */}
       <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm mb-8 animate-in fade-in slide-in-from-bottom-4 duration-550">
