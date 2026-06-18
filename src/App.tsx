@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useStorage } from './hooks/useStorage';
 import { useMorningRitual } from './hooks/useMorningRitual';
 import { useTheme } from './hooks/useTheme';
+import { useAuth } from './hooks/useAuth';
 import { ViewType, AppData } from './types';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './views/DashboardView';
@@ -18,12 +19,14 @@ import { SkoposLogo } from './components/SkoposLogo';
 import { LandingView } from './views/LandingView';
 import { GraphView } from './views/GraphView';
 import { MorningRitualScreen } from './components/MorningRitualScreen';
+import { WelcomeBackScreen } from './components/WelcomeBackScreen';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const { data, updateData, shouldRemindExport, dismissExportReminder } = useStorage();
   const { shouldShowRitual, completeRitual, skipRitual } = useMorningRitual(data, updateData);
   const { mode: themeMode, setThemeMode } = useTheme();
+  const { hasPassword, isUnlocked, setPassword, removePassword, unlock, logout } = useAuth();
 
   const [userProfile, setUserProfile] = useState<{ name: string; ageGroup?: string; focusArea?: string } | null>(() => {
     const raw = window.localStorage.getItem('skopos_user_profile');
@@ -89,6 +92,10 @@ export default function App() {
             onUpdateProfile={handleUpdateProfile}
             themeMode={themeMode}
             onChangeThemeMode={setThemeMode}
+            hasPassword={hasPassword}
+            onSetPassword={setPassword}
+            onRemovePassword={removePassword}
+            onLogout={logout}
           />
         );
       default:
@@ -100,9 +107,13 @@ export default function App() {
     return <LandingView onComplete={handleUpdateProfile} />;
   }
 
+  if (!isUnlocked) {
+    return <WelcomeBackScreen name={userProfile.name} hasPassword={hasPassword} onUnlock={unlock} />;
+  }
+
   return (
     <div className="flex min-h-screen bg-[#F5F5F0] dark:bg-stone-950 font-serif text-stone-800 dark:text-stone-200 selection:bg-emerald-200 selection:text-emerald-900">
-      <Sidebar currentView={currentView} onChangeView={setCurrentView} />
+      <Sidebar currentView={currentView} onChangeView={setCurrentView} onLogout={logout} />
 
       <div className="flex-1 flex flex-col h-[100dvh] md:ml-64 relative overflow-hidden">
         {/* Mobile Top Header */}

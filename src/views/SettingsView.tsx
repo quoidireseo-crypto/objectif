@@ -1,7 +1,7 @@
 import { useRef, useState, ChangeEvent, useEffect } from 'react';
 import { AppData } from '../types';
 import { ThemeMode } from '../hooks/useTheme';
-import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw, Smartphone, Info, Sun, Moon, Clock } from 'lucide-react';
+import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw, Smartphone, Info, Sun, Moon, Clock, Lock, LogOut, KeyRound } from 'lucide-react';
 
 interface SettingsProps {
   data: AppData;
@@ -10,11 +10,42 @@ interface SettingsProps {
   onUpdateProfile: (profile: { name: string; ageGroup?: string; focusArea?: string } | null) => void;
   themeMode: ThemeMode;
   onChangeThemeMode: (mode: ThemeMode) => void;
+  hasPassword: boolean;
+  onSetPassword: (password: string) => Promise<void>;
+  onRemovePassword: (password: string) => Promise<boolean>;
+  onLogout: () => void;
 }
 
-export function SettingsView({ data, onImportData, userProfile, onUpdateProfile, themeMode, onChangeThemeMode }: SettingsProps) {
+export function SettingsView({ data, onImportData, userProfile, onUpdateProfile, themeMode, onChangeThemeMode, hasPassword, onSetPassword, onRemovePassword, onLogout }: SettingsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Verrouillage par mot de passe (local)
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [currentPw, setCurrentPw] = useState('');
+  const [pwBusy, setPwBusy] = useState(false);
+  const [pwMsg, setPwMsg] = useState<'idle' | 'set' | 'removed' | 'mismatch' | 'tooShort' | 'wrong'>('idle');
+
+  const handleSetPassword = async () => {
+    if (newPw.trim().length < 4) { setPwMsg('tooShort'); return; }
+    if (newPw !== confirmPw) { setPwMsg('mismatch'); return; }
+    setPwBusy(true);
+    await onSetPassword(newPw);
+    setPwBusy(false);
+    setNewPw('');
+    setConfirmPw('');
+    setPwMsg('set');
+  };
+
+  const handleRemovePassword = async () => {
+    setPwBusy(true);
+    const ok = await onRemovePassword(currentPw);
+    setPwBusy(false);
+    if (!ok) { setPwMsg('wrong'); return; }
+    setCurrentPw('');
+    setPwMsg('removed');
+  };
 
   const [profileName, setProfileName] = useState(userProfile?.name || '');
   const [profileAgeGroup, setProfileAgeGroup] = useState(userProfile?.ageGroup || '');
@@ -301,6 +332,122 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile,
                 Réinitialiser le profil
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* SECURITY / ACCESS SECTION */}
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm">
+          <h3 className="text-lg font-bold font-sans uppercase tracking-widest text-stone-800 dark:text-stone-100 mb-2 flex items-center gap-2">
+            <Lock className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
+            Sécurité & accès
+          </h3>
+          <p className="text-stone-500 dark:text-stone-400 leading-relaxed mb-6 font-light">
+            Tu peux protéger l'ouverture de ton espace par un mot de passe. C'est optionnel et cela reste sur cet appareil — pratique pour éviter qu'un proche n'ouvre l'app, mais ce n'est pas une protection infaillible.
+          </p>
+
+          {!hasPassword ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 dark:text-stone-500 block">
+                    Mot de passe
+                  </label>
+                  <input
+                    type="password"
+                    value={newPw}
+                    onChange={(e) => { setNewPw(e.target.value); setPwMsg('idle'); }}
+                    placeholder="Au moins 4 caractères"
+                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 dark:text-stone-100 font-sans text-sm transition"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 dark:text-stone-500 block">
+                    Confirmer
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPw}
+                    onChange={(e) => { setConfirmPw(e.target.value); setPwMsg('idle'); }}
+                    placeholder="Retape le mot de passe"
+                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 dark:text-stone-100 font-sans text-sm transition"
+                  />
+                </div>
+              </div>
+              <button
+                onClick={handleSetPassword}
+                disabled={pwBusy || !newPw.trim() || !confirmPw.trim()}
+                className="bg-emerald-700 text-white flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl hover:bg-emerald-800 transition-all font-sans font-bold uppercase tracking-widest text-xs w-full sm:w-auto disabled:opacity-50 cursor-pointer"
+              >
+                <KeyRound className="w-4 h-4" />
+                Activer le verrouillage
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 bg-emerald-50/70 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-xl text-[#047857] dark:text-emerald-400 font-sans text-xs uppercase tracking-widest font-bold w-max">
+                <CheckCircle2 className="w-4 h-4" />
+                Verrouillage activé
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 dark:text-stone-500">Désactiver le verrouillage</p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="password"
+                    value={currentPw}
+                    onChange={(e) => { setCurrentPw(e.target.value); setPwMsg('idle'); }}
+                    placeholder="Mot de passe actuel"
+                    className="flex-1 px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 dark:text-stone-100 font-sans text-sm transition"
+                  />
+                  <button
+                    onClick={handleRemovePassword}
+                    disabled={pwBusy || !currentPw.trim()}
+                    className="bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 px-5 py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-50 dark:hover:bg-stone-700 transition disabled:opacity-50 shrink-0 cursor-pointer"
+                  >
+                    Désactiver
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {pwMsg === 'set' && (
+            <p className="mt-4 flex items-center gap-2 text-sm font-sans font-bold text-emerald-700 dark:text-emerald-400">
+              <CheckCircle2 className="w-4 h-4" /> Mot de passe enregistré. Ton espace est protégé.
+            </p>
+          )}
+          {pwMsg === 'removed' && (
+            <p className="mt-4 flex items-center gap-2 text-sm font-sans font-bold text-stone-600 dark:text-stone-300">
+              <CheckCircle2 className="w-4 h-4" /> Verrouillage désactivé.
+            </p>
+          )}
+          {pwMsg === 'mismatch' && (
+            <p className="mt-4 flex items-center gap-2 text-sm font-sans font-bold text-rose-600 dark:text-rose-400">
+              <AlertCircle className="w-4 h-4" /> Les deux mots de passe ne correspondent pas.
+            </p>
+          )}
+          {pwMsg === 'tooShort' && (
+            <p className="mt-4 flex items-center gap-2 text-sm font-sans font-bold text-rose-600 dark:text-rose-400">
+              <AlertCircle className="w-4 h-4" /> Choisis au moins 4 caractères.
+            </p>
+          )}
+          {pwMsg === 'wrong' && (
+            <p className="mt-4 flex items-center gap-2 text-sm font-sans font-bold text-rose-600 dark:text-rose-400">
+              <AlertCircle className="w-4 h-4" /> Mot de passe actuel incorrect.
+            </p>
+          )}
+
+          <div className="mt-8 pt-6 border-t border-stone-100 dark:border-stone-800">
+            <button
+              onClick={onLogout}
+              className="flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-sans font-bold uppercase tracking-widest text-xs hover:bg-stone-100 dark:hover:bg-stone-700 transition w-full sm:w-auto cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              Se déconnecter
+            </button>
+            <p className="text-xs text-stone-400 dark:text-stone-500 font-sans mt-3">
+              Tu reviendras à l'écran d'accueil. {hasPassword ? 'Ton mot de passe sera redemandé.' : 'Tu pourras reprendre en un clic.'}
+            </p>
           </div>
         </div>
 
