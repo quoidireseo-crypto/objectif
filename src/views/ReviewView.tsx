@@ -3,6 +3,7 @@ import { AppData, OrphanReason } from '../types';
 import { Activity, CheckCircle2, CalendarDays, BookOpen, Quote, BarChart as BarChartIcon } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useOrphans } from '../hooks/useOrphans';
+import { useGoalHistory } from '../hooks/useGoalHistory';
 
 interface ReviewProps {
   data: AppData;
@@ -16,9 +17,24 @@ const REASON_TEXTS: Record<OrphanReason, string> = {
   'goal-inactive': 'En sommeil',
 };
 
+const DOT_COLORS: Record<string, string> = {
+  'created': 'bg-emerald-400',
+  'achieved': 'bg-emerald-600',
+  'reactivated': 'bg-emerald-500',
+  'paused': 'bg-stone-400',
+  'title-changed': 'bg-blue-400',
+  'why-changed': 'bg-indigo-400',
+  'milestone-added': 'bg-amber-400',
+  'milestone-completed': 'bg-amber-500',
+  'deadline-changed': 'bg-orange-400',
+  'domain-changed': 'bg-stone-400',
+  'status-changed': 'bg-stone-500',
+};
+
 export function ReviewView({ data }: ReviewProps) {
   const [period, setPeriod] = useState<'weekly' | 'monthly'>('weekly');
   const orphans = useOrphans(data);
+  const { getHistoryForGoal } = useGoalHistory(data, () => {});
 
   const { stats, chartData } = useMemo(() => {
     const days = period === 'weekly' ? 7 : 30;
@@ -66,6 +82,14 @@ export function ReviewView({ data }: ReviewProps) {
     };
   }, [data, period]);
 
+  // Compute goals with history
+  const goalsWithHistory = useMemo(() => {
+    return data.goals.filter(goal => {
+      const history = getHistoryForGoal(goal.id);
+      return history.length > 0;
+    });
+  }, [data.goals, getHistoryForGoal]);
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-stone-200 pb-6">
@@ -100,7 +124,7 @@ export function ReviewView({ data }: ReviewProps) {
             <span className="font-sans font-bold uppercase tracking-widest text-[10px]">Tâches Complétées</span>
           </div>
           <div>
-            <span className="text-4xl font-light text-emerald-900 block">{stats.completedTasks}</span>
+            <span className="text-4xl font-light text-emerald-950 block">{stats.completedTasks}</span>
             <span className="text-emerald-700 text-sm italic mt-1 block">sur {stats.totalTasks} au total</span>
           </div>
         </div>
@@ -111,7 +135,7 @@ export function ReviewView({ data }: ReviewProps) {
             <span className="font-sans font-bold uppercase tracking-widest text-[10px]">Taux de Régularité</span>
           </div>
           <div>
-            <span className="text-4xl font-light text-amber-900 block">{stats.completionRate}%</span>
+            <span className="text-4xl font-light text-amber-950 block">{stats.completionRate}%</span>
             <span className="text-amber-700 text-sm italic mt-1 block">des engagements tenus</span>
           </div>
         </div>
@@ -122,12 +146,13 @@ export function ReviewView({ data }: ReviewProps) {
             <span className="font-sans font-bold uppercase tracking-widest text-[10px]">Jours Documentés</span>
           </div>
           <div>
-            <span className="text-4xl font-light text-indigo-900 block">{stats.journalEntries.length}</span>
+            <span className="text-4xl font-light text-indigo-950 block">{stats.journalEntries.length}</span>
             <span className="text-indigo-700 text-sm italic mt-1 block">entrées de journal</span>
           </div>
         </div>
       </div>
 
+      {/* Progression des objectifs */}
       <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm mb-8">
         <div className="flex items-center gap-3 mb-8 border-b border-stone-100 pb-4">
           <BarChartIcon className="w-6 h-6 text-stone-400" />
@@ -150,6 +175,78 @@ export function ReviewView({ data }: ReviewProps) {
         </div>
       </div>
 
+      {/* Cheminement de tes objectifs */}
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm mb-8">
+        <div>
+          <h3 className="text-xl font-light text-stone-900">Cheminement de tes objectifs</h3>
+          <p className="text-xs font-sans uppercase tracking-widest text-stone-400 mt-1">
+            La trace de ton évolution.
+          </p>
+        </div>
+
+        {goalsWithHistory.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="italic text-stone-400 text-sm">
+              Ton cheminement s'écrira ici au fil de tes modifications.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4 mt-6">
+            {goalsWithHistory.map(goal => {
+              const entries = getHistoryForGoal(goal.id);
+              const displayedPastilles = entries.slice(0, 5);
+              const extraCount = entries.length - 5;
+              const firstEntry = entries[entries.length - 1];
+              const achievedEntry = entries.find(e => e.changeType === 'achieved');
+
+              return (
+                <div
+                  key={goal.id}
+                  className="p-5 bg-stone-50 rounded-2xl border border-stone-100 hover:border-stone-200 transition"
+                >
+                  <h4 className="font-serif font-light text-lg text-stone-800">
+                    {goal.title}{' '}
+                    <span className="text-xs text-stone-400 font-sans">
+                      ({entries.length} événement{entries.length > 1 ? 's' : ''})
+                    </span>
+                  </h4>
+
+                  <div className="flex items-center gap-2 mt-3 overflow-x-auto hidden-scrollbar pb-1">
+                    {displayedPastilles.map(entry => {
+                      const colorClass = DOT_COLORS[entry.changeType] || 'bg-stone-400';
+                      return (
+                        <div
+                          key={entry.id}
+                          className={`w-3 h-3 rounded-full shrink-0 ${colorClass}`}
+                          title={`${entry.description} — ${entry.date}`}
+                        />
+                      );
+                    })}
+                    {extraCount > 0 && (
+                      <span className="text-[10px] text-stone-400 font-sans italic">
+                        +{extraCount} autre{extraCount > 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-1 mt-3">
+                    <p className="text-xs text-stone-400 font-sans">
+                      Commencé le {firstEntry.date}
+                    </p>
+                    {achievedEntry && (
+                      <p className="text-xs text-emerald-600 font-sans font-bold flex items-center gap-1">
+                        <span>✦</span> Atteint le {achievedEntry.date}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Rétrospective */}
       <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm">
         <div className="flex items-center gap-3 mb-8 border-b border-stone-100 pb-4">
           <CalendarDays className="w-6 h-6 text-stone-400" />

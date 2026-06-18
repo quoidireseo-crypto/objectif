@@ -10,7 +10,8 @@ const defaultData: AppData = {
   milestones: [],
   tasks: [],
   journal: [],
-  morningRituals: []
+  morningRituals: [],
+  goalsHistory: []
 };
 
 export function useStorage() {
@@ -25,6 +26,7 @@ export function useStorage() {
         if (!parsed.tasks) parsed.tasks = [];
         if (!parsed.journal) parsed.journal = [];
         if (!parsed.morningRituals) parsed.morningRituals = [];
+        if (!parsed.goalsHistory) parsed.goalsHistory = [];
         
         let hasChanges = false;
         

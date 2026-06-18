@@ -44,6 +44,7 @@ export interface AppData {
   tasks: Task[];
   journal: JournalEntry[];
   morningRituals: MorningRitual[];
+  goalsHistory: GoalHistoryEntry[];
 }
 
 export type MorningRitualStatus = 'pending' | 'completed' | 'skipped';
@@ -73,4 +74,28 @@ export interface OrphanItem {
   daysSinceLastActivity: number;
   linkedGoalTitle?: string;
 }
+
+export type GoalChangeType =
+  | 'created'
+  | 'title-changed'
+  | 'why-changed'
+  | 'status-changed'
+  | 'milestone-added'
+  | 'milestone-completed'
+  | 'deadline-changed'
+  | 'domain-changed'
+  | 'reactivated'
+  | 'achieved'
+  | 'paused';
+
+export interface GoalHistoryEntry {
+  id: string;
+  goalId: string;
+  changeType: GoalChangeType;
+  date: string; // format YYYY-MM-DD HH:MM
+  previousValue?: string;
+  newValue?: string;
+  description: string; // phrase lisible générée automatiquement
+}
+
 

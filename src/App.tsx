@@ -50,6 +50,7 @@ export default function App() {
       tasks: importedData.tasks || [],
       journal: importedData.journal || [],
       morningRituals: importedData.morningRituals || [],
+      goalsHistory: importedData.goalsHistory || [],
     };
     updateData(sanitizedData);
   };

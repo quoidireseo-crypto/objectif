@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { AppData, Goal, LifeDomain, Milestone, Task } from '../types';
 import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle } from 'lucide-react';
+import { useGoalHistory } from '../hooks/useGoalHistory';
+import { GoalHistoryTimeline } from '../components/GoalHistoryTimeline';
 
 interface GoalsProps {
   data: AppData;
@@ -47,6 +49,7 @@ const DEADLINE_OPTIONS = [
 ];
 
 export function GoalsView({ data, updateData }: GoalsProps) {
+  const { addHistoryEntry } = useGoalHistory(data, updateData);
   const [isAdding, setIsAdding] = useState(false);
   const [selectedVerb, setSelectedVerb] = useState(VERBS[0].id);
   const [goalComplement, setGoalComplement] = useState('');
@@ -101,6 +104,8 @@ export function GoalsView({ data, updateData }: GoalsProps) {
       goals: [goal, ...data.goals],
       tasks: newTasks
     });
+
+    addHistoryEntry(goal.id, 'created');
     
     setIsAdding(false);
     setFirstAction('');
@@ -110,27 +115,45 @@ export function GoalsView({ data, updateData }: GoalsProps) {
   };
 
   const deleteGoal = (id: string) => {
-    if (confirm("Supprimer cet objectif ?")) {
+    if (window.confirm("Supprimer cet objectif ?")) {
       updateData({ 
         goals: data.goals.filter(g => g.id !== id),
         tasks: data.tasks.map(t => t.goalId === id ? { ...t, goalId: undefined, milestoneId: undefined } : t),
-        milestones: data.milestones.filter(m => m.goalId !== id)
+        milestones: data.milestones.filter(m => m.goalId !== id),
+        goalsHistory: (data.goalsHistory || []).filter(h => h.goalId !== id)
       });
     }
   };
 
-  const markAsAchieved = (id: string) => {
-    const goal = data.goals.find(g => g.id === id);
+  const handleStatusChange = (goalId: string, newStatus: Goal['status']) => {
+    const goal = data.goals.find(g => g.id === goalId);
     if (!goal) return;
+    const oldStatus = goal.status;
 
-    setCelebrationMessage({ title: goal.title });
-    setTimeout(() => {
-      setCelebrationMessage(null);
-    }, 3000);
+    if (newStatus === 'Atteint') {
+      setCelebrationMessage({ title: goal.title });
+      setTimeout(() => {
+        setCelebrationMessage(null);
+      }, 3000);
+    }
 
     updateData({
-      goals: data.goals.map(g => g.id === id ? { ...g, status: 'Atteint' } : g)
+      goals: data.goals.map(g => g.id === goalId ? { ...g, status: newStatus } : g)
     });
+
+    if (newStatus === 'Atteint') {
+      addHistoryEntry(goalId, 'achieved', oldStatus, 'Atteint');
+    } else if (newStatus === 'En pause') {
+      addHistoryEntry(goalId, 'paused', oldStatus, 'En pause');
+    } else if (newStatus === 'En cours' && oldStatus === 'En pause') {
+      addHistoryEntry(goalId, 'reactivated', oldStatus, 'En cours');
+    } else {
+      addHistoryEntry(goalId, 'status-changed', oldStatus, newStatus);
+    }
+  };
+
+  const markAsAchieved = (id: string) => {
+    handleStatusChange(id, 'Atteint');
   };
 
   const addMilestone = (goalId: string) => {
@@ -153,12 +176,33 @@ export function GoalsView({ data, updateData }: GoalsProps) {
     });
 
     setNewMilestoneTitles(prev => ({ ...prev, [goalId]: '' }));
+
+    addHistoryEntry(
+      goalId,
+      'milestone-added',
+      undefined,
+      newMilestone.title
+    );
   };
 
   const toggleMilestone = (id: string) => {
+    const milestone = data.milestones.find(m => m.id === id);
+    if (!milestone) return;
+
+    const willBeCompleted = !milestone.isCompleted;
+
     updateData({
-      milestones: data.milestones.map(m => m.id === id ? { ...m, isCompleted: !m.isCompleted } : m)
+      milestones: data.milestones.map(m => m.id === id ? { ...m, isCompleted: willBeCompleted } : m)
     });
+
+    if (willBeCompleted) {
+      addHistoryEntry(
+        milestone.goalId,
+        'milestone-completed',
+        undefined,
+        milestone.title
+      );
+    }
   };
 
   const deleteMilestone = (id: string) => {
@@ -519,8 +563,60 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between border-t border-stone-100 pt-5">
-                  {getDeadlineBadge(goal)}
+                <GoalHistoryTimeline
+                  goalId={goal.id}
+                  data={data}
+                  updateData={updateData}
+                  onClose={() => {}}
+                />
+
+                <div className="mt-5 flex items-center justify-between border-t border-stone-100/50 pt-5">
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={goal.status}
+                      onChange={(e) => handleStatusChange(goal.id, e.target.value as Goal['status'])}
+                      className={`text-xs font-sans uppercase font-bold tracking-wider px-3 py-1.5 rounded-full border cursor-pointer outline-none transition ${
+                        goal.status === 'En cours'
+                          ? 'text-amber-850 bg-amber-50 border-amber-100 hover:bg-amber-100/50'
+                          : goal.status === 'En pause'
+                          ? 'text-stone-550 bg-stone-100 border-stone-200 hover:bg-stone-200/50'
+                          : 'text-emerald-850 bg-emerald-50 border-emerald-100 hover:bg-emerald-100/50'
+                      }`}
+                    >
+                      <option value="En cours">En cours</option>
+                      <option value="En pause">En pause</option>
+                      <option value="Atteint">Atteint</option>
+                    </select>
+
+                    {goal.status === 'En cours' && goal.deadline && (() => {
+                      const today = new Date();
+                      today.setHours(0,0,0,0);
+                      const deadlineDate = new Date(goal.deadline);
+                      deadlineDate.setHours(0,0,0,0);
+                      const diffTime = deadlineDate.getTime() - today.getTime();
+                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                      
+                      if (diffDays < 0) {
+                        return (
+                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider bg-red-50 text-red-800 border border-red-100 px-2.5 py-1.5 rounded-full">
+                            Échéance dépassée
+                          </span>
+                        );
+                      } else if (diffDays === 0) {
+                        return (
+                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-100 px-2.5 py-1.5 rounded-full">
+                            Aujourd’hui
+                          </span>
+                        );
+                      } else {
+                        return (
+                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider bg-blue-50 text-blue-800 border border-blue-100 px-2.5 py-1.5 rounded-full">
+                            J-{diffDays}
+                          </span>
+                        );
+                      }
+                    })()}
+                  </div>
                   <span className="text-[10px] text-stone-400 font-sans uppercase">
                     Créé le {new Intl.DateTimeFormat('fr-FR').format(new Date(goal.createdAt))}
                   </span>
@@ -550,9 +646,16 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                     </button>
                   </div>
                   <h4 className="text-lg font-medium text-stone-800 line-through mb-2">{goal.title}</h4>
-                  <div className="mt-auto pt-3 flex items-center gap-2 text-xs text-emerald-700 font-sans uppercase font-bold tracking-wider">
-                    <CheckCircle className="w-3.5 h-3.5" />
-                    Atteint
+                  <div className="mt-auto pt-3 border-t border-stone-100/50 flex items-center justify-between gap-2">
+                    <select
+                      value={goal.status}
+                      onChange={(e) => handleStatusChange(goal.id, e.target.value as Goal['status'])}
+                      className="text-xs font-sans uppercase font-bold tracking-wider px-3 py-1.5 rounded-full border cursor-pointer outline-none transition text-emerald-850 bg-emerald-50 border-emerald-100 hover:bg-emerald-100/50"
+                    >
+                      <option value="En cours">En cours</option>
+                      <option value="En pause">En pause</option>
+                      <option value="Atteint">Atteint</option>
+                    </select>
                   </div>
                 </div>
               );
