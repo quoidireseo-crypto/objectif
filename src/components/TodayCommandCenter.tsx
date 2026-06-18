@@ -9,6 +9,7 @@ import {
   Star,
   Sunrise,
   ArrowRight,
+  Target,
   X,
 } from 'lucide-react';
 
@@ -38,10 +39,16 @@ export function TodayCommandCenter({ data, updateData, onChangeView }: TodayComm
     [data.tasks, todayDate]
   );
 
-  // Boîte de réception : notes capturées sans date, à trier.
+  // Boîte de réception : notes capturées sans date ni objectif, à trier.
   const inboxTasks = useMemo(
-    () => data.tasks.filter(t => !t.date && !t.isCompleted),
+    () => data.tasks.filter(t => !t.date && !t.goalId && !t.isCompleted),
     [data.tasks]
+  );
+
+  // Objectifs en cours, cibles possibles d'un tri.
+  const inProgressGoals = useMemo(
+    () => data.goals.filter(g => g.status === 'En cours'),
+    [data.goals]
   );
 
   const remainingToday = todayTasks.filter(t => !t.isCompleted).length;
@@ -61,6 +68,15 @@ export function TodayCommandCenter({ data, updateData, onChangeView }: TodayComm
 
   const removeTask = (id: string) => {
     updateData({ tasks: data.tasks.filter(t => t.id !== id) });
+  };
+
+  // Rattacher une note à un objectif : elle quitte l'inbox et devient une
+  // action « en réserve » de cet objectif (sans date tant qu'elle n'est pas planifiée).
+  const attachToGoal = (id: string, goalId: string) => {
+    if (!goalId) return;
+    updateData({
+      tasks: data.tasks.map(t => (t.id === id ? { ...t, goalId } : t)),
+    });
   };
 
   const addNote = () => {
@@ -230,12 +246,30 @@ export function TodayCommandCenter({ data, updateData, onChangeView }: TodayComm
             {inboxTasks.map(task => (
               <div
                 key={task.id}
-                className="flex items-center gap-3 p-3 rounded-xl bg-stone-50/70 dark:bg-stone-800 border border-dashed border-stone-200 dark:border-stone-700"
+                className="flex items-center gap-2 flex-wrap p-3 rounded-xl bg-stone-50/70 dark:bg-stone-800 border border-dashed border-stone-200 dark:border-stone-700"
               >
                 <Inbox className="w-4 h-4 text-stone-300 dark:text-stone-600 shrink-0" />
-                <span className="flex-1 font-sans text-sm text-stone-700 dark:text-stone-200 truncate">
+                <span className="flex-1 min-w-[8rem] font-sans text-sm text-stone-700 dark:text-stone-200 truncate">
                   {task.title}
                 </span>
+
+                {inProgressGoals.length > 0 && (
+                  <div className="relative shrink-0">
+                    <Target className="w-3 h-3 text-stone-400 dark:text-stone-500 absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <select
+                      value=""
+                      onChange={(e) => attachToGoal(task.id, e.target.value)}
+                      className="appearance-none pl-7 pr-3 py-1.5 rounded-lg bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-stone-600 dark:text-stone-300 text-[11px] font-sans font-bold cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-600 transition outline-none focus:ring-1 focus:ring-emerald-500"
+                      title="Rattacher à un objectif"
+                    >
+                      <option value="">Rattacher…</option>
+                      {inProgressGoals.map(g => (
+                        <option key={g.id} value={g.id}>{g.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <button
                   onClick={() => moveToToday(task.id)}
                   className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-emerald-700 dark:text-emerald-400 text-[11px] font-sans font-bold hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition"

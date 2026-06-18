@@ -69,6 +69,25 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
   const { todaysHabits, isCompletedOn, toggleCompletion } = useHabits(data, updateData);
   const completedHabitsToday = todaysHabits.filter(h => isCompletedOn(h.id, todayDate)).length;
 
+  // Prochaine action concrète d'un objectif (logique GTD) : la première action
+  // non faite qui lui est reliée, en privilégiant celles déjà planifiées.
+  const getNextAction = (goalId: string) => {
+    const candidates = data.tasks.filter(t => t.goalId === goalId && !t.isCompleted);
+    candidates.sort((a, b) => {
+      if (a.date && b.date) return a.date.localeCompare(b.date);
+      if (a.date) return -1;
+      if (b.date) return 1;
+      return 0;
+    });
+    return candidates[0] || null;
+  };
+
+  const toggleTaskDone = (id: string) => {
+    updateData({
+      tasks: data.tasks.map(t => (t.id === id ? { ...t, isCompleted: !t.isCompleted } : t)),
+    });
+  };
+
   const [weeklyChallenge, setWeeklyChallenge] = useState<{ text: string, date: string } | null>(null);
 
   const todayReflection = useMemo(
@@ -635,13 +654,44 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </div>
 
           {activeGoals > 0 ? (
-            <div className="space-y-2 flex-1">
-              {inProgressGoals.slice(0, 3).map(goal => (
-                <div key={goal.id} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-stone-50/70 dark:bg-stone-800 border border-stone-100 dark:border-stone-700">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="font-sans text-sm text-stone-700 dark:text-stone-200 truncate">{goal.title}</span>
-                </div>
-              ))}
+            <div className="space-y-2.5 flex-1">
+              {inProgressGoals.slice(0, 3).map(goal => {
+                const next = getNextAction(goal.id);
+                return (
+                  <div key={goal.id} className="px-3 py-2.5 rounded-xl bg-stone-50/70 dark:bg-stone-800 border border-stone-100 dark:border-stone-700">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                      <span className="font-sans text-sm font-semibold text-stone-700 dark:text-stone-200 truncate">{goal.title}</span>
+                    </div>
+
+                    {next ? (
+                      <button
+                        onClick={() => toggleTaskDone(next.id)}
+                        className="mt-2 ml-4 w-[calc(100%-1rem)] flex items-center gap-2 text-left group"
+                        title="Marquer la prochaine action comme faite"
+                      >
+                        <Circle className="w-4 h-4 text-stone-300 dark:text-stone-600 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition shrink-0" />
+                        <span className="font-sans text-xs text-stone-500 dark:text-stone-400 truncate group-hover:text-stone-700 dark:group-hover:text-stone-200 transition">
+                          {next.title}
+                        </span>
+                        {next.date && (
+                          <span className="text-[10px] font-sans text-stone-400 dark:text-stone-500 shrink-0 ml-auto">
+                            {new Date(next.date + 'T00:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                          </span>
+                        )}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => onChangeView('tasks')}
+                        className="mt-2 ml-4 flex items-center gap-2 text-left text-xs font-sans text-amber-600 dark:text-amber-400 hover:underline"
+                      >
+                        <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                        Définir la prochaine action
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
               {activeGoals > 3 && (
                 <p className="text-xs text-stone-400 dark:text-stone-500 font-sans pl-1 pt-1">
                   + {activeGoals - 3} autre{activeGoals - 3 > 1 ? 's' : ''}
