@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 
 const REMINDER_MESSAGES = [
-  "Bonjour ! Une petite action vers ton cap t'attend aujourd'hui. 🧭",
-  "C'est l'heure de ton rendez-vous avec toi-même. Qu'est-ce que tu choisis ?",
+  "Bonjour ! Une petite action t'attend aujourd'hui. 🌱",
+  "C'est le moment de prendre un instant pour toi. Qu'est-ce que tu choisis ?",
   "Un pas, même petit, c'est déjà avancer. Qu'est-ce que tu fais aujourd'hui ?",
-  "Ta boussole t'attend. Jette un œil à tes objectifs du jour.",
-  "Rappel bienveillant : tu as des caps à honorer. Sans pression, juste un regard."
+  "Jette un œil à tes objectifs du jour, quand tu veux.",
+  "Petit rappel : tes objectifs t'attendent. Sans pression, juste un coup d'œil."
 ];
 
 export function useReminder() {
@@ -44,13 +44,13 @@ export function useReminder() {
       if ('Notification' in window && Notification.permission === 'granted') {
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.ready.then((registration) => {
-            registration.showNotification("Ton Cap", {
+            registration.showNotification("SKOPOS", {
               body: msg,
               vibrate: [200, 100, 200]
             } as any);
           });
         } else {
-          new Notification("Ton Cap", { body: msg });
+          new Notification("SKOPOS", { body: msg });
         }
       }
     };

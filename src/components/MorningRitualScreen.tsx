@@ -136,7 +136,7 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
         {step === 2 && (
           <div className="space-y-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="space-y-2">
-              <h2 className="text-xl md:text-2xl font-serif text-stone-800 dark:text-stone-200">Sur quel cap veux-tu avancer aujourd'hui ?</h2>
+              <h2 className="text-xl md:text-2xl font-serif text-stone-800 dark:text-stone-200">Sur quoi as-tu envie d'avancer aujourd'hui ?</h2>
               <p className="italic text-stone-400 dark:text-stone-500 font-serif font-light text-sm">
                 Optionnel. Sauter si aucun ne s'applique.
               </p>
@@ -144,7 +144,7 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
 
             {activeGoals.length === 0 ? (
               <div className="space-y-5">
-                <p className="text-stone-500 dark:text-stone-400 font-serif italic text-base">Tu n'as pas encore de cap défini.</p>
+                <p className="text-stone-500 dark:text-stone-400 font-serif italic text-base">Tu n'as pas encore d'objectif défini.</p>
                 <button
                   type="button"
                   onClick={() => setStep(3)}

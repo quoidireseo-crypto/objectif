@@ -277,7 +277,7 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile,
 
             <div className="space-y-1">
               <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 dark:text-stone-500 block">
-                Point d'ancrage principal
+                Ce qui compte le plus pour moi
               </label>
               <input
                 type="text"
@@ -406,9 +406,9 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile,
         </div>
 
         <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm">
-          <h3 className="text-lg font-bold font-sans uppercase tracking-widest text-stone-800 dark:text-stone-100 mb-2">Rappels Bienveillants</h3>
+          <h3 className="text-lg font-bold font-sans uppercase tracking-widest text-stone-800 dark:text-stone-100 mb-2">Mes rappels</h3>
           <p className="text-stone-500 dark:text-stone-400 leading-relaxed mb-6 font-light">
-            Chaque jour à l'heure choisie, tu recevras un petit mot pour t'inviter à consulter ton cap du jour.
+            Chaque jour à l'heure choisie, tu recevras un petit mot pour t'inviter à regarder ta journée.
           </p>
 
           <div className="flex flex-col gap-6">

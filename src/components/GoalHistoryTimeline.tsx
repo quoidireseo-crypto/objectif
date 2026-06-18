@@ -48,7 +48,7 @@ export function GoalHistoryTimeline({ goalId, data, updateData, onClose }: GoalH
         <div className="flex items-center">
           <History className="w-4 h-4 text-stone-400 dark:text-stone-500" />
           <span className="font-sans text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 ml-2">
-            Trace du cheminement
+            Au fil du temps
           </span>
           <span className="bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 text-[10px] font-sans px-2 py-0.5 rounded-full ml-2">
             {entries.length} modification{entries.length > 1 ? 's' : ''}

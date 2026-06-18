@@ -211,19 +211,19 @@ export function ReviewView({ data, updateData }: ReviewProps) {
         </div>
       </div>
 
-      {/* Cheminement de tes objectifs */}
+      {/* Tes objectifs au fil du temps */}
       <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm mb-8">
         <div>
-          <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Cheminement de tes objectifs</h3>
+          <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Tes objectifs au fil du temps</h3>
           <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-1">
-            La trace de ton évolution.
+            Comment ils ont évolué.
           </p>
         </div>
 
         {goalsWithHistory.length === 0 ? (
           <div className="text-center py-8">
             <p className="italic text-stone-400 dark:text-stone-500 text-sm">
-              Ton cheminement s'écrira ici au fil de tes modifications.
+              L'évolution de tes objectifs apparaîtra ici au fil du temps.
             </p>
           </div>
         ) : (
@@ -354,17 +354,17 @@ export function ReviewView({ data, updateData }: ReviewProps) {
       <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm mt-8">
         {orphans.length === 0 ? (
           <>
-            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100 mb-6">Intentions en sommeil</h3>
+            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100 mb-6">À reprendre</h3>
             <div className="text-center py-8">
               <p className="italic text-stone-400 dark:text-stone-500 text-sm">
-                Aucune intention en sommeil. Tout est relié et actif.
+                Rien à reprendre pour l'instant. Tout est en mouvement.
               </p>
             </div>
           </>
         ) : (
           <>
             <h3 className="text-xl font-light text-stone-900 dark:text-stone-100 mb-6">
-              {orphans.length} intention(s) méritent ton attention
+              {orphans.length} élément(s) attendent peut-être un geste
             </h3>
             <div className="divide-y divide-stone-50 dark:divide-stone-800">
               {orphans.map(orphan => {

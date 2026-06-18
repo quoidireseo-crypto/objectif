@@ -296,7 +296,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
               Tu as atteint : "{celebrationMessage.title}"
             </p>
             <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6 font-light">
-              Ce cap est désormais derrière toi. <br/>
+              Tu peux en être fier(e) ! <br/>
               Qu'est-ce que tu choisis maintenant ?
             </p>
           </div>
@@ -316,7 +316,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
           className="bg-stone-800 dark:bg-emerald-700 w-full sm:w-auto justify-center hover:bg-stone-900 dark:hover:bg-emerald-800 text-white px-5 py-3 rounded-xl font-sans uppercase tracking-widest text-xs flex items-center gap-2 transition shadow-sm"
         >
           <Plus className="w-4 h-4" />
-          Nouveau cap
+          Nouvel objectif
         </button>
       </header>
 
@@ -467,7 +467,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
             onClick={() => setIsAdding(true)}
             className="text-emerald-800 dark:text-emerald-400 font-sans text-xs uppercase tracking-widest font-bold hover:underline"
           >
-            Fixer mon premier cap
+            Choisir mon premier objectif
           </button>
         </div>
       ) : (
@@ -635,7 +635,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
         <div className="mt-16 pt-10 border-t border-stone-200 dark:border-stone-800">
           <h3 className="text-lg font-light text-stone-500 dark:text-stone-400 mb-6 flex items-center gap-2">
             <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            Caps honorés
+            Objectifs atteints
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {achievedGoals.map(goal => {

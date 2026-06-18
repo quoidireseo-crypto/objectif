@@ -19,7 +19,7 @@ const BADGE_TEXTS: Record<OrphanReason, string> = {
 const GENTLE_MESSAGES: Record<OrphanReason, string> = {
   'goal-no-action': 'Cet objectif attend une première action.',
   'goal-no-milestone': "Il n'a pas encore été découpé en étapes.",
-  'task-no-goal': "Cette action n'est reliée à aucun cap.",
+  'task-no-goal': "Cette action n'est reliée à aucun objectif.",
   'milestone-abandoned': "Cette étape n'a pas eu de suite.",
   'goal-inactive': "Cet objectif n'a pas été touché depuis longtemps.",
 };

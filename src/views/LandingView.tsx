@@ -17,7 +17,7 @@ export function LandingView({ onComplete }: LandingViewProps) {
     { id: 'Sante', label: 'Santé & Bien-être', desc: 'Prendre soin de son corps, de son esprit et de son énergie.' },
     { id: 'Projet', label: 'Projets Personnels', desc: 'Concrétiser un rêve, une passion ou une nouvelle activité.' },
     { id: 'Relations', label: 'Relations & Famille', desc: 'Consolider les liens essentiels avec ses proches.' },
-    { id: 'Apprentissage', label: 'Nouveaux Apprentissages', desc: 'Nourrir sa curiosité d’esprit et acquérir de nouvelles postures.' },
+    { id: 'Apprentissage', label: 'Nouveaux Apprentissages', desc: 'Nourrir sa curiosité et apprendre de nouvelles choses.' },
   ];
 
   const handleNext = () => {
@@ -79,7 +79,7 @@ export function LandingView({ onComplete }: LandingViewProps) {
                 Donnez une direction à votre quotidien.
               </h2>
               <p className="text-stone-500 dark:text-stone-400 font-sans text-xs md:text-sm leading-relaxed max-w-md mx-auto">
-                Skopos est un outil bienveillant qui vous aide à transformer vos intentions en gestes concrets, jour après jour et à votre rythme.
+                Skopos vous aide à transformer ce qui compte pour vous en petits gestes concrets, jour après jour et à votre rythme.
               </p>
             </div>
 
@@ -138,7 +138,7 @@ export function LandingView({ onComplete }: LandingViewProps) {
                   <option value="Quarante">La quarantaine — Vivre pleinement</option>
                   <option value="Cinquante">La cinquantaine — Nouveaux horizons</option>
                   <option value="Soixante">La soixantaine — Un nouveau chapitre</option>
-                  <option value="SoixanteDix">La soixante-dizaine et plus — Sagesse & transmission</option>
+                  <option value="SoixanteDix">La soixante-dizaine et plus — Transmettre et profiter</option>
                   <option value="Autre">Autre – Évolution personnelle</option>
                 </select>
               </div>
@@ -166,7 +166,7 @@ export function LandingView({ onComplete }: LandingViewProps) {
                 Ravi de faire votre connaissance, {name}.
               </h2>
               <p className="text-stone-500 dark:text-stone-400 font-sans text-xs md:text-sm leading-relaxed max-w-sm mx-auto">
-                Quel est votre point d'ancrage prioritaire en ce moment ? Cela nous aidera à personnaliser votre tableau de bord.
+                Qu'est-ce qui compte le plus pour vous en ce moment ? Cela nous aidera à personnaliser votre tableau de bord.
               </p>
             </div>
 

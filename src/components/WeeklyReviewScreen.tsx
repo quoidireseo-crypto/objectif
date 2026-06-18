@@ -99,7 +99,7 @@ export function WeeklyReviewScreen({ onComplete, onClose }: WeeklyReviewScreenPr
           <div className="space-y-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="space-y-2">
               <CompassIcon className="w-7 h-7 text-emerald-600 dark:text-emerald-400 mx-auto mb-2" />
-              <h2 className="text-xl md:text-2xl font-serif text-stone-800 dark:text-stone-200">Quelle est ton intention pour la semaine qui vient ?</h2>
+              <h2 className="text-xl md:text-2xl font-serif text-stone-800 dark:text-stone-200">Qu'as-tu envie de garder en tête pour la semaine qui vient ?</h2>
               <p className="italic text-stone-400 dark:text-stone-500 font-serif font-light text-sm max-w-md mx-auto">
                 Une direction simple à garder en tête.
               </p>

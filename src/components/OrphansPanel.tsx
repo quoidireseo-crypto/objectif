@@ -96,7 +96,7 @@ export function OrphansPanel({ data, updateData, onChangeView }: OrphansPanelPro
       >
         <div className="flex items-center">
           <AlertCircle className="text-amber-500 w-5 h-5" />
-          <span className="font-sans font-bold text-stone-700 dark:text-stone-300 text-sm ml-2">Intentions en sommeil</span>
+          <span className="font-sans font-bold text-stone-700 dark:text-stone-300 text-sm ml-2">À reprendre</span>
           <span className="bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold text-xs px-2 py-0.5 rounded-full ml-2">
             {visibleOrphans.length}
           </span>
@@ -110,7 +110,7 @@ export function OrphansPanel({ data, updateData, onChangeView }: OrphansPanelPro
       {isExpanded && (
         <div className="animate-in fade-in slide-in-from-top-2 duration-200">
           <p className="text-sm italic text-stone-500 dark:text-stone-400 px-5 pb-4 leading-relaxed">
-            Ces éléments semblent avoir besoin de ton attention. Réactive-les ou archive-les consciemment.
+            Ces éléments attendent peut-être un petit geste de ta part. Reprends-les ou range-les.
           </p>
           <div className="space-y-3 px-5 pb-5">
             {visibleOrphans.map(orphan => (

@@ -633,7 +633,7 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
         isPreview ? (
           <div className="flex-1 flex flex-col items-center justify-center p-4 text-center select-none pointer-events-none">
             <Network className="w-8 h-8 text-stone-300 dark:text-stone-600 mb-2 animate-pulse" />
-            <p className="text-xs text-stone-400 dark:text-stone-500 italic">Aucune intention à afficher</p>
+            <p className="text-xs text-stone-400 dark:text-stone-500 italic">Rien à afficher pour l'instant</p>
           </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-stone-900 z-0 max-w-lg mx-auto my-12 rounded-3xl border border-stone-100 dark:border-stone-800 shadow-sm">
@@ -642,13 +642,13 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
             </div>
             <h2 className="text-xl font-serif font-light text-stone-800 dark:text-stone-100 mb-2">Ton graphe est vide</h2>
             <p className="text-sm text-stone-500 dark:text-stone-400 mb-6 leading-relaxed max-w-sm">
-              Commence par définir un objectif pour voir tes intentions prendre forme ici.
+              Commence par choisir un objectif pour le voir apparaître ici.
             </p>
             <button
               onClick={() => onChangeView && onChangeView('goals')}
               className="inline-flex items-center gap-2 bg-indigo-600 dark:bg-indigo-700 text-white font-medium rounded-2xl px-5 py-3 text-sm hover:bg-indigo-700 dark:hover:bg-indigo-800 active:scale-95 transition"
             >
-              Fixer mon premier cap
+              Choisir mon premier objectif
             </button>
           </div>
         )

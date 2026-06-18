@@ -226,7 +226,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
 
             {/* Motivational subline */}
             <p className="text-center text-[11px] font-serif italic text-stone-400 mt-6 pt-3 border-t border-stone-200/50">
-              « Chaque jour est une nouvelle chance d’être acteur de sa vie »
+              « Avance à ton rythme, un jour après l’autre »
             </p>
           </div>
         </div>

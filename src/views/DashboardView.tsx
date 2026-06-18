@@ -22,10 +22,10 @@ const QUOTES = [
   { text: "La meilleure façon de prédire l'avenir est de le créer.", author: "Peter Drucker" },
   { text: "Ce n'est pas le vent qui décide de ta destination, c'est l'orientation que tu donnes à ta voile.", author: "Jim Rohn" },
   { text: "Le meilleur moment pour planter un arbre était il y a 20 ans. Le deuxième meilleur moment est maintenant.", author: "Proverbe chinois" },
-  { text: "Chaque jour est une nouvelle chance d'être acteur de sa vie.", author: "Anonyme" },
+  { text: "Fais ce que tu peux, avec ce que tu as, là où tu es.", author: "Theodore Roosevelt" },
   { text: "Il n'y a pas d'âge pour se réinventer.", author: "Anonyme" },
   { text: "La vie ce n'est pas d'attendre que les orages passent, c'est d'apprendre à danser sous la pluie.", author: "Sénèque" },
-  { text: "La bienveillance envers soi-même est le premier pas vers l'harmonie.", author: "Anonyme" },
+  { text: "Sois doux avec toi-même, tu fais de ton mieux.", author: "Anonyme" },
   { text: "Prends le temps de faire ce qui rend ton âme heureuse.", author: "Anonyme" },
   { text: "Nul besoin de courir, il suffit d'avancer à son rythme.", author: "Anonyme" }
 ];
@@ -245,7 +245,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </div>
 
           <p className="text-stone-600 dark:text-stone-300 font-serif text-base md:text-lg leading-relaxed max-w-2xl">
-            SKOPOS t'aide à transformer tes intentions en gestes concrets, jour après jour et à ton rythme.
+            SKOPOS t'aide à transformer ce qui compte pour toi en petits gestes concrets, jour après jour et à ton rythme.
             Le principe tient en trois temps :
           </p>
 
@@ -494,7 +494,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                     type="text"
                     value={successInput}
                     onChange={(e) => setSuccessInput(e.target.value)}
-                    placeholder="Ex : j'ai pris le temps de marcher 20 minutes en pleine conscience..."
+                    placeholder="Ex : j'ai pris le temps de marcher 20 minutes au calme..."
                     className="flex-1 px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-stone-800 dark:text-stone-100 font-sans text-sm transition"
                     maxLength={140}
                   />
@@ -630,7 +630,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
             </div>
           ) : (
             <p className="text-sm text-stone-500 dark:text-stone-400 italic flex-1">
-              Aucun objectif en cours pour l'instant. Définis une première intention pour donner une direction à ton quotidien.
+              Aucun objectif en cours pour l'instant. Choisis une première chose qui compte pour toi.
             </p>
           )}
 

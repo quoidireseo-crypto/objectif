@@ -33,7 +33,7 @@ export function useGoalHistory(
         description = `Titre modifié : '${previousValue}' → '${newValue}'`;
         break;
       case 'why-changed':
-        description = "L'intention a évolué.";
+        description = "La raison a changé.";
         break;
       case 'status-changed':
         description = `Statut changé : ${previousValue} → ${newValue}`;
@@ -54,7 +54,7 @@ export function useGoalHistory(
         description = 'Objectif réactivé. Un nouveau départ.';
         break;
       case 'achieved':
-        description = 'Objectif atteint. Ce cap est désormais derrière toi.';
+        description = 'Objectif atteint. Bravo !';
         break;
       case 'paused':
         description = 'Objectif mis en pause.';
