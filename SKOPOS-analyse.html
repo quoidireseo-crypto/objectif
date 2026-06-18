@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SKOPOS — Analyse & Feuille de route</title>
+<style>
+  :root{
+    --bg:#F5F5F0; --ink:#1C1917; --stone:#78716c; --stone-l:#a8a29e;
+    --emerald:#047857; --emerald-l:#059669; --amber:#d97706; --rose:#e11d48;
+    --card:#ffffff; --line:#e7e5e4;
+    --serif:Georgia,'Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px 120px}
+
+  /* Header */
+  header.top{padding:56px 0 28px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .badge-top{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--emerald);font-weight:700}
+  .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--emerald);display:inline-block}
+  h1{font-family:var(--serif);font-weight:300;font-size:42px;margin:14px 0 6px;letter-spacing:-.5px}
+  h1 b{font-style:italic;font-weight:400;color:var(--emerald)}
+  .sub{color:var(--stone);font-size:15px;max-width:680px}
+  .meta{margin-top:14px;font-size:12px;color:var(--stone-l);text-transform:uppercase;letter-spacing:.1em}
+
+  /* Sticky progress */
+  .progress-bar{position:sticky;top:0;z-index:20;background:rgba(245,245,240,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;gap:16px;margin:0 -20px 28px;flex-wrap:wrap}
+  .track{flex:1;min-width:160px;height:8px;background:#e7e5e4;border-radius:99px;overflow:hidden}
+  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--emerald),var(--emerald-l));border-radius:99px;transition:width .4s ease}
+  .pct{font-size:13px;font-weight:700;color:var(--emerald);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .reset{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--stone-l);background:none;border:1px solid var(--line);
+    padding:6px 12px;border-radius:99px;cursor:pointer}
+  .reset:hover{color:var(--stone);border-color:var(--stone-l)}
+
+  h2.sec{font-family:var(--serif);font-weight:400;font-size:25px;margin:46px 0 6px;display:flex;align-items:center;gap:12px}
+  h2.sec .n{font-family:var(--sans);font-size:12px;font-weight:700;color:#fff;background:var(--ink);width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;letter-spacing:0}
+  .sec-desc{color:var(--stone);font-size:14px;margin:0 0 18px;padding-left:38px}
+
+  /* Cards */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin-bottom:14px;
+    display:flex;gap:16px;align-items:flex-start;transition:box-shadow .2s,border-color .2s}
+  .card:hover{box-shadow:0 6px 22px -12px rgba(0,0,0,.18)}
+  .card.done{opacity:.55}
+  .card.done .c-title{text-decoration:line-through}
+  .cb{appearance:none;-webkit-appearance:none;width:24px;height:24px;border:2px solid var(--stone-l);border-radius:7px;
+    cursor:pointer;flex-shrink:0;margin-top:2px;position:relative;transition:.15s}
+  .cb:checked{background:var(--emerald);border-color:var(--emerald)}
+  .cb:checked::after{content:"";position:absolute;left:7px;top:3px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .c-body{flex:1;min-width:0}
+  .c-title{font-weight:600;font-size:16px;margin:0 0 4px}
+  .c-why{color:var(--stone);font-size:14px;margin:0}
+  .c-why code{background:#f0efe9;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:12.5px}
+  .tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 9px;border-radius:99px;border:1px solid}
+  .t-bug{color:var(--rose);background:#fff1f3;border-color:#ffd9df}
+  .t-data{color:#b45309;background:#fffbeb;border-color:#fde68a}
+  .t-feat{color:var(--emerald);background:#ecfdf5;border-color:#a7f3d0}
+  .t-ux{color:#4338ca;background:#eef2ff;border-color:#c7d2fe}
+  .t-eff{color:var(--stone);background:#f5f5f4;border-color:var(--line)}
+  .t-imp{color:var(--ink);background:#f5f5f4;border-color:var(--line)}
+
+  .pill-strength{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:14px;padding:14px 16px;font-size:14px;color:#065f46}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}h1{font-size:33px}}
+
+  .note{font-size:13px;color:var(--stone);font-style:italic;font-family:var(--serif);text-align:center;
+    margin-top:60px;padding-top:24px;border-top:1px solid var(--line)}
+  .quick{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px 22px;margin:24px 0 8px}
+  .quick h3{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--stone)}
+  .quick ol{margin:8px 0 0;padding-left:20px}
+  .quick li{margin:6px 0;font-size:14.5px}
+  .quick b{color:var(--emerald)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <span class="badge-top"><span class="logo-dot"></span>SKOPOS · Revue produit</span>
+    <h1>Analyse & <b>feuille de route</b></h1>
+    <p class="sub">Lecture complète du code et de l'expérience. Voici ce qui est déjà beau, ce qui mérite d'être corrigé en priorité, et des idées pour aller plus loin — pour un usage perso et à partager avec quelques amis.</p>
+    <p class="meta">Préparé le 18 juin 2026 · 8 vues, 6 hooks analysés</p>
+  </header>
+
+  <div class="progress-bar">
+    <span class="pct" id="pct">0 / 0 traité</span>
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <button class="reset" id="reset">Réinitialiser</button>
+  </div>
+
+  <!-- FORCES -->
+  <h2 class="sec"><span class="n">★</span> Ce qui marche déjà très bien</h2>
+  <p class="sec-desc">À garder précieusement — c'est l'ADN de l'app.</p>
+  <div class="grid2">
+    <div class="pill-strength"><b>Un ton juste et bienveillant.</b> « Cap », « intentions », « sans pression » : l'écriture donne envie, loin des to-do lists culpabilisantes.</div>
+    <div class="pill-strength"><b>Le « pourquoi » au cœur.</b> Chaque objectif relie le sens à l'action — c'est ce qui fait tenir dans la durée.</div>
+    <div class="pill-strength"><b>Boucle quotidienne complète.</b> Rituel du matin → quotidien → bilan du soir → journal. Le cycle est rare et précieux.</div>
+    <div class="pill-strength"><b>Design cohérent & apaisant.</b> Palette pierre/émeraude, serif/sans, arrondis : une vraie identité visuelle.</div>
+    <div class="pill-strength"><b>100 % local & privé.</b> Aucune donnée ne quitte l'appareil. Parfait pour un journal intime de vie.</div>
+    <div class="pill-strength"><b>Détails malins.</b> Carte mentale, détection des intentions « en sommeil », sauvegardes rotatives, défis hebdo.</div>
+  </div>
+
+  <!-- SECTION 1 : CORRECTIONS -->
+  <h2 class="sec"><span class="n">1</span> À corriger en priorité</h2>
+  <p class="sec-desc">Petits efforts, gros impact. Deux de ces points peuvent faire <strong>perdre des données</strong> ou casser l'expérience de tes amis.</p>
+  <div id="grp-1"></div>
+
+  <!-- SECTION 2 : INSTALLATION & PARTAGE -->
+  <h2 class="sec"><span class="n">2</span> Installer sur le portable & partager aux amis</h2>
+  <p class="sec-desc">Tu veux l'installer sur ton téléphone et la donner à quelques proches. Voici ce qui rend ça fluide et fiable.</p>
+  <div id="grp-2"></div>
+
+  <!-- SECTION 3 : DONNÉES -->
+  <h2 class="sec"><span class="n">3</span> Pérennité des données (le nerf de la guerre)</h2>
+  <p class="sec-desc">Tout est en localStorage : un nettoyage de navigateur efface tout. Sécurisons sans trahir le « 100 % local ».</p>
+  <div id="grp-3"></div>
+
+  <!-- SECTION 4 : FONCTIONNALITÉS -->
+  <h2 class="sec"><span class="n">4</span> Nouvelles fonctionnalités à fort sens</h2>
+  <p class="sec-desc">Des idées alignées avec la philosophie « acteur de ses journées », sans alourdir.</p>
+  <div id="grp-4"></div>
+
+  <!-- SECTION 5 : ERGONOMIE -->
+  <h2 class="sec"><span class="n">5</span> Ergonomie & confort</h2>
+  <p class="sec-desc">Les petites frictions qui, une fois lissées, rendent l'usage quotidien agréable.</p>
+  <div id="grp-5"></div>
+
+  <div class="quick">
+    <h3>Si je ne devais faire que 3 choses ce week-end</h3>
+    <ol>
+      <li>Corriger le <b>« Bonjour, Didier » codé en dur</b> + intégrer le <b>bilan du soir dans la sauvegarde</b> (risque de perte de données).</li>
+      <li>Héberger des <b>icônes PWA locales</b> pour une installation fiable sur téléphone, même hors-ligne.</li>
+      <li>Ajouter un <b>rappel d'export automatique</b> clair + tester l'import sur le téléphone d'un ami.</li>
+    </ol>
+  </div>
+
+  <p class="note">« Chaque jour est une nouvelle chance d'être acteur de sa vie. »<br>Coche les éléments au fur et à mesure — ta progression est sauvegardée dans ce navigateur.</p>
+
+</div>
+
+<script>
+const ITEMS = {
+  "1":[
+    {id:"prenom",title:"Le rituel du matin dit « Bonjour, Didier » en dur",
+     why:"Dans <code>MorningRitualScreen.tsx</code>, le prénom est écrit en dur. Tes amis verront « Didier » chaque matin. Il faut utiliser <code>userProfile.name</code> comme partout ailleurs.",
+     tags:[["t-bug","Bug"],["t-eff","Effort : 5 min"],["t-imp","Impact : élevé"]]},
+    {id:"bilan-export",title:"Le « Bilan du soir » n'est pas inclus dans la sauvegarde",
+     why:"Les victoires du soir sont stockées dans des clés à part (<code>skopos_success_*</code>), hors de <code>AppData</code>. Elles ne sont donc <strong>ni exportées, ni restaurées</strong> : tout est perdu en cas de changement d'appareil. À intégrer au modèle de données.",
+     tags:[["t-data","Perte de données"],["t-eff","Effort : moyen"],["t-imp","Impact : élevé"]]},
+    {id:"pwa-icons",title:"Icônes PWA hébergées sur une URL externe (icons8.com)",
+     why:"Le manifeste pointe vers <code>img.icons8.com</code>. Si le site est lent/bloqué ou hors-ligne, l'installation et l'icône d'accueil peuvent échouer. Mettre des PNG locaux (192/512px) dans le projet.",
+     tags:[["t-bug","Fiabilité"],["t-eff","Effort : 15 min"],["t-imp","Impact : élevé"]]},
+    {id:"lang",title:"La page se déclare en anglais (<code>lang=\"en\"</code>)",
+     why:"L'app est entièrement en français mais <code>index.html</code> indique <code>lang=\"en\"</code>. Mauvais pour l'accessibilité (lecteurs d'écran, correcteur). Passer à <code>lang=\"fr\"</code>.",
+     tags:[["t-bug","A11y"],["t-eff","Effort : 1 min"],["t-imp","Impact : moyen"]]},
+    {id:"prefixes",title:"Clés de stockage incohérentes (didier_ / skopos_ / boussole_)",
+     why:"Trois préfixes hérités cohabitent. C'est fragile et déroutant à maintenir. Unifier sous <code>skopos_</code> avec une petite migration au démarrage.",
+     tags:[["t-data","Dette technique"],["t-eff","Effort : moyen"],["t-imp","Impact : moyen"]]},
+    {id:"gemini",title:"Endpoint de transcription Gemini présent mais jamais utilisé",
+     why:"<code>server.ts</code> expose <code>/api/transcribe</code> (et exige une clé <code>GEMINI_API_KEY</code>), mais aucune vue ne l'appelle. Pour des amis sans clé API, c'est un frein. → Soit le <strong>retirer</strong> (l'app tourne alors 100 % statique, installable partout), soit le <strong>brancher</strong> en journal vocal (voir §4).",
+     tags:[["t-bug","Nettoyage"],["t-eff","Effort : faible"],["t-imp","Impact : moyen"]]},
+  ],
+  "2":[
+    {id:"static",title:"Viser un build 100 % statique (sans serveur Node)",
+     why:"Si on retire l'appel Gemini, l'app devient un simple site statique : installable en PWA sur n'importe quel téléphone, hébergeable gratuitement (le <code>netlify.toml</code> est déjà là), et partageable par un simple lien.",
+     tags:[["t-feat","Distribution"],["t-eff","Effort : faible"],["t-imp","Impact : élevé"]]},
+    {id:"install-prompt",title:"Bouton « Installer l'app » intégré",
+     why:"Capturer l'événement <code>beforeinstallprompt</code> et proposer un bouton clair « Ajouter à l'écran d'accueil ». Tes amis ne sauront pas le faire seuls sinon.",
+     tags:[["t-ux","Onboarding"],["t-eff","Effort : faible"],["t-imp","Impact : élevé"]]},
+    {id:"offline",title:"Vérifier le fonctionnement hors-ligne réel",
+     why:"La PWA est configurée mais s'appuie sur des polices/icônes externes. Tester en mode avion : l'app doit s'ouvrir et rester pleinement utilisable sans réseau.",
+     tags:[["t-feat","Offline"],["t-eff","Effort : faible"],["t-imp","Impact : moyen"]]},
+    {id:"qr",title:"Page de partage simple pour les amis",
+     why:"Un mini guide « Comment installer SKOPOS » (3 captures + QR code vers le lien) rend le partage à des proches non-techniques très facile.",
+     tags:[["t-feat","Partage"],["t-eff","Effort : faible"],["t-imp","Impact : moyen"]]},
+  ],
+  "3":[
+    {id:"auto-backup",title:"Export automatique périodique (et plus seulement un rappel)",
+     why:"Le rappel d'export tous les 7 jours existe, mais repose sur un clic. Proposer un téléchargement auto silencieux, ou l'écriture via l'API File System Access pour réécrire toujours le même fichier de sauvegarde.",
+     tags:[["t-data","Sécurité"],["t-eff","Effort : moyen"],["t-imp","Impact : élevé"]]},
+    {id:"cloud-opt",title:"Synchro optionnelle & chiffrée (Google Drive / Dropbox)",
+     why:"Pour retrouver ses données sur 2 appareils sans rien exposer : une synchro <em>opt-in</em>, fichier chiffré côté client. Reste fidèle au « privé par défaut ».",
+     tags:[["t-feat","Confort"],["t-eff","Effort : élevé"],["t-imp","Impact : moyen"]]},
+    {id:"import-merge",title:"Import en mode « fusion » et non « remplacement »",
+     why:"Aujourd'hui l'import écrase tout. Proposer une fusion (par <code>id</code>) éviterait d'effacer accidentellement les données présentes lors d'une restauration partielle.",
+     tags:[["t-data","Robustesse"],["t-eff","Effort : moyen"],["t-imp","Impact : moyen"]]},
+    {id:"quota",title:"Garde-fou sur le quota localStorage",
+     why:"À long terme (années de journal), localStorage peut saturer (~5 Mo). Surveiller la taille et alerter avant blocage silencieux des écritures.",
+     tags:[["t-data","Pérennité"],["t-eff","Effort : faible"],["t-imp","Impact : faible"]]},
+  ],
+  "4":[
+    {id:"habits",title:"Habitudes récurrentes (vs tâches à usage unique)",
+     why:"Les tâches sont liées à un seul jour. Une notion d'« habitude » (ex : marcher 15 min, tous les jours) nourrirait vraiment les streaks et collerait au public « reprendre le sport / la méditation ».",
+     tags:[["t-feat","Engagement"],["t-eff","Effort : moyen"],["t-imp","Impact : élevé"]]},
+    {id:"voice",title:"Journal & priorité du jour à la voix",
+     why:"L'endpoint Gemini de transcription est déjà écrit : le brancher sur le journal et le rituel du matin (dictée vocale) serait magique sur mobile, surtout pour un public moins à l'aise au clavier.",
+     tags:[["t-feat","Mobile"],["t-eff","Effort : moyen"],["t-imp","Impact : élevé"]]},
+    {id:"weekly-review",title:"Rituel hebdomadaire de bilan guidé",
+     why:"En plus du rituel du matin, un court bilan du dimanche (3 questions : ce qui a avancé, ce qui a bloqué, le cap de la semaine) renforcerait la prise de recul déjà amorcée dans « Mon Bilan ».",
+     tags:[["t-feat","Réflexion"],["t-eff","Effort : moyen"],["t-imp","Impact : moyen"]]},
+    {id:"future-tasks",title:"Planifier une action sur un jour futur depuis « Mon Quotidien »",
+     why:"On ne peut ajouter une tâche que pour aujourd'hui (le Calendrier existe mais la friction est réelle). Un petit sélecteur de date dans le formulaire d'ajout fluidifierait la planification.",
+     tags:[["t-feat","Productivité"],["t-eff","Effort : faible"],["t-imp","Impact : moyen"]]},
+    {id:"insights",title:"Petites « prises de conscience » automatiques",
+     why:"Croiser humeur (journal/rituel) et régularité : « Tu avances plus quand tu démarres par la Santé », « 3 victoires de suite cette semaine ». Encourageant et 100 % local (pas besoin d'IA).",
+     tags:[["t-feat","Motivation"],["t-eff","Effort : moyen"],["t-imp","Impact : moyen"]]},
+  ],
+  "5":[
+    {id:"dark",title:"Mode sombre / thème du soir",
+     why:"Le bilan du soir et le journal s'utilisent souvent au lit. Un thème sombre doux (et automatique le soir) serait reposant et cohérent avec le ton apaisant.",
+     tags:[["t-ux","Confort"],["t-eff","Effort : moyen"],["t-imp","Impact : moyen"]]},
+    {id:"search",title:"Recherche & filtres dans le journal et les tâches",
+     why:"Au fil des mois, retrouver une réflexion ou filtrer par humeur/pilier de vie deviendra essentiel. Une barre de recherche simple suffit.",
+     tags:[["t-ux","Navigation"],["t-eff","Effort : faible"],["t-imp","Impact : moyen"]]},
+    {id:"undo",title:"Annuler une suppression (objectif, tâche, journal)",
+     why:"Les suppressions passent par <code>window.confirm</code>. Un petit toast « Annuler » (5 s) est plus doux et évite les pertes par erreur — surtout pour des amis moins habitués.",
+     tags:[["t-ux","Sérénité"],["t-eff","Effort : faible"],["t-imp","Impact : moyen"]]},
+    {id:"reminder-limit",title:"Clarifier la limite des rappels (app fermée)",
+     why:"Le rappel repose sur un <code>setTimeout</code> qui ne tourne que si l'app est ouverte. Sur mobile fermé, la notif ne partira pas. À documenter honnêtement, ou évoluer vers une vraie notification programmée.",
+     tags:[["t-ux","Attentes"],["t-eff","Effort : faible"],["t-imp","Impact : moyen"]]},
+    {id:"empty-celebrate",title:"Soigner les tout premiers instants",
+     why:"Les écrans vides sont déjà jolis. Aller plus loin : un mini parcours en 3 cartes au tout premier lancement pour qu'un ami comprenne « objectif → action → rituel » en 20 secondes.",
+     tags:[["t-ux","Onboarding"],["t-eff","Effort : faible"],["t-imp","Impact : faible"]]},
+  ],
+};
+
+const KEY="skopos_roadmap_done_v1";
+let done=JSON.parse(localStorage.getItem(KEY)||"{}");
+let total=0;
+
+function tag([cls,txt]){const s=document.createElement("span");s.className="tag "+cls;s.textContent=txt;return s;}
+
+function render(){
+  total=0;
+  for(const grp in ITEMS){
+    const host=document.getElementById("grp-"+grp);
+    host.innerHTML="";
+    ITEMS[grp].forEach(it=>{
+      total++;
+      const card=document.createElement("label");
+      card.className="card"+(done[it.id]?" done":"");
+      const cb=document.createElement("input");
+      cb.type="checkbox";cb.className="cb";cb.checked=!!done[it.id];
+      cb.addEventListener("change",()=>{done[it.id]=cb.checked;localStorage.setItem(KEY,JSON.stringify(done));render();});
+      const body=document.createElement("div");body.className="c-body";
+      const t=document.createElement("p");t.className="c-title";t.textContent=it.title;
+      const w=document.createElement("p");w.className="c-why";w.innerHTML=it.why;
+      const tags=document.createElement("div");tags.className="tags";
+      it.tags.forEach(tg=>tags.appendChild(tag(tg)));
+      body.append(t,w,tags);card.append(cb,body);host.appendChild(card);
+    });
+  }
+  const n=Object.values(done).filter(Boolean).length;
+  document.getElementById("pct").textContent=n+" / "+total+" traité"+(n>1?"s":"");
+  document.getElementById("fill").style.width=(total?Math.round(n/total*100):0)+"%";
+}
+document.getElementById("reset").addEventListener("click",()=>{
+  if(confirm("Décocher tous les éléments ?")){done={};localStorage.setItem(KEY,"{}");render();}
+});
+render();
+</script>
+</body>
+</html>
