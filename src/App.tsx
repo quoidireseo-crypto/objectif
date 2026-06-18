@@ -45,7 +45,10 @@ export default function App() {
   const handleImportData = (importedData: AppData) => {
     const sanitizedData = {
       ...importedData,
+      goals: importedData.goals || [],
       milestones: importedData.milestones || [],
+      tasks: importedData.tasks || [],
+      journal: importedData.journal || [],
       morningRituals: importedData.morningRituals || [],
     };
     updateData(sanitizedData);

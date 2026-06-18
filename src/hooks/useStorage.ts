@@ -20,7 +20,10 @@ export function useStorage() {
       if (item) {
         const parsed: AppData = JSON.parse(item);
         // Ensure backward compatibility
+        if (!parsed.goals) parsed.goals = [];
         if (!parsed.milestones) parsed.milestones = [];
+        if (!parsed.tasks) parsed.tasks = [];
+        if (!parsed.journal) parsed.journal = [];
         if (!parsed.morningRituals) parsed.morningRituals = [];
         
         let hasChanges = false;
