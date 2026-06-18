@@ -76,11 +76,31 @@ export function LandingView({ onComplete }: LandingViewProps) {
           >
             <div className="text-center space-y-2">
               <h2 className="text-xl md:text-2xl font-light text-stone-800 dark:text-stone-100 leading-snug">
-                Bienvenue dans votre nouvel espace d'alignement.
+                Donnez une direction à votre quotidien.
               </h2>
               <p className="text-stone-500 dark:text-stone-400 font-sans text-xs md:text-sm leading-relaxed max-w-md mx-auto">
-                Skopos est un outil bienveillant conçu pour vous aider à fixer des objectifs porteurs de sens et avancer sereinement à votre rythme.
+                Skopos est un outil bienveillant qui vous aide à transformer vos intentions en gestes concrets, jour après jour et à votre rythme.
               </p>
+            </div>
+
+            {/* Les trois temps de SKOPOS */}
+            <div className="grid grid-cols-3 gap-2.5">
+              {[
+                { icon: Target, label: 'Mes objectifs', desc: 'Ce qui compte' },
+                { icon: BookmarkCheck, label: 'Agir au quotidien', desc: 'À mon rythme' },
+                { icon: Sparkles, label: 'Faire le point', desc: 'Mes réussites' },
+              ].map((pillar) => {
+                const Icon = pillar.icon;
+                return (
+                  <div key={pillar.label} className="flex flex-col items-center text-center gap-1.5 bg-stone-50/70 dark:bg-stone-800/60 border border-stone-100 dark:border-stone-700/60 rounded-2xl px-2 py-3.5">
+                    <div className="p-2 bg-emerald-50 dark:bg-emerald-500/10 text-[#047857] dark:text-emerald-400 rounded-xl">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <span className="text-[11px] font-sans font-bold text-stone-700 dark:text-stone-200 leading-tight">{pillar.label}</span>
+                    <span className="text-[9px] font-sans text-stone-400 dark:text-stone-500 uppercase tracking-wider">{pillar.desc}</span>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="space-y-4 pt-4 border-t border-stone-100 dark:border-stone-800">

@@ -1,12 +1,13 @@
 import { useMemo, useState, useEffect, ReactNode } from 'react';
 import { AppData, ViewType } from '../types';
-import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award, Pencil, Repeat, Circle, Sunrise, ArrowRight } from 'lucide-react';
+import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award, Pencil, Repeat, Circle, Sunrise, ArrowRight, X } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
 import { GoalDomainChart } from '../components/GoalDomainChart';
 import { useStreak } from '../hooks/useStreak';
 import { useHabits } from '../hooks/useHabits';
 import { GraphView } from './GraphView';
 import { OrphansPanel } from '../components/OrphansPanel';
+import { SkoposLogo } from '../components/SkoposLogo';
 
 interface DashboardProps {
   data: AppData;
@@ -74,6 +75,14 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
   const [successInput, setSuccessInput] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const isSaved = !!todaySuccess && !isEditing;
+
+  // Bandeau d'introduction pour les nouveaux utilisateurs (« c'est quoi SKOPOS »)
+  const [introDismissed, setIntroDismissed] = useState(() => window.localStorage.getItem('skopos_intro_dismissed') === 'true');
+  const dismissIntro = () => {
+    window.localStorage.setItem('skopos_intro_dismissed', 'true');
+    setIntroDismissed(true);
+  };
+  const showIntro = !introDismissed && data.goals.length === 0;
 
   const handleSaveSuccess = () => {
     const value = successInput.trim();
@@ -212,6 +221,85 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col min-h-full py-2">
+
+      {/* Bandeau d'introduction — qu'est-ce que SKOPOS (nouveaux utilisateurs) */}
+      {showIntro && (
+        <div className="relative overflow-hidden rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm p-6 md:p-8 mb-6 animate-in fade-in slide-in-from-top-2 duration-500">
+          <button
+            onClick={dismissIntro}
+            className="absolute top-4 right-4 p-1.5 rounded-full text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer"
+            title="Masquer cette présentation"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          <div className="flex items-center gap-2.5 mb-3">
+            <SkoposLogo className="text-[#047857] dark:text-emerald-400 shrink-0" size={24} />
+            <h3 className="text-sm font-sans tracking-widest font-bold text-stone-800 dark:text-stone-100 uppercase">
+              Bienvenue dans SKOPOS
+            </h3>
+          </div>
+
+          <p className="text-stone-600 dark:text-stone-300 font-serif text-base md:text-lg leading-relaxed max-w-2xl">
+            SKOPOS t'aide à transformer tes intentions en gestes concrets, jour après jour et à ton rythme.
+            Le principe tient en trois temps :
+          </p>
+
+          <div className="grid sm:grid-cols-3 gap-4 mt-6">
+            <div className="bg-stone-50/70 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-2xl p-4">
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="p-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
+                  <Target className="w-4 h-4" />
+                </div>
+                <span className="font-sans font-bold text-sm text-stone-800 dark:text-stone-100">1 · Mes objectifs</span>
+              </div>
+              <p className="text-xs text-stone-500 dark:text-stone-400 font-sans leading-relaxed">
+                Définir ce qui compte vraiment pour moi.
+              </p>
+            </div>
+
+            <div className="bg-stone-50/70 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-2xl p-4">
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="p-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <span className="font-sans font-bold text-sm text-stone-800 dark:text-stone-100">2 · Agir au quotidien</span>
+              </div>
+              <p className="text-xs text-stone-500 dark:text-stone-400 font-sans leading-relaxed">
+                Avancer un jour après l'autre, sans pression.
+              </p>
+            </div>
+
+            <div className="bg-stone-50/70 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-2xl p-4">
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="p-2 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl">
+                  <Moon className="w-4 h-4" />
+                </div>
+                <span className="font-sans font-bold text-sm text-stone-800 dark:text-stone-100">3 · Faire le point</span>
+              </div>
+              <p className="text-xs text-stone-500 dark:text-stone-400 font-sans leading-relaxed">
+                Célébrer mes réussites et ajuster ma direction.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-6">
+            <button
+              onClick={() => onChangeView('goals')}
+              className="bg-[#047857] dark:bg-emerald-700 inline-flex justify-center items-center gap-2 text-white px-6 py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] dark:hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer"
+            >
+              Fixer ma première intention
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={dismissIntro}
+              className="text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 text-xs font-sans font-bold uppercase tracking-widest px-4 py-3 transition cursor-pointer"
+            >
+              J'ai compris
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ===================== ZONE 1 — AUJOURD'HUI ===================== */}
 
@@ -690,8 +778,8 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         </div>
       )}
 
-      {/* Première intention (aucun objectif) */}
-      {data.goals.length === 0 && (
+      {/* Première intention (aucun objectif, et bandeau d'intro déjà masqué) */}
+      {data.goals.length === 0 && !showIntro && (
         <div className="bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl p-6 md:p-8 text-center max-w-2xl mx-auto border border-stone-200 dark:border-stone-800 w-full shrink-0">
           <h3 className="text-xs md:text-sm uppercase tracking-widest text-[#047857] dark:text-emerald-400 mb-4 font-sans font-bold">La première étape</h3>
           <p className="text-base md:text-lg leading-snug font-light italic text-stone-700 dark:text-stone-300 mb-6 font-serif">
