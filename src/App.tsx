@@ -108,10 +108,10 @@ export default function App() {
         {/* Mobile Top Header */}
         <header className="md:hidden flex flex-col items-center justify-center px-5 py-3.5 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0 z-40 shadow-xs text-center">
           <div className="flex items-center gap-3">
-            <SkoposLogo className="text-[#047857]" size={26} />
-            <span className="text-lg font-sans font-bold tracking-widest text-[#1C1917]">SKOPOS</span>
+            <SkoposLogo className="text-[#047857] dark:text-emerald-400" size={26} />
+            <span className="text-lg font-sans font-bold tracking-widest text-[#1C1917] dark:text-stone-100">SKOPOS</span>
           </div>
-          <p className="text-[11px] text-[#047857] font-serif italic mt-1">chaque jour son nouveau départ</p>
+          <p className="text-[11px] text-[#047857] dark:text-emerald-400 font-serif italic mt-1">chaque jour son nouveau départ</p>
         </header>
 
         {shouldShowRitual && (
