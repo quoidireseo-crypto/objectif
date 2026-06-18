@@ -1,6 +1,7 @@
 import { useState, FormEvent, useEffect, useRef } from 'react';
 import { AppData, Task, LifeDomain } from '../types';
 import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag, Trash2 } from 'lucide-react';
+import { HelpTooltip } from '../components/HelpTooltip';
 
 interface TasksProps {
   data: AppData;
@@ -107,6 +108,7 @@ export function TasksView({ data, updateData }: TasksProps) {
       <header className="mb-6 md:mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
         <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100 flex items-center gap-3">
           Mon Quotidien
+          <HelpTooltip text="Tes actions concrètes du jour. Tu peux les relier à un objectif pour voir comment chaque petit geste fait avancer ce qui compte pour toi." />
         </h2>
         <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Ce que je choisis de faire aujourd'hui.</p>
       </header>

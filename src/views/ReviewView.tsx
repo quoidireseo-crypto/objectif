@@ -6,6 +6,7 @@ import { useOrphans } from '../hooks/useOrphans';
 import { useGoalHistory } from '../hooks/useGoalHistory';
 import { useWeeklyReview } from '../hooks/useWeeklyReview';
 import { WeeklyReviewScreen } from '../components/WeeklyReviewScreen';
+import { HelpTooltip } from '../components/HelpTooltip';
 
 interface ReviewProps {
   data: AppData;
@@ -126,7 +127,10 @@ export function ReviewView({ data, updateData }: ReviewProps) {
 
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
         <div>
-          <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100">Mon Bilan</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100">Mon Bilan</h2>
+            <HelpTooltip text="Cet espace réunit tes statistiques, l'évolution de tes objectifs et ton bilan hebdomadaire guidé — un moment pour prendre du recul et ajuster ta direction." />
+          </div>
           <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Prendre du recul pour mieux avancer.</p>
         </div>
         <div className="flex bg-stone-100 dark:bg-stone-800 p-1 rounded-xl w-full sm:w-auto">

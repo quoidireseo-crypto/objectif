@@ -2,6 +2,7 @@ import { useState, FormEvent, useMemo } from 'react';
 import { AppData, LifeDomain } from '../types';
 import { useHabits, isHabitDueOn } from '../hooks/useHabits';
 import { Repeat, Plus, Circle, CheckCircle2, Flame, Trash2, Archive, Tag } from 'lucide-react';
+import { HelpTooltip } from '../components/HelpTooltip';
 
 interface HabitsProps {
   data: AppData;
@@ -80,6 +81,7 @@ export function HabitsView({ data, updateData }: HabitsProps) {
       <header className="mb-6 md:mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
         <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100 flex items-center gap-3">
           Mes Habitudes
+          <HelpTooltip text="Une habitude est une action que tu veux répéter régulièrement (tous les jours ou certains jours). Coche-la chaque fois que tu l'accomplis : la flamme indique le nombre de jours d'affilée." />
         </h2>
         <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">
           Construire la régularité, jour après jour.

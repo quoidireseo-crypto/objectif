@@ -3,6 +3,7 @@ import { AppData, Goal, LifeDomain, Milestone, Task } from '../types';
 import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle } from 'lucide-react';
 import { useGoalHistory } from '../hooks/useGoalHistory';
 import { GoalHistoryTimeline } from '../components/GoalHistoryTimeline';
+import { HelpTooltip } from '../components/HelpTooltip';
 
 interface GoalsProps {
   data: AppData;
@@ -304,8 +305,11 @@ export function GoalsView({ data, updateData }: GoalsProps) {
 
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
         <div>
-          <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100">Mes Objectifs</h2>
-          <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Définir le cap. Pourquoi je fais les choses.</p>
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100">Mes Objectifs</h2>
+            <HelpTooltip text="Un objectif décrit ce que tu veux atteindre et pourquoi c'est important pour toi. Tu peux le découper en petites étapes, puis le relier à tes actions du quotidien." />
+          </div>
+          <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Définir une direction. Pourquoi je fais les choses.</p>
         </div>
         <button
           onClick={() => setIsAdding(true)}

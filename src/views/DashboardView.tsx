@@ -8,6 +8,7 @@ import { useHabits } from '../hooks/useHabits';
 import { GraphView } from './GraphView';
 import { OrphansPanel } from '../components/OrphansPanel';
 import { SkoposLogo } from '../components/SkoposLogo';
+import { HelpTooltip } from '../components/HelpTooltip';
 
 interface DashboardProps {
   data: AppData;
@@ -43,12 +44,15 @@ const WEEKLY_CHALLENGES = [
 ];
 
 // Petit intitulé de section pour donner une hiérarchie claire au tableau de bord
-function SectionLabel({ children }: { children: ReactNode }) {
+function SectionLabel({ children, help }: { children: ReactNode; help?: string }) {
   return (
     <div className="flex items-center gap-4 mb-5 mt-4">
-      <h3 className="text-[11px] font-sans font-bold uppercase tracking-[0.22em] text-stone-400 dark:text-stone-500 shrink-0">
-        {children}
-      </h3>
+      <div className="flex items-center gap-2 shrink-0">
+        <h3 className="text-[11px] font-sans font-bold uppercase tracking-[0.22em] text-stone-400 dark:text-stone-500">
+          {children}
+        </h3>
+        {help && <HelpTooltip text={help} />}
+      </div>
       <div className="h-px flex-1 bg-stone-200/70 dark:bg-stone-800" />
     </div>
   );
@@ -450,9 +454,12 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
               <Moon className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-400 dark:text-stone-500">
-                À noter en fin de journée
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-400 dark:text-stone-500">
+                  À noter en fin de journée
+                </h3>
+                <HelpTooltip text="Le soir, note une réussite — même modeste. Au fil des jours, tu construis une collection de petites victoires qui confortent ta direction." />
+              </div>
               <p className="text-lg font-serif italic text-stone-800 dark:text-stone-200">
                 Ma réussite du jour
               </p>
@@ -590,7 +597,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       </div>
 
       {/* ===================== ZONE 2 — MA PROGRESSION ===================== */}
-      <SectionLabel>Ma progression</SectionLabel>
+      <SectionLabel help="Une vue d'ensemble de tes objectifs en cours et de ta constance dans la durée.">Ma progression</SectionLabel>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Objectifs en cours */}
@@ -637,7 +644,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
 
         {/* Régularité du rituel du matin */}
         <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm">
-          <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Régularité du rituel</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Régularité du rituel</h3>
+            <HelpTooltip text="Le rituel du matin est un court moment pour poser ta priorité du jour. Chaque pastille indique ton humeur lors de ce moment sur les 7 derniers jours." />
+          </div>
           <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-0.5">7 derniers jours</p>
 
           <div className="flex flex-wrap items-center gap-4 mt-6">
@@ -704,7 +714,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       </div>
 
       {/* ===================== ZONE 3 — PRENDRE DU RECUL ===================== */}
-      <SectionLabel>Prendre du recul</SectionLabel>
+      <SectionLabel help="Des graphiques et des repères pour observer ton évolution sur la durée.">Prendre du recul</SectionLabel>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <ProgressChart tasks={data.tasks} />
@@ -715,9 +725,12 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       <div className="bg-white dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h3 className="text-xl font-serif font-light text-stone-800 dark:text-stone-200">
-              Mes objectifs et leurs actions
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xl font-serif font-light text-stone-800 dark:text-stone-200">
+                Mes objectifs et leurs actions
+              </h3>
+              <HelpTooltip text="Une carte visuelle qui relie chaque objectif aux étapes et aux actions du quotidien qui y mènent." />
+            </div>
             <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
               Chaque action est reliée à un objectif plus grand.
             </p>
