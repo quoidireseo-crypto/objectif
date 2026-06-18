@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, ReactNode } from 'react';
 import { AppData, ViewType } from '../types';
-import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award, Pencil, Repeat, Circle } from 'lucide-react';
+import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award, Pencil, Repeat, Circle, Sunrise, ArrowRight } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
 import { GoalDomainChart } from '../components/GoalDomainChart';
 import { useStreak } from '../hooks/useStreak';
@@ -41,8 +41,21 @@ const WEEKLY_CHALLENGES = [
   "Se coucher 30 minutes plus tôt avec un livre plutôt qu'un écran."
 ];
 
+// Petit intitulé de section pour donner une hiérarchie claire au tableau de bord
+function SectionLabel({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex items-center gap-4 mb-5 mt-4">
+      <h3 className="text-[11px] font-sans font-bold uppercase tracking-[0.22em] text-stone-400 dark:text-stone-500 shrink-0">
+        {children}
+      </h3>
+      <div className="h-px flex-1 bg-stone-200/70 dark:bg-stone-800" />
+    </div>
+  );
+}
+
 export function DashboardView({ data, updateData, onChangeView, userProfile }: DashboardProps) {
-  const activeGoals = data.goals.filter(g => g.status === 'En cours').length;
+  const inProgressGoals = data.goals.filter(g => g.status === 'En cours');
+  const activeGoals = inProgressGoals.length;
   const todayDate = new Date().toISOString().split('T')[0];
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
   const completedToday = todayTasks.filter(t => t.isCompleted).length;
@@ -94,7 +107,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '');
       // Capitalize first letter of day name
       const dayNameCap = dayName.charAt(0).toUpperCase() + dayName.slice(1);
-      
+
       list.push({
         dateStr,
         dayName: dayNameCap,
@@ -113,10 +126,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       const d = new Date(today);
       d.setDate(today.getDate() - i);
       const dateStr = d.toISOString().split('T')[0];
-      
+
       const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '');
       const dayNameCap = dayName.charAt(0).toUpperCase() + dayName.slice(1);
-      
+
       const formattedDateFull = d.toLocaleDateString('fr-FR', {
         weekday: 'long',
         day: 'numeric',
@@ -125,7 +138,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       const formattedDateFullCap = formattedDateFull.charAt(0).toUpperCase() + formattedDateFull.slice(1);
 
       const ritual = (data.morningRituals || []).find(r => r.date === dateStr);
-      
+
       list.push({
         dateStr,
         dayName: dayNameCap,
@@ -151,7 +164,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         const challengeDate = new Date(current.date);
         const diffTime = now.getTime() - challengeDate.getTime();
         const diffDays = diffTime / (1000 * 60 * 60 * 24);
-        
+
         if (diffDays <= 7) {
           setWeeklyChallenge(current);
           isCurrentValid = true;
@@ -190,118 +203,113 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
     return QUOTES[dayOfYear % QUOTES.length];
   }, []);
 
-  let streakColor = 'bg-stone-50 text-stone-500 border-stone-200 dark:bg-stone-800 dark:text-stone-400 dark:border-stone-700';
-  let streakIconColor = 'text-stone-400 bg-white border-stone-100 dark:text-stone-500 dark:bg-stone-900 dark:border-stone-800';
   let streakMessage = "Commence aujourd'hui.";
-  let streakValueColor = 'text-stone-900 dark:text-stone-100';
+  if (currentStreak >= 7) streakMessage = "Remarquable constance.";
+  else if (currentStreak >= 3) streakMessage = "Tu tiens le rythme !";
+  else if (currentStreak > 0) streakMessage = "Continue sur ta lancée.";
 
-  if (currentStreak >= 7) {
-    streakColor = 'bg-emerald-50 text-emerald-800 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
-    streakIconColor = 'text-emerald-600 bg-white border-emerald-50 dark:text-emerald-400 dark:bg-stone-900 dark:border-emerald-500/20';
-    streakMessage = "Remarquable constance.";
-  } else if (currentStreak >= 3) {
-    streakColor = 'bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
-    streakIconColor = 'text-amber-600 bg-white border-amber-50 dark:text-amber-400 dark:bg-stone-900 dark:border-amber-500/20';
-    streakMessage = "Tu tiens le rythme !";
-  } else if (currentStreak > 0) {
-    // 1 or 2 days
-    streakColor = 'bg-stone-50 text-stone-600 border-stone-100 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700';
-    streakIconColor = 'text-amber-500 bg-white border-stone-100 dark:text-amber-400 dark:bg-stone-900 dark:border-stone-800';
-    streakMessage = "Continue sur ta lancée.";
-  }
+  const todayLabel = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col min-h-full py-2">
 
-      {/* Greeting Banner */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-stone-200/55 dark:border-stone-800 pb-6">
-        <div>
-          <h2 className="text-3xl font-light text-stone-900 dark:text-stone-100">
-            Bonjour, <span className="font-serif italic text-[#047857] dark:text-emerald-400">{userProfile?.name}</span>
+      {/* ===================== ZONE 1 — AUJOURD'HUI ===================== */}
+
+      {/* Hero : accueil + priorité + repères du jour */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-800 via-emerald-900 to-emerald-950 dark:from-stone-800 dark:via-stone-900 dark:to-stone-950 text-stone-100 p-6 md:p-9 shadow-xl mb-6">
+        {/* Décor ambiant */}
+        <div className="absolute -top-20 -right-16 w-72 h-72 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-12 w-72 h-72 bg-amber-300/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10">
+          {/* Date + salutation */}
+          <p className="text-[11px] uppercase tracking-[0.22em] font-sans font-bold text-emerald-300/80 dark:text-emerald-400/80 mb-2 capitalize">
+            {todayLabel}
+          </p>
+          <h2 className="text-3xl md:text-4xl font-light leading-tight">
+            Bonjour, <span className="font-serif italic text-amber-200 dark:text-amber-300">{userProfile?.name}</span>
           </h2>
-          <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">
-            Chaque jour est un nouveau départ.
-          </p>
-        </div>
-        <div className="text-left md:text-right">
-          <p className="text-[10px] md:text-xs text-stone-400 dark:text-stone-500 font-sans uppercase tracking-widest leading-none capitalize mb-1">
-            {new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}
-          </p>
-          <p className="text-sm font-serif italic text-[#047857] dark:text-emerald-400 leading-snug">Se donner la direction pour ne pas subir.</p>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 text-stone-800 dark:text-stone-200">
-        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
-              <Target className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-xs text-stone-400 dark:text-stone-500 uppercase font-sans font-bold">Cap en cours</p>
-              <p className="text-2xl font-light text-stone-900 dark:text-stone-100">{activeGoals} Objectif{activeGoals > 1 ? 's' : ''}</p>
-            </div>
+          {/* Priorité du jour */}
+          <div className="mt-6">
+            {todayRitual?.priority ? (
+              <div className="flex items-start gap-3.5">
+                <div className="p-2.5 bg-amber-400/20 text-amber-200 rounded-2xl shrink-0">
+                  <Target className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest font-sans font-bold text-emerald-300/70 dark:text-emerald-400/70 mb-1">
+                    Ma priorité aujourd'hui
+                  </p>
+                  <p className="text-lg md:text-xl font-serif italic text-stone-50 leading-snug">
+                    « {todayRitual.priority} »
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5">
+                <div className="flex items-center gap-3">
+                  <Sunrise className="w-5 h-5 text-amber-200 shrink-0" />
+                  <p className="text-sm font-sans text-emerald-50/90">
+                    Quelle est ta priorité pour aujourd'hui ? Prends un instant pour la poser.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-          <button
-            onClick={() => onChangeView('goals')}
-            className="text-left text-sm text-emerald-700 dark:text-emerald-400 font-sans uppercase tracking-widest hover:text-emerald-800 dark:hover:text-emerald-300 transition"
-          >
-            Examiner la direction &rarr;
-          </button>
-        </div>
 
-        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
-              <CheckCircle2 className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-xs text-stone-400 dark:text-stone-500 uppercase font-sans font-bold">Actions du jour</p>
-              <p className="text-2xl font-light text-stone-900 dark:text-stone-100">{completedToday} / {todayTasks.length} accomplis</p>
-            </div>
-          </div>
-          <button
-            onClick={() => onChangeView('tasks')}
-            className="text-left text-sm text-emerald-700 dark:text-emerald-400 font-sans uppercase tracking-widest hover:text-emerald-800 dark:hover:text-emerald-300 transition"
-          >
-            Voir mon quotidien &rarr;
-          </button>
-        </div>
+          {/* Repères du jour : 3 indicateurs */}
+          <div className="grid grid-cols-3 gap-3 mt-7">
+            <button
+              onClick={() => onChangeView('tasks')}
+              className="text-left bg-white/10 hover:bg-white/[0.16] border border-white/10 rounded-2xl p-4 transition group"
+            >
+              <CheckCircle2 className="w-5 h-5 text-emerald-300 mb-2.5" />
+              <p className="text-2xl font-light leading-none">
+                {completedToday}<span className="text-base text-emerald-200/50">/{todayTasks.length}</span>
+              </p>
+              <p className="text-[10px] uppercase tracking-wider font-sans font-bold text-emerald-200/70 mt-1.5 group-hover:text-emerald-100 transition">
+                Actions
+              </p>
+            </button>
 
-        <div className={`rounded-3xl p-6 border shadow-sm flex flex-col justify-between ${streakColor}`}>
-          <div className="flex items-center gap-4 mb-4">
-            <div className={`p-3 rounded-xl border ${streakIconColor}`}>
-              <Flame className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-xs uppercase font-sans font-bold leading-tight opacity-70">Régularité</p>
-              <p className={`text-2xl font-light ${streakValueColor}`}>{currentStreak} jour{currentStreak > 1 ? 's' : ''}</p>
-            </div>
-          </div>
-          <p className="text-left text-sm font-sans uppercase tracking-widest font-medium opacity-90">
-            {streakMessage}
-          </p>
-        </div>
+            <button
+              onClick={() => onChangeView('habits')}
+              className="text-left bg-white/10 hover:bg-white/[0.16] border border-white/10 rounded-2xl p-4 transition group"
+            >
+              <Repeat className="w-5 h-5 text-emerald-300 mb-2.5" />
+              <p className="text-2xl font-light leading-none">
+                {completedHabitsToday}<span className="text-base text-emerald-200/50">/{todaysHabits.length}</span>
+              </p>
+              <p className="text-[10px] uppercase tracking-wider font-sans font-bold text-emerald-200/70 mt-1.5 group-hover:text-emerald-100 transition">
+                Habitudes
+              </p>
+            </button>
 
-        <div className="bg-emerald-900 dark:bg-emerald-950 text-stone-100 rounded-3xl p-6 shadow-md flex flex-col justify-center relative overflow-hidden group">
-          <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Sparkles className="w-16 h-16" />
-          </div>
-          <div className="relative z-10 flex flex-col h-full justify-between">
-            <div>
-              <h3 className="font-sans text-[10px] uppercase tracking-widest text-emerald-300 font-bold mb-3">Inspiration du Jour</h3>
-              <p className="text-sm opacity-90 italic leading-relaxed">
-                "{dailyQuote.text}"
+            <div className="bg-white/10 border border-white/10 rounded-2xl p-4" title={streakMessage}>
+              <Flame className="w-5 h-5 text-amber-300 mb-2.5" />
+              <p className="text-2xl font-light leading-none">
+                {currentStreak}<span className="text-base text-emerald-200/50"> j</span>
+              </p>
+              <p className="text-[10px] uppercase tracking-wider font-sans font-bold text-emerald-200/70 mt-1.5">
+                Régularité
               </p>
             </div>
-            <p className="text-xs text-right mt-4 opacity-50 font-sans font-bold">— {dailyQuote.author}</p>
+          </div>
+
+          {/* Inspiration du jour */}
+          <div className="flex items-start gap-2.5 mt-7 pt-5 border-t border-white/10">
+            <Sparkles className="w-4 h-4 text-emerald-300/70 shrink-0 mt-0.5" />
+            <p className="text-xs text-emerald-50/70 italic font-serif leading-relaxed">
+              « {dailyQuote.text} » <span className="not-italic text-emerald-200/50 font-sans">— {dailyQuote.author}</span>
+            </p>
           </div>
         </div>
       </div>
 
       {/* Habitudes du jour */}
       {todaysHabits.length > 0 && (
-        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
@@ -322,7 +330,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
             </button>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="grid sm:grid-cols-2 gap-2.5">
             {todaysHabits.map(habit => {
               const done = isCompletedOn(habit.id, todayDate);
               return (
@@ -344,120 +352,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         </div>
       )}
 
-      {/* Rituels du matin */}
-      <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm mb-8 animate-in fade-in slide-in-from-bottom-4 duration-550">
-        <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Régularité du rituel</h3>
-        <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-1">7 jours glissants</p>
-        
-        <div className="flex flex-wrap items-center gap-5 mt-6">
-          {recentRitualDays.map((day) => {
-            const ritual = day.ritual;
-            let colorClass = "";
-            let statusTitle = "";
-            
-            if (!ritual) {
-              colorClass = "bg-stone-100 dark:bg-stone-800 border border-dashed border-stone-300 dark:border-stone-700";
-              statusTitle = "Aucun rituel";
-            } else if (ritual.status === 'skipped') {
-              colorClass = "bg-stone-200 dark:bg-stone-700";
-              statusTitle = "Passé";
-            } else if (ritual.status === 'completed') {
-              if (ritual.mood === 'Super') {
-                colorClass = "bg-amber-400";
-                statusTitle = "Super";
-              } else if (ritual.mood === 'Bien') {
-                colorClass = "bg-emerald-500";
-                statusTitle = "Bien";
-              } else if (ritual.mood === 'Moyen') {
-                colorClass = "bg-stone-400 dark:bg-stone-500";
-                statusTitle = "Moyen";
-              } else if (ritual.mood === 'Difficile') {
-                colorClass = "bg-stone-600 dark:bg-stone-700";
-                statusTitle = "Difficile";
-              }
-            }
-
-            const priorityText = ritual?.priority ? ` - Priorité : ${ritual.priority}` : '';
-            const finalTitle = `${statusTitle} - ${day.formattedDate}${priorityText}`;
-
-            return (
-              <div key={day.dateStr} className="flex flex-col items-center gap-2">
-                <div 
-                  className={`w-8 h-8 rounded-full ${colorClass} transition transform hover:scale-110 cursor-help flex items-center justify-center`}
-                  title={finalTitle}
-                >
-                </div>
-                <span className="text-[10px] text-stone-400 dark:text-stone-500 font-sans font-medium">
-                  {day.dayName}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        {todayRitual?.status === 'completed' && todayRitual?.priority && (
-          <p className="italic text-stone-600 dark:text-stone-300 text-sm mt-4">
-            Priorité du jour : {todayRitual.priority}
-          </p>
-        )}
-      </div>
-
-      <div className="mb-8">
-        <OrphansPanel 
-          data={data} 
-          updateData={updateData}
-          onChangeView={onChangeView}
-        />
-      </div>
-
-      {/* Aperçu de la carte mentale */}
-      <div className="bg-white dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h3 className="text-xl font-serif font-light text-stone-800 dark:text-stone-200">
-              Ta Constellation d'Intentions
-            </h3>
-            <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
-              Chaque action relie à un cap plus grand.
-            </p>
-          </div>
-          <button
-            onClick={() => onChangeView('graph')}
-            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition font-sans text-sm font-bold uppercase tracking-widest text-left sm:text-right shrink-0"
-          >
-            Explorer ma carte complète &rarr;
-          </button>
-        </div>
-
-        {/* Thumbnail Preview Area */}
-        <div className="relative h-[200px] w-full overflow-hidden rounded-3xl border border-stone-100 dark:border-stone-800 bg-stone-50/20 dark:bg-stone-800/20 pointer-events-none select-none">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div
-              style={{
-                width: '1000px',
-                height: '600px',
-                transform: 'scale(0.4)',
-                transformOrigin: 'center',
-              }}
-              className="shrink-0"
-            >
-              <GraphView data={data} isPreview={true} />
-            </div>
-          </div>
-          {/* Bottom Fade Gradient for "Aperçu" style */}
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-white dark:to-stone-900 pointer-events-none" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <ProgressChart tasks={data.tasks} />
-        {data.goals.length > 0 && <GoalDomainChart goals={data.goals} />}
-      </div>
-
-      {/* BILAN DU SOIR SECTION */}
-      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-8 shadow-xs relative overflow-hidden">
-        {/* Decorative Top Line/Indicator */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500/10"></div>
+      {/* Ma réussite du jour (bilan du soir) */}
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-2 shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500/20"></div>
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-stone-100 dark:border-stone-800">
           <div className="flex items-center gap-3">
@@ -466,36 +363,34 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
             </div>
             <div>
               <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-400 dark:text-stone-500">
-                Le Bilan du Soir
+                À noter en fin de journée
               </h3>
               <p className="text-lg font-serif italic text-stone-800 dark:text-stone-200">
-                Le Bilan des Réussites
+                Ma réussite du jour
               </p>
             </div>
           </div>
 
-          {/* Badge Count Subtitle */}
           <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 rounded-full">
-            <Award className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-pulse" />
+            <Award className="w-4 h-4 text-amber-500 dark:text-amber-400" />
             <span className="text-xs font-sans font-semibold text-amber-700 dark:text-amber-400">
-              {recentDays.filter(d => d.success).length} badge{recentDays.filter(d => d.success).length > 1 ? 's' : ''} cette semaine
+              {recentDays.filter(d => d.success).length} cette semaine
             </span>
           </div>
         </div>
 
-        {/* Dynamic Inner Container */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Main Success Area: Form vs Display Badge */}
+
+          {/* Saisie / célébration */}
           <div className="lg:col-span-8 flex flex-col justify-center h-full">
             {!isSaved ? (
               <div className="space-y-4">
                 <div className="space-y-1">
                   <h4 className="text-base font-sans font-semibold text-stone-800 dark:text-stone-200">
-                    Quelle est votre victoire d'aujourd'hui ?
+                    Quelle est ta réussite d'aujourd'hui ?
                   </h4>
                   <p className="text-xs text-stone-500 dark:text-stone-400">
-                    Notez ici un seul fait, une action, un moment précieux ou un accomplissement dont vous êtes fier(e) aujourd'hui, aussi modeste soit-il.
+                    Note un seul fait, une action, un moment précieux ou un accomplissement dont tu es fier(e) aujourd'hui, aussi modeste soit-il.
                   </p>
                 </div>
 
@@ -504,7 +399,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                     type="text"
                     value={successInput}
                     onChange={(e) => setSuccessInput(e.target.value)}
-                    placeholder="Ex: J'ai pris le temps de marcher 20 minutes en pleine conscience..."
+                    placeholder="Ex : j'ai pris le temps de marcher 20 minutes en pleine conscience..."
                     className="flex-1 px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-stone-800 dark:text-stone-100 font-sans text-sm transition"
                     maxLength={140}
                   />
@@ -519,9 +414,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
               </div>
             ) : (
               <div className="bg-[#FFFBEB] dark:bg-amber-500/10 border border-amber-200/50 dark:border-amber-500/20 rounded-3xl p-6 relative flex flex-col items-center text-center animate-in zoom-in-95 duration-500">
-                {/* Visual Amber Badge Award */}
                 <div className="relative mb-4 flex items-center justify-center">
-                  {/* Glowing Amber Circles */}
                   <div className="absolute w-16 h-16 bg-amber-400/20 rounded-full animate-ping opacity-60"></div>
                   <div className="absolute w-12 h-12 bg-amber-400/30 rounded-full"></div>
                   <div className="relative p-2.5 bg-amber-500 text-white rounded-full shadow-md z-10">
@@ -530,7 +423,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                 </div>
 
                 <span className="text-[10px] uppercase tracking-widest text-amber-700 dark:text-amber-400 font-sans font-bold bg-amber-100 dark:bg-amber-500/20 px-3 py-1 rounded-full mb-3">
-                  Victoire Célébrée • Badge Obtenu
+                  Réussite du jour notée
                 </span>
 
                 <p className="font-serif italic text-lg md:text-xl text-stone-900 dark:text-stone-100 max-w-xl px-2 leading-relaxed">
@@ -538,10 +431,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                 </p>
 
                 <p className="text-xs text-stone-500 dark:text-stone-400 font-sans mt-4 max-w-sm">
-                  Chaque réussite, petite ou grande, conforte votre direction. Chaque jour est votre nouveau départ.
+                  Chaque réussite, petite ou grande, conforte ta direction. Chaque jour est un nouveau départ.
                 </p>
 
-                {/* Adjust/Edit Button */}
                 <button
                   onClick={handleEditSuccess}
                   className="mt-6 flex items-center gap-2 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 text-xs font-sans font-medium hover:underline transition cursor-pointer"
@@ -552,29 +444,26 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
               </div>
             )}
           </div>
-          
-          {/* History / Weekly Badge Progress Tracking Sidebar inside the card */}
+
+          {/* Réussites des 7 derniers jours */}
           <div className="lg:col-span-4 bg-stone-50 dark:bg-stone-800 rounded-2xl p-5 border border-stone-100 dark:border-stone-700">
             <h4 className="text-[10px] uppercase tracking-wider font-sans font-bold text-stone-400 dark:text-stone-500 mb-4 text-center lg:text-left">
-              Vos Badges Hebdomadaires
+              Mes 7 derniers jours
             </h4>
-            
+
             <div className="grid grid-cols-7 lg:grid-cols-1 gap-2.5">
               {recentDays.map((day) => (
-                <div 
-                  key={day.dateStr} 
+                <div
+                  key={day.dateStr}
                   className={`flex flex-col lg:flex-row items-center lg:justify-between gap-1.5 lg:gap-3 p-1 rounded-xl transition ${
                     day.isToday ? 'bg-white/80 dark:bg-stone-700/80 shadow-2xs border border-stone-200/50 dark:border-stone-600/50' : ''
                   }`}
                   title={day.success ? `Réussite : ${day.success}` : "Pas de réussite notée pour ce jour"}
                 >
                   <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2.5">
-                    {/* The small Amber visual badge circle */}
                     {day.success ? (
                       <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-xs shrink-0 relative group">
                         <Award className="w-3.5 h-3.5" />
-
-                        {/* Tooltip for hover success view */}
                         <div className="hidden lg:group-hover:block absolute left-full ml-2 w-48 bg-stone-900 dark:bg-stone-700 text-white text-xs p-2 rounded-lg shadow-lg z-50 pointer-events-none font-sans">
                           {day.success}
                         </div>
@@ -597,13 +486,12 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                     </div>
                   </div>
 
-                  {/* Mini label indicator */}
                   <span className={`text-[9px] font-sans max-lg:hidden px-2 py-0.5 rounded-full ${
                     day.success
                       ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-100/50 dark:border-amber-500/20'
                       : 'text-stone-400 dark:text-stone-500'
                   }`}>
-                    {day.success ? 'Obtenu' : 'À venir'}
+                    {day.success ? 'Noté' : 'À venir'}
                   </span>
                 </div>
               ))}
@@ -613,8 +501,168 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         </div>
       </div>
 
+      {/* ===================== ZONE 2 — MA PROGRESSION ===================== */}
+      <SectionLabel>Ma progression</SectionLabel>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Objectifs en cours */}
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm flex flex-col">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
+              <Target className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Objectifs en cours</h3>
+              <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-0.5">
+                {activeGoals} objectif{activeGoals > 1 ? 's' : ''} en route
+              </p>
+            </div>
+          </div>
+
+          {activeGoals > 0 ? (
+            <div className="space-y-2 flex-1">
+              {inProgressGoals.slice(0, 3).map(goal => (
+                <div key={goal.id} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-stone-50/70 dark:bg-stone-800 border border-stone-100 dark:border-stone-700">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span className="font-sans text-sm text-stone-700 dark:text-stone-200 truncate">{goal.title}</span>
+                </div>
+              ))}
+              {activeGoals > 3 && (
+                <p className="text-xs text-stone-400 dark:text-stone-500 font-sans pl-1 pt-1">
+                  + {activeGoals - 3} autre{activeGoals - 3 > 1 ? 's' : ''}
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-stone-500 dark:text-stone-400 italic flex-1">
+              Aucun objectif en cours pour l'instant. Définis une première intention pour donner une direction à ton quotidien.
+            </p>
+          )}
+
+          <button
+            onClick={() => onChangeView('goals')}
+            className="mt-4 text-left text-sm text-emerald-700 dark:text-emerald-400 font-sans uppercase tracking-widest hover:text-emerald-800 dark:hover:text-emerald-300 transition"
+          >
+            Voir mes objectifs &rarr;
+          </button>
+        </div>
+
+        {/* Régularité du rituel du matin */}
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm">
+          <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Régularité du rituel</h3>
+          <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-0.5">7 derniers jours</p>
+
+          <div className="flex flex-wrap items-center gap-4 mt-6">
+            {recentRitualDays.map((day) => {
+              const ritual = day.ritual;
+              let colorClass = "";
+              let statusTitle = "";
+
+              if (!ritual) {
+                colorClass = "bg-stone-100 dark:bg-stone-800 border border-dashed border-stone-300 dark:border-stone-700";
+                statusTitle = "Aucun rituel";
+              } else if (ritual.status === 'skipped') {
+                colorClass = "bg-stone-200 dark:bg-stone-700";
+                statusTitle = "Passé";
+              } else if (ritual.status === 'completed') {
+                if (ritual.mood === 'Super') {
+                  colorClass = "bg-amber-400";
+                  statusTitle = "Super";
+                } else if (ritual.mood === 'Bien') {
+                  colorClass = "bg-emerald-500";
+                  statusTitle = "Bien";
+                } else if (ritual.mood === 'Moyen') {
+                  colorClass = "bg-stone-400 dark:bg-stone-500";
+                  statusTitle = "Moyen";
+                } else if (ritual.mood === 'Difficile') {
+                  colorClass = "bg-stone-600 dark:bg-stone-700";
+                  statusTitle = "Difficile";
+                }
+              }
+
+              const priorityText = ritual?.priority ? ` - Priorité : ${ritual.priority}` : '';
+              const finalTitle = `${statusTitle} - ${day.formattedDate}${priorityText}`;
+
+              return (
+                <div key={day.dateStr} className="flex flex-col items-center gap-2">
+                  <div
+                    className={`w-8 h-8 rounded-full ${colorClass} transition transform hover:scale-110 cursor-help flex items-center justify-center`}
+                    title={finalTitle}
+                  >
+                  </div>
+                  <span className="text-[10px] text-stone-400 dark:text-stone-500 font-sans font-medium">
+                    {day.dayName}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {todayRitual?.status === 'completed' && todayRitual?.priority && (
+            <p className="italic text-stone-600 dark:text-stone-300 text-sm mt-5">
+              Priorité du jour : {todayRitual.priority}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Intentions en sommeil */}
+      <div className="mb-2">
+        <OrphansPanel
+          data={data}
+          updateData={updateData}
+          onChangeView={onChangeView}
+        />
+      </div>
+
+      {/* ===================== ZONE 3 — PRENDRE DU RECUL ===================== */}
+      <SectionLabel>Prendre du recul</SectionLabel>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <ProgressChart tasks={data.tasks} />
+        {data.goals.length > 0 && <GoalDomainChart goals={data.goals} />}
+      </div>
+
+      {/* Aperçu de la carte mentale */}
+      <div className="bg-white dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-6 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h3 className="text-xl font-serif font-light text-stone-800 dark:text-stone-200">
+              Mes objectifs et leurs actions
+            </h3>
+            <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
+              Chaque action est reliée à un objectif plus grand.
+            </p>
+          </div>
+          <button
+            onClick={() => onChangeView('graph')}
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition font-sans text-sm font-bold uppercase tracking-widest text-left sm:text-right shrink-0"
+          >
+            Voir la carte complète &rarr;
+          </button>
+        </div>
+
+        <div className="relative h-[200px] w-full overflow-hidden rounded-3xl border border-stone-100 dark:border-stone-800 bg-stone-50/20 dark:bg-stone-800/20 pointer-events-none select-none">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div
+              style={{
+                width: '1000px',
+                height: '600px',
+                transform: 'scale(0.4)',
+                transformOrigin: 'center',
+              }}
+              className="shrink-0"
+            >
+              <GraphView data={data} isPreview={true} />
+            </div>
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-white dark:to-stone-900 pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Défi de la semaine */}
       {weeklyChallenge && (
-        <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-8 relative overflow-hidden group w-full">
+        <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-6 relative overflow-hidden group w-full">
           <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
             <div className="flex items-start gap-4">
               <div className="p-3.5 bg-white dark:bg-stone-800 shadow-sm border border-stone-100 dark:border-stone-700 rounded-2xl text-stone-600 dark:text-stone-300 shrink-0">
@@ -642,17 +690,19 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         </div>
       )}
 
+      {/* Première intention (aucun objectif) */}
       {data.goals.length === 0 && (
         <div className="bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl p-6 md:p-8 text-center max-w-2xl mx-auto border border-stone-200 dark:border-stone-800 w-full shrink-0">
           <h3 className="text-xs md:text-sm uppercase tracking-widest text-[#047857] dark:text-emerald-400 mb-4 font-sans font-bold">La première étape</h3>
           <p className="text-base md:text-lg leading-snug font-light italic text-stone-700 dark:text-stone-300 mb-6 font-serif">
-            Chaque voyage commence par une première direction. Définissez ce qui résonne en vous, sans pression, simplement guidé par l'intention de donner du sens à votre quotidien.
+            Chaque voyage commence par une première direction. Définis ce qui résonne en toi, sans pression, simplement guidé par l'intention de donner du sens à ton quotidien.
           </p>
           <button
             onClick={() => onChangeView('goals')}
-            className="bg-[#047857] dark:bg-emerald-700 w-full sm:w-auto flex justify-center mx-auto text-white px-6 py-3.5 md:py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] dark:hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer"
+            className="bg-[#047857] dark:bg-emerald-700 w-full sm:w-auto inline-flex justify-center items-center gap-2 mx-auto text-white px-6 py-3.5 md:py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] dark:hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer"
           >
             Fixer ma première intention
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       )}
