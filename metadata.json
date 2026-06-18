@@ -2,5 +2,5 @@
   "name": "SKOPOS",
   "description": "Un outil personnel de gestion de vie, d'objectifs et de quotidien conçu pour l'utilisateur, afin de reprendre le cap, fixer des intentions et devenir l'acteur de ses journées.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": []
 }
