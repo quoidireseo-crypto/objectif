@@ -124,16 +124,16 @@ export function ReviewView({ data, updateData }: ReviewProps) {
         </div>
       )}
 
-      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-stone-200 pb-6">
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
         <div>
-          <h2 className="text-3xl md:text-4xl font-light text-stone-900">Mon Bilan</h2>
-          <p className="text-stone-500 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Prendre du recul pour mieux avancer.</p>
+          <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100">Mon Bilan</h2>
+          <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Prendre du recul pour mieux avancer.</p>
         </div>
-        <div className="flex bg-stone-100 p-1 rounded-xl w-full sm:w-auto">
+        <div className="flex bg-stone-100 dark:bg-stone-800 p-1 rounded-xl w-full sm:w-auto">
           <button
             onClick={() => setPeriod('weekly')}
             className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-sans font-bold uppercase tracking-wider transition-all ${
-              period === 'weekly' ? 'bg-white shadow-sm text-stone-900' : 'text-stone-500 hover:text-stone-700'
+              period === 'weekly' ? 'bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-stone-100' : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
             }`}
           >
             Hebdomadaire
@@ -141,7 +141,7 @@ export function ReviewView({ data, updateData }: ReviewProps) {
           <button
             onClick={() => setPeriod('monthly')}
             className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-sans font-bold uppercase tracking-wider transition-all ${
-              period === 'monthly' ? 'bg-white shadow-sm text-stone-900' : 'text-stone-500 hover:text-stone-700'
+              period === 'monthly' ? 'bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-stone-100' : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
             }`}
           >
             Mensuel
@@ -150,45 +150,45 @@ export function ReviewView({ data, updateData }: ReviewProps) {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100 flex flex-col justify-between">
-          <div className="flex items-center gap-3 mb-4 text-emerald-800">
+        <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-3xl p-6 border border-emerald-100 dark:border-emerald-500/20 flex flex-col justify-between">
+          <div className="flex items-center gap-3 mb-4 text-emerald-800 dark:text-emerald-400">
             <CheckCircle2 className="w-5 h-5" />
             <span className="font-sans font-bold uppercase tracking-widest text-[10px]">Tâches Complétées</span>
           </div>
           <div>
-            <span className="text-4xl font-light text-emerald-950 block">{stats.completedTasks}</span>
-            <span className="text-emerald-700 text-sm italic mt-1 block">sur {stats.totalTasks} au total</span>
+            <span className="text-4xl font-light text-emerald-950 dark:text-emerald-200 block">{stats.completedTasks}</span>
+            <span className="text-emerald-700 dark:text-emerald-400 text-sm italic mt-1 block">sur {stats.totalTasks} au total</span>
           </div>
         </div>
 
-        <div className="bg-amber-50 rounded-3xl p-6 border border-amber-100 flex flex-col justify-between">
-          <div className="flex items-center gap-3 mb-4 text-amber-800">
+        <div className="bg-amber-50 dark:bg-amber-500/10 rounded-3xl p-6 border border-amber-100 dark:border-amber-500/20 flex flex-col justify-between">
+          <div className="flex items-center gap-3 mb-4 text-amber-800 dark:text-amber-400">
             <Activity className="w-5 h-5" />
             <span className="font-sans font-bold uppercase tracking-widest text-[10px]">Taux de Régularité</span>
           </div>
           <div>
-            <span className="text-4xl font-light text-amber-950 block">{stats.completionRate}%</span>
-            <span className="text-amber-700 text-sm italic mt-1 block">des engagements tenus</span>
+            <span className="text-4xl font-light text-amber-950 dark:text-amber-200 block">{stats.completionRate}%</span>
+            <span className="text-amber-700 dark:text-amber-400 text-sm italic mt-1 block">des engagements tenus</span>
           </div>
         </div>
 
-        <div className="bg-indigo-50 rounded-3xl p-6 border border-indigo-100 flex flex-col justify-between">
-          <div className="flex items-center gap-3 mb-4 text-indigo-800">
+        <div className="bg-indigo-50 dark:bg-indigo-500/10 rounded-3xl p-6 border border-indigo-100 dark:border-indigo-500/20 flex flex-col justify-between">
+          <div className="flex items-center gap-3 mb-4 text-indigo-800 dark:text-indigo-400">
             <BookOpen className="w-5 h-5" />
             <span className="font-sans font-bold uppercase tracking-widest text-[10px]">Jours Documentés</span>
           </div>
           <div>
-            <span className="text-4xl font-light text-indigo-950 block">{stats.journalEntries.length}</span>
-            <span className="text-indigo-700 text-sm italic mt-1 block">entrées de journal</span>
+            <span className="text-4xl font-light text-indigo-950 dark:text-indigo-200 block">{stats.journalEntries.length}</span>
+            <span className="text-indigo-700 dark:text-indigo-400 text-sm italic mt-1 block">entrées de journal</span>
           </div>
         </div>
       </div>
 
       {/* Progression des objectifs */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm mb-8">
-        <div className="flex items-center gap-3 mb-8 border-b border-stone-100 pb-4">
-          <BarChartIcon className="w-6 h-6 text-stone-400" />
-          <h3 className="text-xl font-light text-stone-900">Progression des objectifs</h3>
+      <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm mb-8">
+        <div className="flex items-center gap-3 mb-8 border-b border-stone-100 dark:border-stone-800 pb-4">
+          <BarChartIcon className="w-6 h-6 text-stone-400 dark:text-stone-500" />
+          <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Progression des objectifs</h3>
         </div>
         <div className="h-64 mt-4 text-xs font-sans">
           <ResponsiveContainer width="100%" height="100%">
@@ -208,17 +208,17 @@ export function ReviewView({ data, updateData }: ReviewProps) {
       </div>
 
       {/* Cheminement de tes objectifs */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm mb-8">
+      <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm mb-8">
         <div>
-          <h3 className="text-xl font-light text-stone-900">Cheminement de tes objectifs</h3>
-          <p className="text-xs font-sans uppercase tracking-widest text-stone-400 mt-1">
+          <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Cheminement de tes objectifs</h3>
+          <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-1">
             La trace de ton évolution.
           </p>
         </div>
 
         {goalsWithHistory.length === 0 ? (
           <div className="text-center py-8">
-            <p className="italic text-stone-400 text-sm">
+            <p className="italic text-stone-400 dark:text-stone-500 text-sm">
               Ton cheminement s'écrira ici au fil de tes modifications.
             </p>
           </div>
@@ -234,11 +234,11 @@ export function ReviewView({ data, updateData }: ReviewProps) {
               return (
                 <div
                   key={goal.id}
-                  className="p-5 bg-stone-50 rounded-2xl border border-stone-100 hover:border-stone-200 transition"
+                  className="p-5 bg-stone-50 dark:bg-stone-800 rounded-2xl border border-stone-100 dark:border-stone-700 hover:border-stone-200 dark:hover:border-stone-600 transition"
                 >
-                  <h4 className="font-serif font-light text-lg text-stone-800">
+                  <h4 className="font-serif font-light text-lg text-stone-800 dark:text-stone-200">
                     {goal.title}{' '}
-                    <span className="text-xs text-stone-400 font-sans">
+                    <span className="text-xs text-stone-400 dark:text-stone-500 font-sans">
                       ({entries.length} événement{entries.length > 1 ? 's' : ''})
                     </span>
                   </h4>
@@ -255,18 +255,18 @@ export function ReviewView({ data, updateData }: ReviewProps) {
                       );
                     })}
                     {extraCount > 0 && (
-                      <span className="text-[10px] text-stone-400 font-sans italic">
+                      <span className="text-[10px] text-stone-400 dark:text-stone-500 font-sans italic">
                         +{extraCount} autre{extraCount > 1 ? 's' : ''}
                       </span>
                     )}
                   </div>
 
                   <div className="flex flex-col gap-1 mt-3">
-                    <p className="text-xs text-stone-400 font-sans">
+                    <p className="text-xs text-stone-400 dark:text-stone-500 font-sans">
                       Commencé le {firstEntry.date}
                     </p>
                     {achievedEntry && (
-                      <p className="text-xs text-emerald-600 font-sans font-bold flex items-center gap-1">
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400 font-sans font-bold flex items-center gap-1">
                         <span>✦</span> Atteint le {achievedEntry.date}
                       </p>
                     )}
@@ -280,10 +280,10 @@ export function ReviewView({ data, updateData }: ReviewProps) {
 
       {/* Bilans hebdomadaires */}
       {weeklyReviews.length > 0 && (
-        <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm mb-8">
-          <div className="flex items-center gap-3 mb-8 border-b border-stone-100 pb-4">
-            <Compass className="w-6 h-6 text-stone-400" />
-            <h3 className="text-xl font-light text-stone-900">Bilans hebdomadaires</h3>
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm mb-8">
+          <div className="flex items-center gap-3 mb-8 border-b border-stone-100 dark:border-stone-800 pb-4">
+            <Compass className="w-6 h-6 text-stone-400 dark:text-stone-500" />
+            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Bilans hebdomadaires</h3>
           </div>
           <div className="space-y-6">
             {weeklyReviews.map(review => {
@@ -293,20 +293,20 @@ export function ReviewView({ data, updateData }: ReviewProps) {
               const label = `${weekStart.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} → ${weekEnd.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`;
 
               return (
-                <div key={review.id} className="p-5 bg-stone-50 rounded-2xl border border-stone-100">
-                  <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-stone-400 block mb-3">{label}</span>
+                <div key={review.id} className="p-5 bg-stone-50 dark:bg-stone-800 rounded-2xl border border-stone-100 dark:border-stone-700">
+                  <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500 block mb-3">{label}</span>
                   <div className="space-y-3 text-sm">
                     <div className="flex items-start gap-2.5">
                       <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                      <p className="text-stone-700 italic">{review.win}</p>
+                      <p className="text-stone-700 dark:text-stone-300 italic">{review.win}</p>
                     </div>
                     <div className="flex items-start gap-2.5">
-                      <Mountain className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
-                      <p className="text-stone-700 italic">{review.challenge}</p>
+                      <Mountain className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0 mt-0.5" />
+                      <p className="text-stone-700 dark:text-stone-300 italic">{review.challenge}</p>
                     </div>
                     <div className="flex items-start gap-2.5">
-                      <Compass className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <p className="text-stone-700 italic">{review.intention}</p>
+                      <Compass className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <p className="text-stone-700 dark:text-stone-300 italic">{review.intention}</p>
                     </div>
                   </div>
                 </div>
@@ -317,27 +317,27 @@ export function ReviewView({ data, updateData }: ReviewProps) {
       )}
 
       {/* Rétrospective */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm">
-        <div className="flex items-center gap-3 mb-8 border-b border-stone-100 pb-4">
-          <CalendarDays className="w-6 h-6 text-stone-400" />
-          <h3 className="text-xl font-light text-stone-900">Rétrospective</h3>
+      <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm">
+        <div className="flex items-center gap-3 mb-8 border-b border-stone-100 dark:border-stone-800 pb-4">
+          <CalendarDays className="w-6 h-6 text-stone-400 dark:text-stone-500" />
+          <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Rétrospective</h3>
         </div>
 
         {stats.journalEntries.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-stone-500 font-sans font-bold">Aucune entrée pour cette période.</p>
-            <p className="text-stone-400 text-sm mt-1 italic">N'hésite pas à écrire pour garder une trace d'où tu viens.</p>
+            <p className="text-stone-500 dark:text-stone-400 font-sans font-bold">Aucune entrée pour cette période.</p>
+            <p className="text-stone-400 dark:text-stone-500 text-sm mt-1 italic">N'hésite pas à écrire pour garder une trace d'où tu viens.</p>
           </div>
         ) : (
           <div className="space-y-6">
             {stats.journalEntries.map(entry => (
-              <div key={entry.id} className="relative pl-6 border-l-2 border-stone-100 pb-2">
-                <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-stone-300" />
-                <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-stone-400 block mb-2">
+              <div key={entry.id} className="relative pl-6 border-l-2 border-stone-100 dark:border-stone-800 pb-2">
+                <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600" />
+                <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500 block mb-2">
                   {new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(entry.date))}
                 </span>
-                <div className="bg-[#F5F5F0] rounded-2xl p-4 text-stone-700 border border-stone-200/50">
-                  <Quote className="w-4 h-4 text-stone-300 mb-2 rotate-180" />
+                <div className="bg-[#F5F5F0] dark:bg-stone-800 rounded-2xl p-4 text-stone-700 dark:text-stone-300 border border-stone-200/50 dark:border-stone-700/50">
+                  <Quote className="w-4 h-4 text-stone-300 dark:text-stone-600 mb-2 rotate-180" />
                   <p className="italic leading-relaxed">{entry.content}</p>
                 </div>
               </div>
@@ -347,34 +347,34 @@ export function ReviewView({ data, updateData }: ReviewProps) {
       </div>
 
       {/* Intentions en sommeil */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm mt-8">
+      <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm mt-8">
         {orphans.length === 0 ? (
           <>
-            <h3 className="text-xl font-light text-stone-900 mb-6">Intentions en sommeil</h3>
+            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100 mb-6">Intentions en sommeil</h3>
             <div className="text-center py-8">
-              <p className="italic text-stone-400 text-sm">
+              <p className="italic text-stone-400 dark:text-stone-500 text-sm">
                 Aucune intention en sommeil. Tout est relié et actif.
               </p>
             </div>
           </>
         ) : (
           <>
-            <h3 className="text-xl font-light text-stone-900 mb-6">
+            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100 mb-6">
               {orphans.length} intention(s) méritent ton attention
             </h3>
-            <div className="divide-y divide-stone-50">
+            <div className="divide-y divide-stone-50 dark:divide-stone-800">
               {orphans.map(orphan => {
-                const dotColor = orphan.reason === 'goal-inactive' ? 'bg-amber-400' : 'bg-stone-300';
+                const dotColor = orphan.reason === 'goal-inactive' ? 'bg-amber-400' : 'bg-stone-300 dark:bg-stone-600';
                 return (
-                  <div key={orphan.id} className="flex items-start gap-3 py-3 border-b border-stone-50 last:border-0">
+                  <div key={orphan.id} className="flex items-start gap-3 py-3 border-b border-stone-50 dark:border-stone-800 last:border-0">
                     <div className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${dotColor}`} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-stone-700 font-sans text-sm break-words">{orphan.title}</p>
+                      <p className="text-stone-700 dark:text-stone-300 font-sans text-sm break-words">{orphan.title}</p>
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1">
-                        <span className="text-stone-400 text-xs italic">
+                        <span className="text-stone-400 dark:text-stone-500 text-xs italic">
                           {REASON_TEXTS[orphan.reason]}
                         </span>
-                        <span className="text-stone-300 text-xs">
+                        <span className="text-stone-300 dark:text-stone-600 text-xs">
                           Inactif depuis {orphan.daysSinceLastActivity} {orphan.daysSinceLastActivity > 1 ? 'jours' : 'jour'}
                         </span>
                       </div>

@@ -167,8 +167,8 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
                         onClick={() => setSelectedGoalId(isSelected ? '' : goal.id)}
                         className={`flex items-center gap-3.5 text-left border rounded-2xl px-5 py-4 transition-all duration-200 cursor-pointer text-sm font-sans ${
                           isSelected
-                            ? 'bg-emerald-50 border-emerald-600 text-emerald-800 ring-1 ring-emerald-600/30'
-                            : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-50/50'
+                            ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-600 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-400 ring-1 ring-emerald-600/30 dark:ring-emerald-500/30'
+                            : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50/50 dark:hover:bg-stone-800/50'
                         }`}
                       >
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border shrink-0 ${badgeStyle}`}>
@@ -184,7 +184,7 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
                   <button
                     type="button"
                     onClick={() => setStep(3)}
-                    className="bg-stone-800 text-white px-8 py-3.5 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 transition active:scale-95 shadow-sm"
+                    className="bg-stone-800 dark:bg-emerald-700 text-white px-8 py-3.5 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 dark:hover:bg-emerald-800 transition active:scale-95 shadow-sm"
                   >
                     Continuer →
                   </button>
@@ -194,7 +194,7 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
                       setSelectedGoalId('');
                       setStep(3);
                     }}
-                    className="text-stone-400 hover:text-stone-600 text-xs tracking-wider transition font-medium"
+                    className="text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 text-xs tracking-wider transition font-medium"
                   >
                     Passer cette étape
                   </button>
@@ -207,8 +207,8 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
         {step === 3 && (
           <div className="space-y-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="space-y-2">
-              <h2 className="text-xl md:text-2xl font-serif text-stone-800">Comment tu te sens ce matin ?</h2>
-              <p className="italic text-stone-400 font-serif font-light text-sm">
+              <h2 className="text-xl md:text-2xl font-serif text-stone-800 dark:text-stone-200">Comment tu te sens ce matin ?</h2>
+              <p className="italic text-stone-400 dark:text-stone-500 font-serif font-light text-sm">
                 Sans jugement. Juste un état des lieux.
               </p>
             </div>
@@ -225,8 +225,8 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
                     onClick={() => setMood(item.label)}
                     className={`flex items-center gap-2 px-5 py-3.5 rounded-2xl border transition-all text-xs font-bold uppercase tracking-wider cursor-pointer ${
                       isSelected
-                        ? item.color + ' ring-1 ring-offset-2 ring-stone-400 shadow-sm'
-                        : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
+                        ? item.color + ' ring-1 ring-offset-2 ring-stone-400 dark:ring-stone-600 dark:ring-offset-stone-950 shadow-sm'
+                        : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -254,7 +254,7 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
         <button
           type="button"
           onClick={onSkip}
-          className="text-stone-300 text-xs font-sans hover:text-stone-500 transition tracking-widest uppercase font-medium"
+          className="text-stone-300 dark:text-stone-600 text-xs font-sans hover:text-stone-500 dark:hover:text-stone-400 transition tracking-widest uppercase font-medium"
         >
           Plus tard
         </button>

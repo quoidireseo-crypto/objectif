@@ -443,34 +443,34 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
             {!isSaved ? (
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <h4 className="text-base font-sans font-semibold text-stone-800">
+                  <h4 className="text-base font-sans font-semibold text-stone-800 dark:text-stone-200">
                     Quelle est votre victoire d'aujourd'hui ?
                   </h4>
-                  <p className="text-xs text-stone-500">
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
                     Notez ici un seul fait, une action, un moment précieux ou un accomplissement dont vous êtes fier(e) aujourd'hui, aussi modeste soit-il.
                   </p>
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-3">
                   <input
                     type="text"
                     value={successInput}
                     onChange={(e) => setSuccessInput(e.target.value)}
                     placeholder="Ex: J'ai pris le temps de marcher 20 minutes en pleine conscience..."
-                    className="flex-1 px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-stone-800 font-sans text-sm transition"
+                    className="flex-1 px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-stone-800 dark:text-stone-100 font-sans text-sm transition"
                     maxLength={140}
                   />
                   <button
                     onClick={handleSaveSuccess}
                     disabled={!successInput.trim()}
-                    className="px-6 py-3 bg-stone-900 text-amber-300 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-800 disabled:opacity-55 disabled:hover:bg-stone-900 transition flex items-center justify-center gap-2 shadow-xs shrink-0 cursor-pointer"
+                    className="px-6 py-3 bg-stone-900 dark:bg-emerald-700 text-amber-300 dark:text-amber-200 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-800 dark:hover:bg-emerald-800 disabled:opacity-55 disabled:hover:bg-stone-900 dark:disabled:hover:bg-emerald-700 transition flex items-center justify-center gap-2 shadow-xs shrink-0 cursor-pointer"
                   >
                     Célébrer &rarr;
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="bg-[#FFFBEB] border border-amber-200/50 rounded-3xl p-6 relative flex flex-col items-center text-center animate-in zoom-in-95 duration-500">
+              <div className="bg-[#FFFBEB] dark:bg-amber-500/10 border border-amber-200/50 dark:border-amber-500/20 rounded-3xl p-6 relative flex flex-col items-center text-center animate-in zoom-in-95 duration-500">
                 {/* Visual Amber Badge Award */}
                 <div className="relative mb-4 flex items-center justify-center">
                   {/* Glowing Amber Circles */}
@@ -481,22 +481,22 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                   </div>
                 </div>
 
-                <span className="text-[10px] uppercase tracking-widest text-amber-700 font-sans font-bold bg-amber-100 px-3 py-1 rounded-full mb-3">
+                <span className="text-[10px] uppercase tracking-widest text-amber-700 dark:text-amber-400 font-sans font-bold bg-amber-100 dark:bg-amber-500/20 px-3 py-1 rounded-full mb-3">
                   Victoire Célébrée • Badge Obtenu
                 </span>
 
-                <p className="font-serif italic text-lg md:text-xl text-stone-900 max-w-xl px-2 leading-relaxed">
+                <p className="font-serif italic text-lg md:text-xl text-stone-900 dark:text-stone-100 max-w-xl px-2 leading-relaxed">
                   « {todaySuccess} »
                 </p>
 
-                <p className="text-xs text-stone-500 font-sans mt-4 max-w-sm">
+                <p className="text-xs text-stone-500 dark:text-stone-400 font-sans mt-4 max-w-sm">
                   Chaque réussite, petite ou grande, conforte votre direction. Chaque jour est votre nouveau départ.
                 </p>
 
                 {/* Adjust/Edit Button */}
                 <button
                   onClick={handleEditSuccess}
-                  className="mt-6 flex items-center gap-2 text-stone-400 hover:text-stone-600 text-xs font-sans font-medium hover:underline transition cursor-pointer"
+                  className="mt-6 flex items-center gap-2 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 text-xs font-sans font-medium hover:underline transition cursor-pointer"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                   Modifier ma réussite
@@ -506,8 +506,8 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </div>
           
           {/* History / Weekly Badge Progress Tracking Sidebar inside the card */}
-          <div className="lg:col-span-4 bg-stone-50 rounded-2xl p-5 border border-stone-100">
-            <h4 className="text-[10px] uppercase tracking-wider font-sans font-bold text-stone-400 mb-4 text-center lg:text-left">
+          <div className="lg:col-span-4 bg-stone-50 dark:bg-stone-800 rounded-2xl p-5 border border-stone-100 dark:border-stone-700">
+            <h4 className="text-[10px] uppercase tracking-wider font-sans font-bold text-stone-400 dark:text-stone-500 mb-4 text-center lg:text-left">
               Vos Badges Hebdomadaires
             </h4>
             
@@ -516,7 +516,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                 <div 
                   key={day.dateStr} 
                   className={`flex flex-col lg:flex-row items-center lg:justify-between gap-1.5 lg:gap-3 p-1 rounded-xl transition ${
-                    day.isToday ? 'bg-white/80 shadow-2xs border border-stone-200/50' : ''
+                    day.isToday ? 'bg-white/80 dark:bg-stone-700/80 shadow-2xs border border-stone-200/50 dark:border-stone-600/50' : ''
                   }`}
                   title={day.success ? `Réussite : ${day.success}` : "Pas de réussite notée pour ce jour"}
                 >
@@ -525,35 +525,35 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                     {day.success ? (
                       <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-xs shrink-0 relative group">
                         <Award className="w-3.5 h-3.5" />
-                        
+
                         {/* Tooltip for hover success view */}
-                        <div className="hidden lg:group-hover:block absolute left-full ml-2 w-48 bg-stone-900 text-white text-xs p-2 rounded-lg shadow-lg z-50 pointer-events-none font-sans">
+                        <div className="hidden lg:group-hover:block absolute left-full ml-2 w-48 bg-stone-900 dark:bg-stone-700 text-white text-xs p-2 rounded-lg shadow-lg z-50 pointer-events-none font-sans">
                           {day.success}
                         </div>
                       </div>
                     ) : (
-                      <div className="w-6 h-6 bg-stone-200 text-stone-400 rounded-full flex items-center justify-center shrink-0 border border-stone-300/30">
+                      <div className="w-6 h-6 bg-stone-200 dark:bg-stone-700 text-stone-400 dark:text-stone-500 rounded-full flex items-center justify-center shrink-0 border border-stone-300/30 dark:border-stone-600/30">
                         <span className="text-[9px] font-sans font-bold">{day.isToday ? '•' : ''}</span>
                       </div>
                     )}
-                    
+
                     <div className="text-center lg:text-left">
                       <p className={`text-[10px] font-sans font-semibold leading-none ${
-                        day.isToday ? 'text-stone-800' : 'text-stone-500'
+                        day.isToday ? 'text-stone-800 dark:text-stone-100' : 'text-stone-500 dark:text-stone-400'
                       }`}>
                         {day.dayName}
                       </p>
-                      <p className="text-[8px] text-stone-400 font-sans leading-none mt-0.5 max-lg:hidden">
+                      <p className="text-[8px] text-stone-400 dark:text-stone-500 font-sans leading-none mt-0.5 max-lg:hidden">
                         {day.formattedDate}
                       </p>
                     </div>
                   </div>
-                  
+
                   {/* Mini label indicator */}
                   <span className={`text-[9px] font-sans max-lg:hidden px-2 py-0.5 rounded-full ${
-                    day.success 
-                      ? 'bg-amber-50 text-amber-700 border border-amber-100/50' 
-                      : 'text-stone-400'
+                    day.success
+                      ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-100/50 dark:border-amber-500/20'
+                      : 'text-stone-400 dark:text-stone-500'
                   }`}>
                     {day.success ? 'Obtenu' : 'À venir'}
                   </span>
@@ -566,25 +566,25 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       </div>
 
       {weeklyChallenge && (
-        <div className="bg-stone-50 border border-stone-200 rounded-3xl p-6 md:p-8 mb-8 relative overflow-hidden group w-full">
+        <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-8 relative overflow-hidden group w-full">
           <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
             <div className="flex items-start gap-4">
-              <div className="p-3.5 bg-white shadow-sm border border-stone-100 rounded-2xl text-stone-600 shrink-0">
+              <div className="p-3.5 bg-white dark:bg-stone-800 shadow-sm border border-stone-100 dark:border-stone-700 rounded-2xl text-stone-600 dark:text-stone-300 shrink-0">
                 <Feather className="w-6 h-6 z-10 relative" />
               </div>
               <div>
-                <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-500 mb-1.5 flex items-center gap-2">
+                <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 flex items-center gap-2">
                   Défi de la semaine
                 </h3>
-                <p className="text-lg md:text-xl font-light text-stone-800 leading-snug max-w-2xl">
+                <p className="text-lg md:text-xl font-light text-stone-800 dark:text-stone-200 leading-snug max-w-2xl">
                   {weeklyChallenge.text}
                 </p>
               </div>
             </div>
-            
-            <button 
+
+            <button
               onClick={refreshChallenge}
-              className="px-4 py-2 bg-white hover:bg-stone-100 text-stone-500 text-xs font-sans font-bold uppercase tracking-wider rounded-xl transition border border-stone-200 flex items-center gap-2 shrink-0"
+              className="px-4 py-2 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-500 dark:text-stone-400 text-xs font-sans font-bold uppercase tracking-wider rounded-xl transition border border-stone-200 dark:border-stone-700 flex items-center gap-2 shrink-0"
               title="Changer de défi"
             >
               <RefreshCw className="w-3.5 h-3.5" />
@@ -595,14 +595,14 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       )}
 
       {data.goals.length === 0 && (
-        <div className="bg-[#EAE7E2] rounded-3xl p-6 md:p-8 text-center max-w-2xl mx-auto border border-stone-200 w-full shrink-0">
-          <h3 className="text-xs md:text-sm uppercase tracking-widest text-[#047857] mb-4 font-sans font-bold">La première étape</h3>
-          <p className="text-base md:text-lg leading-snug font-light italic text-stone-700 mb-6 font-serif">
+        <div className="bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl p-6 md:p-8 text-center max-w-2xl mx-auto border border-stone-200 dark:border-stone-800 w-full shrink-0">
+          <h3 className="text-xs md:text-sm uppercase tracking-widest text-[#047857] dark:text-emerald-400 mb-4 font-sans font-bold">La première étape</h3>
+          <p className="text-base md:text-lg leading-snug font-light italic text-stone-700 dark:text-stone-300 mb-6 font-serif">
             Chaque voyage commence par une première direction. Définissez ce qui résonne en vous, sans pression, simplement guidé par l'intention de donner du sens à votre quotidien.
           </p>
-          <button 
+          <button
             onClick={() => onChangeView('goals')}
-            className="bg-[#047857] w-full sm:w-auto flex justify-center mx-auto text-white px-6 py-3.5 md:py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] active:scale-95 transition-all shadow-sm cursor-pointer"
+            className="bg-[#047857] dark:bg-emerald-700 w-full sm:w-auto flex justify-center mx-auto text-white px-6 py-3.5 md:py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] dark:hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer"
           >
             Fixer ma première intention
           </button>

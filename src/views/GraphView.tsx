@@ -843,30 +843,30 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
             {/* Floating Legend (Bottom Left) */}
             {!isPreview && (
               legendOpen ? (
-                <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur rounded-2xl p-4 border border-stone-100 text-[11px] font-sans shadow-md space-y-2.5 z-40 select-none animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute bottom-6 left-6 bg-white/90 dark:bg-stone-900/90 backdrop-blur rounded-2xl p-4 border border-stone-100 dark:border-stone-800 text-[11px] font-sans shadow-md space-y-2.5 z-40 select-none animate-in fade-in zoom-in-95 duration-150">
                   <div className="flex items-center justify-between gap-6 mb-1">
-                    <div className="font-semibold text-stone-400 uppercase tracking-wider text-[9px]">Légende</div>
+                    <div className="font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider text-[9px]">Légende</div>
                     <button
                       onClick={() => setLegendOpen(false)}
-                      className="p-1 hover:bg-stone-50 rounded-full transition text-stone-400 hover:text-stone-600 focus:outline-none"
+                      className="p-1 hover:bg-stone-50 dark:hover:bg-stone-800 rounded-full transition text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 focus:outline-none"
                       title="Fermer la légende"
                     >
                       <X className="w-3 h-3" />
                     </button>
                   </div>
-                  <div className="flex items-center gap-2.5 text-stone-600">
+                  <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
                     <span className="w-3.5 h-3.5 rounded-full bg-violet-600 inline-block flex-shrink-0" />
                     <span className="font-medium">Objectif (28px)</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-stone-600">
+                  <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
                     <span className="w-2.5 h-2.5 rounded-full bg-stone-400 inline-block flex-shrink-0" />
                     <span className="font-medium">Étape (18px)</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-stone-600">
+                  <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block flex-shrink-0" />
                     <span className="font-medium">Action (12px)</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-stone-600">
+                  <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block flex-shrink-0" />
                     <span className="font-medium">Journal (10px)</span>
                   </div>
@@ -874,7 +874,7 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
               ) : (
                 <button
                   onClick={() => setLegendOpen(true)}
-                  className="absolute bottom-6 left-6 bg-white border border-stone-200 rounded-full w-9 h-9 flex items-center justify-center shadow-sm cursor-pointer z-40 text-stone-500 hover:text-indigo-600 hover:bg-stone-50 transition active:scale-95 focus:outline-none"
+                  className="absolute bottom-6 left-6 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-full w-9 h-9 flex items-center justify-center shadow-sm cursor-pointer z-40 text-stone-500 dark:text-stone-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-stone-50 dark:hover:bg-stone-800 transition active:scale-95 focus:outline-none"
                   title="Afficher la légende"
                 >
                   <Info className="w-5 h-5" />
@@ -885,7 +885,7 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
 
           {/* Floating Details Sidebar Panel (Bottom Right) */}
           {!isPreview && selectedNode && (
-            <div className="fixed bottom-6 right-6 bg-white border border-stone-100 rounded-3xl shadow-xl p-6 w-80 z-50 animate-in fade-in slide-in-from-bottom-4 duration-200">
+            <div className="fixed bottom-6 right-6 bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-3xl shadow-xl p-6 w-80 z-50 animate-in fade-in slide-in-from-bottom-4 duration-200">
               <div className="flex justify-between items-start mb-4">
                 {/* Colored Badge */}
                 <span
@@ -901,33 +901,33 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                 </span>
                 <button
                   onClick={() => setSelectedNodeId(null)}
-                  className="p-1 hover:bg-stone-50 rounded-full transition text-stone-400 hover:text-stone-600"
+                  className="p-1 hover:bg-stone-50 dark:hover:bg-stone-800 rounded-full transition text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Title */}
-              <h3 className="font-serif font-light text-xl text-stone-800 leading-tight mb-3">
+              <h3 className="font-serif font-light text-xl text-stone-800 dark:text-stone-100 leading-tight mb-3">
                 {selectedNode.fullTitle}
               </h3>
 
               {/* Status Section */}
               {selectedNode.type !== 'journal' && (
-                <div className="flex items-center gap-2 mb-4 text-xs text-stone-500">
+                <div className="flex items-center gap-2 mb-4 text-xs text-stone-500 dark:text-stone-400">
                   {selectedNode.isCompleted ? (
-                    <span className="flex items-center gap-1 text-emerald-600 font-bold">
+                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
                       <CheckCircle className="w-3.5 h-3.5" />
                       Complété
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-stone-400 font-semibold">
+                    <span className="flex items-center gap-1 text-stone-400 dark:text-stone-500 font-semibold">
                       <Circle className="w-3.5 h-3.5" />
                       En cours
                     </span>
                   )}
                   {selectedNode.date && (
-                    <span className="text-stone-400">
+                    <span className="text-stone-400 dark:text-stone-500">
                       • {selectedNode.date}
                     </span>
                   )}
@@ -936,24 +936,24 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
 
               {/* Connections list */}
               <div>
-                <h4 className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-2">
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-2">
                   Connecté à
                 </h4>
                 {connectedNodes.length === 0 ? (
-                  <span className="text-xs text-stone-400 italic font-mono">Aucun lien direct</span>
+                  <span className="text-xs text-stone-400 dark:text-stone-500 italic font-mono">Aucun lien direct</span>
                 ) : (
                   <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
                     {connectedNodes.map(connectedItem => (
                       <button
                         key={connectedItem.id}
                         onClick={() => setSelectedNodeId(connectedItem.id)}
-                        className="w-full flex items-center justify-between text-left p-2 rounded-xl transition hover:bg-stone-50 text-xs border border-transparent hover:border-stone-100 group"
+                        className="w-full flex items-center justify-between text-left p-2 rounded-xl transition hover:bg-stone-50 dark:hover:bg-stone-800 text-xs border border-transparent hover:border-stone-100 dark:hover:border-stone-700 group"
                       >
-                        <div className="flex items-center gap-2 text-stone-600 group-hover:text-stone-800 font-medium truncate max-w-[170px]">
+                        <div className="flex items-center gap-2 text-stone-600 dark:text-stone-300 group-hover:text-stone-800 dark:group-hover:text-stone-100 font-medium truncate max-w-[170px]">
                           <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: connectedItem.color }} />
                           <span className="truncate">{connectedItem.fullTitle}</span>
                         </div>
-                        <span className="text-[9px] text-stone-400 select-none bg-stone-50 px-1.5 py-0.5 rounded">
+                        <span className="text-[9px] text-stone-400 dark:text-stone-500 select-none bg-stone-50 dark:bg-stone-800 px-1.5 py-0.5 rounded">
                           {connectedItem.type === 'goal' ? 'Obj' :
                            connectedItem.type === 'milestone' ? 'Étape' :
                            connectedItem.type === 'task' ? 'Act' : 'Jour'}
