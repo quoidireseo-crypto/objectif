@@ -57,7 +57,7 @@ export default function App() {
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
-        return <DashboardView data={data} onChangeView={setCurrentView} userProfile={userProfile} />;
+        return <DashboardView data={data} updateData={updateData} onChangeView={setCurrentView} userProfile={userProfile} />;
       case 'goals':
         return <GoalsView data={data} updateData={updateData} />;
       case 'tasks':
@@ -73,7 +73,7 @@ export default function App() {
       case 'settings':
         return <SettingsView data={data} onImportData={handleImportData} userProfile={userProfile} onUpdateProfile={handleUpdateProfile} />;
       default:
-        return <DashboardView data={data} onChangeView={setCurrentView} userProfile={userProfile} />;
+        return <DashboardView data={data} updateData={updateData} onChangeView={setCurrentView} userProfile={userProfile} />;
     }
   };
 

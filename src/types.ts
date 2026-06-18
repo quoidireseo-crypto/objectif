@@ -57,3 +57,20 @@ export interface MorningRitual {
   status: MorningRitualStatus;
   createdAt: string;
 }
+
+export type OrphanReason = 
+  | 'goal-no-action'        
+  | 'goal-no-milestone'     
+  | 'task-no-goal'          
+  | 'milestone-abandoned'   
+  | 'goal-inactive';
+
+export interface OrphanItem {
+  id: string;
+  type: 'goal' | 'milestone' | 'task';
+  title: string;
+  reason: OrphanReason;
+  daysSinceLastActivity: number;
+  linkedGoalTitle?: string;
+}
+

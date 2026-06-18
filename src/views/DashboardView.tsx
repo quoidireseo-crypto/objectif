@@ -1,14 +1,16 @@
 import { useMemo, useState, useEffect } from 'react';
-import { AppData } from '../types';
+import { AppData, ViewType } from '../types';
 import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award, Pencil } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
 import { GoalDomainChart } from '../components/GoalDomainChart';
 import { useStreak } from '../hooks/useStreak';
 import { GraphView } from './GraphView';
+import { OrphansPanel } from '../components/OrphansPanel';
 
 interface DashboardProps {
   data: AppData;
-  onChangeView: (view: any) => void;
+  updateData: (data: Partial<AppData>) => void;
+  onChangeView: (view: ViewType) => void;
   userProfile: { name: string; ageGroup?: string; focusArea?: string } | null;
 }
 
@@ -38,7 +40,7 @@ const WEEKLY_CHALLENGES = [
   "Se coucher 30 minutes plus tôt avec un livre plutôt qu'un écran."
 ];
 
-export function DashboardView({ data, onChangeView, userProfile }: DashboardProps) {
+export function DashboardView({ data, updateData, onChangeView, userProfile }: DashboardProps) {
   const activeGoals = data.goals.filter(g => g.status === 'En cours').length;
   const todayDate = new Date().toISOString().split('T')[0];
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
@@ -351,6 +353,14 @@ export function DashboardView({ data, onChangeView, userProfile }: DashboardProp
             Priorité du jour : {todayRitual.priority}
           </p>
         )}
+      </div>
+
+      <div className="mb-8">
+        <OrphansPanel 
+          data={data} 
+          updateData={updateData}
+          onChangeView={onChangeView}
+        />
       </div>
 
       {/* Aperçu de la carte mentale */}

@@ -1,14 +1,24 @@
 import { useState, useMemo } from 'react';
-import { AppData } from '../types';
+import { AppData, OrphanReason } from '../types';
 import { Activity, CheckCircle2, CalendarDays, BookOpen, Quote, BarChart as BarChartIcon } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useOrphans } from '../hooks/useOrphans';
 
 interface ReviewProps {
   data: AppData;
 }
 
+const REASON_TEXTS: Record<OrphanReason, string> = {
+  'goal-no-action': 'Aucune action liée',
+  'goal-no-milestone': 'Pas encore découpé',
+  'task-no-goal': 'Action isolée',
+  'milestone-abandoned': 'Étape sans suite',
+  'goal-inactive': 'En sommeil',
+};
+
 export function ReviewView({ data }: ReviewProps) {
   const [period, setPeriod] = useState<'weekly' | 'monthly'>('weekly');
+  const orphans = useOrphans(data);
 
   const { stats, chartData } = useMemo(() => {
     const days = period === 'weekly' ? 7 : 30;
@@ -166,6 +176,47 @@ export function ReviewView({ data }: ReviewProps) {
               </div>
             ))}
           </div>
+        )}
+      </div>
+
+      {/* Intentions en sommeil */}
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm mt-8">
+        {orphans.length === 0 ? (
+          <>
+            <h3 className="text-xl font-light text-stone-900 mb-6">Intentions en sommeil</h3>
+            <div className="text-center py-8">
+              <p className="italic text-stone-400 text-sm">
+                Aucune intention en sommeil. Tout est relié et actif.
+              </p>
+            </div>
+          </>
+        ) : (
+          <>
+            <h3 className="text-xl font-light text-stone-900 mb-6">
+              {orphans.length} intention(s) méritent ton attention
+            </h3>
+            <div className="divide-y divide-stone-50">
+              {orphans.map(orphan => {
+                const dotColor = orphan.reason === 'goal-inactive' ? 'bg-amber-400' : 'bg-stone-300';
+                return (
+                  <div key={orphan.id} className="flex items-start gap-3 py-3 border-b border-stone-50 last:border-0">
+                    <div className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${dotColor}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-stone-700 font-sans text-sm break-words">{orphan.title}</p>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1">
+                        <span className="text-stone-400 text-xs italic">
+                          {REASON_TEXTS[orphan.reason]}
+                        </span>
+                        <span className="text-stone-300 text-xs">
+                          Inactif depuis {orphan.daysSinceLastActivity} {orphan.daysSinceLastActivity > 1 ? 'jours' : 'jour'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
     </div>
