@@ -166,7 +166,7 @@ export function TasksView({ data, updateData }: TasksProps) {
           value={selectedDomain}
           onChange={(e) => setSelectedDomain(e.target.value as LifeDomain)}
         >
-          <option value="">Pilier de vie ?</option>
+          <option value="">Domaine ?</option>
           {DOMAINS.map(domain => (
             <option key={domain} value={domain}>{domain}</option>
           ))}

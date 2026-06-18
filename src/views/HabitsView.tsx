@@ -106,7 +106,7 @@ export function HabitsView({ data, updateData }: HabitsProps) {
             value={domain}
             onChange={(e) => setDomain(e.target.value as LifeDomain)}
           >
-            <option value="">Pilier de vie ?</option>
+            <option value="">Domaine ?</option>
             {DOMAINS.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>

@@ -31,7 +31,7 @@ export function HelpTooltip({ text, label = 'En savoir plus' }: HelpTooltipProps
         <HelpCircle className="w-4 h-4" />
       </button>
       <span
-        className={`absolute left-0 top-full mt-2 z-50 w-60 max-w-[75vw] bg-stone-900 dark:bg-stone-700 text-stone-100 text-xs font-sans font-normal leading-relaxed normal-case tracking-normal p-3 rounded-xl shadow-lg pointer-events-none transition-opacity duration-150 ${
+        className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 w-60 max-w-[75vw] bg-stone-900 dark:bg-stone-700 text-stone-100 text-xs font-sans font-normal leading-relaxed normal-case tracking-normal p-3 rounded-xl shadow-lg pointer-events-none transition-opacity duration-150 ${
           open ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
         }`}
       >

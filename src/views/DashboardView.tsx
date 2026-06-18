@@ -292,7 +292,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
               onClick={() => onChangeView('goals')}
               className="bg-[#047857] dark:bg-emerald-700 inline-flex justify-center items-center gap-2 text-white px-6 py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] dark:hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer"
             >
-              Fixer ma première intention
+              Choisir mon premier objectif
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
@@ -796,13 +796,13 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         <div className="bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl p-6 md:p-8 text-center max-w-2xl mx-auto border border-stone-200 dark:border-stone-800 w-full shrink-0">
           <h3 className="text-xs md:text-sm uppercase tracking-widest text-[#047857] dark:text-emerald-400 mb-4 font-sans font-bold">La première étape</h3>
           <p className="text-base md:text-lg leading-snug font-light italic text-stone-700 dark:text-stone-300 mb-6 font-serif">
-            Chaque voyage commence par une première direction. Définis ce qui résonne en toi, sans pression, simplement guidé par l'intention de donner du sens à ton quotidien.
+            Par où as-tu envie de commencer ? Choisis simplement une chose importante pour toi en ce moment. Inutile de te mettre la pression.
           </p>
           <button
             onClick={() => onChangeView('goals')}
             className="bg-[#047857] dark:bg-emerald-700 w-full sm:w-auto inline-flex justify-center items-center gap-2 mx-auto text-white px-6 py-3.5 md:py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] dark:hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer"
           >
-            Fixer ma première intention
+            Choisir mon premier objectif
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
