@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon, LayoutGrid, X, Network } from 'lucide-react';
+import { LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon, LayoutGrid, X, Network, Repeat } from 'lucide-react';
 import { ViewType } from '../types';
 import { SkoposLogo } from './SkoposLogo';
 
@@ -15,6 +15,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { id: 'goals', label: 'Mes Objectifs', icon: Flag },
     { id: 'tasks', label: 'Mon Quotidien', icon: CheckSquare },
+    { id: 'habits', label: 'Mes Habitudes', icon: Repeat },
     { id: 'calendar', label: 'Calendrier', icon: CalendarIcon },
     { id: 'journal', label: 'Journal de bord', icon: BookHeart },
     { id: 'review', label: 'Mon Bilan', icon: PieChart },
@@ -24,8 +25,16 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
 
   // Secondary views grouped under "Mon Espace" on mobile
   const spaceViews: { id: ViewType; label: string; description: string; icon: any; colorClass: string; iconColor: string }[] = [
-    { 
-      id: 'calendar', 
+    {
+      id: 'habits',
+      label: 'Mes Habitudes',
+      description: 'Construire la régularité, jour après jour',
+      icon: Repeat,
+      colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      iconColor: 'text-emerald-600'
+    },
+    {
+      id: 'calendar',
       label: 'Calendrier', 
       description: 'Planifier et voir vos journées', 
       icon: CalendarIcon,
@@ -71,7 +80,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     setIsSpaceMenuOpen(false);
   };
 
-  const isMoreSpaceActive = ['calendar', 'journal', 'review', 'settings', 'graph'].includes(currentView);
+  const isMoreSpaceActive = ['habits', 'calendar', 'journal', 'review', 'settings', 'graph'].includes(currentView);
 
   return (
     <>
@@ -169,20 +178,20 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
             onClick={() => setIsSpaceMenuOpen(false)}
           />
           
-          <div className="relative w-full max-w-lg bg-[#F5F5F0] rounded-t-[2.5rem] border-t border-stone-200 p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl z-10 animate-in slide-in-from-bottom duration-300">
+          <div className="relative w-full max-w-lg bg-[#F5F5F0] dark:bg-stone-900 rounded-t-[2.5rem] border-t border-stone-200 dark:border-stone-800 p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] shadow-2xl z-10 animate-in slide-in-from-bottom duration-300">
             {/* Top Indicator Line */}
-            <div className="w-12 h-1 bg-stone-300 rounded-full mx-auto mb-5" />
-            
+            <div className="w-12 h-1 bg-stone-300 dark:bg-stone-700 rounded-full mx-auto mb-5" />
+
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2.5">
-                <SkoposLogo className="text-[#047857]" size={22} />
-                <h3 className="text-sm font-sans tracking-widest font-bold text-[#1C1917] uppercase">
+                <SkoposLogo className="text-[#047857] dark:text-emerald-400" size={22} />
+                <h3 className="text-sm font-sans tracking-widest font-bold text-[#1C1917] dark:text-stone-100 uppercase">
                   Mon Espace
                 </h3>
               </div>
-              <button 
+              <button
                 onClick={() => setIsSpaceMenuOpen(false)}
-                className="p-1.5 rounded-full bg-stone-200/60 text-stone-500 hover:text-stone-700 active:scale-95 transition cursor-pointer"
+                className="p-1.5 rounded-full bg-stone-200/60 dark:bg-stone-800 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 active:scale-95 transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>

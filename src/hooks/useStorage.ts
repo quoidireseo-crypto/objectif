@@ -12,7 +12,10 @@ const defaultData: AppData = {
   journal: [],
   morningRituals: [],
   goalsHistory: [],
-  eveningReflections: []
+  eveningReflections: [],
+  habits: [],
+  habitCompletions: [],
+  weeklyReviews: []
 };
 
 // One-time migration: the evening "Bilan du soir" used to live in standalone
@@ -50,6 +53,9 @@ export function useStorage() {
         if (!parsed.morningRituals) parsed.morningRituals = [];
         if (!parsed.goalsHistory) parsed.goalsHistory = [];
         if (!parsed.eveningReflections) parsed.eveningReflections = [];
+        if (!parsed.habits) parsed.habits = [];
+        if (!parsed.habitCompletions) parsed.habitCompletions = [];
+        if (!parsed.weeklyReviews) parsed.weeklyReviews = [];
 
         migrateEveningReflections(parsed);
 

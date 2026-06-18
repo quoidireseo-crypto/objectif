@@ -8,10 +8,10 @@ interface JournalProps {
 }
 
 const MOODS = [
-  { label: 'Super', icon: Sparkles, color: 'text-amber-800 bg-amber-50 border-amber-200 hover:bg-amber-100' },
-  { label: 'Bien', icon: Smile, color: 'text-emerald-800 bg-emerald-50 border-emerald-200 hover:bg-emerald-100' },
-  { label: 'Moyen', icon: Meh, color: 'text-stone-600 bg-stone-100 border-stone-200 hover:bg-stone-200' },
-  { label: 'Difficile', icon: Frown, color: 'text-amber-900 bg-amber-100 border-amber-300 hover:bg-amber-200' },
+  { label: 'Super', icon: Sparkles, color: 'text-amber-800 bg-amber-50 border-amber-200 hover:bg-amber-100 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20 dark:hover:bg-amber-500/20' },
+  { label: 'Bien', icon: Smile, color: 'text-emerald-800 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:hover:bg-emerald-500/20' },
+  { label: 'Moyen', icon: Meh, color: 'text-stone-600 bg-stone-100 border-stone-200 hover:bg-stone-200 dark:text-stone-300 dark:bg-stone-800 dark:border-stone-700 dark:hover:bg-stone-700' },
+  { label: 'Difficile', icon: Frown, color: 'text-amber-900 bg-amber-100 border-amber-300 hover:bg-amber-200 dark:text-amber-200 dark:bg-amber-500/20 dark:border-amber-500/30 dark:hover:bg-amber-500/30' },
 ] as const;
 
 const FRENCH_STOP_WORDS = new Set([
@@ -98,27 +98,27 @@ export function JournalView({ data, updateData }: JournalProps) {
   }, [data.journal]);
 
   const getWordStyle = (count: number) => {
-    if (count === 1) return 'text-stone-400 text-xs md:text-sm font-light opacity-60';
-    if (count === 2) return 'text-stone-500 text-sm md:text-base font-medium opacity-80';
-    if (count === 3) return 'text-emerald-700 text-base md:text-lg font-bold';
-    if (count === 4) return 'text-emerald-800 text-lg md:text-xl font-bold tracking-tight';
-    return 'text-amber-700 text-xl md:text-2xl font-black tracking-tighter';
+    if (count === 1) return 'text-stone-400 dark:text-stone-500 text-xs md:text-sm font-light opacity-60';
+    if (count === 2) return 'text-stone-500 dark:text-stone-400 text-sm md:text-base font-medium opacity-80';
+    if (count === 3) return 'text-emerald-700 dark:text-emerald-400 text-base md:text-lg font-bold';
+    if (count === 4) return 'text-emerald-800 dark:text-emerald-300 text-lg md:text-xl font-bold tracking-tight';
+    return 'text-amber-700 dark:text-amber-400 text-xl md:text-2xl font-black tracking-tighter';
   };
 
   return (
     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="mb-6 md:mb-8 border-b border-stone-200 pb-6">
-        <h2 className="text-3xl md:text-4xl font-light text-stone-900 flex items-center gap-3">
+      <header className="mb-6 md:mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
+        <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100 flex items-center gap-3">
           Vos sentiments et impressions du jour !
         </h2>
-        <p className="text-stone-500 font-sans tracking-wide text-xs md:text-sm mt-3 leading-relaxed max-w-2xl font-light">
+        <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide text-xs md:text-sm mt-3 leading-relaxed max-w-2xl font-light">
           Prenez un moment pour vous. Cet espace est fait pour noter vos impressions, vos ressentis, ce qui a fonctionné ou qui n'a pas marché aujourd'hui.
         </p>
       </header>
 
       {!hasEntryToday && (
-        <div className="bg-[#EAE7E2] rounded-3xl p-8 mb-10 border border-stone-200">
-          <h3 className="text-xs uppercase tracking-widest text-[#047857] mb-6 font-sans font-bold">Mon état d'esprit & impressions</h3>
+        <div className="bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl p-8 mb-10 border border-stone-200 dark:border-stone-800">
+          <h3 className="text-xs uppercase tracking-widest text-[#047857] dark:text-emerald-400 mb-6 font-sans font-bold">Mon état d'esprit & impressions</h3>
           
           <div className="flex flex-wrap gap-3 mb-6 font-sans">
             {MOODS.map(mood => {
@@ -129,7 +129,7 @@ export function JournalView({ data, updateData }: JournalProps) {
                   key={mood.label}
                   onClick={() => setSelectedMood(mood.label as JournalEntry['mood'])}
                   className={`flex items-center gap-2 px-5 py-3 rounded-2xl border transition-all text-xs font-bold uppercase tracking-wider ${
-                    isSelected ? mood.color + ' ring-1 ring-offset-2 ring-stone-400' : 'border-stone-200/60 bg-stone-50 text-stone-500 hover:bg-white'
+                    isSelected ? mood.color + ' ring-1 ring-offset-2 ring-stone-400 dark:ring-offset-stone-900 dark:ring-stone-600' : 'border-stone-200/60 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-400 hover:bg-white dark:hover:bg-stone-700'
                   } ${isSelected ? 'shadow-sm' : ''}`}
                 >
                   <Icon className="w-4 h-4" />
@@ -141,7 +141,7 @@ export function JournalView({ data, updateData }: JournalProps) {
 
           <textarea
             placeholder="Qu'est-ce qui a bien marché ? Qu'est-ce qui a posé problème ? Une pensée à garder en tête..."
-            className="w-full bg-white border border-stone-100 rounded-3xl p-6 min-h-[160px] outline-none focus:ring-1 focus:ring-emerald-700 text-lg leading-snug font-light italic transition-shadow mb-6 resize-y text-stone-800"
+            className="w-full bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-3xl p-6 min-h-[160px] outline-none focus:ring-1 focus:ring-emerald-700 text-lg leading-snug font-light italic transition-shadow mb-6 resize-y text-stone-800 dark:text-stone-100"
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
@@ -150,7 +150,7 @@ export function JournalView({ data, updateData }: JournalProps) {
             <button
               onClick={handleSave}
               disabled={!content.trim()}
-              className="bg-stone-800 text-white px-6 py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 disabled:opacity-50 flex items-center gap-2 transition"
+              className="bg-stone-800 dark:bg-emerald-700 text-white px-6 py-3 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 dark:hover:bg-emerald-800 disabled:opacity-50 flex items-center gap-2 transition"
             >
               <Send className="w-4 h-4" />
               Enregistrer ma journée
@@ -160,9 +160,9 @@ export function JournalView({ data, updateData }: JournalProps) {
       )}
 
       {wordCloud.length > 0 && (
-        <div className="bg-stone-50 border border-stone-100 rounded-3xl p-6 md:p-8 mb-10 shadow-sm animate-in fade-in duration-700">
-          <div className="flex items-center gap-2 text-stone-500 mb-6">
-            <CloudLightning className="w-5 h-5 text-emerald-600" />
+        <div className="bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-10 shadow-sm animate-in fade-in duration-700">
+          <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400 mb-6">
+            <CloudLightning className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <h3 className="text-xs font-sans uppercase tracking-widest font-bold">Mots-clés des 30 derniers jours</h3>
           </div>
           <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-4 px-4 py-2">
@@ -178,46 +178,46 @@ export function JournalView({ data, updateData }: JournalProps) {
       {data.journal.length > 0 ? (
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
-            <h3 className="text-2xl font-light text-stone-800">Mes réflexions passées</h3>
+            <h3 className="text-2xl font-light text-stone-800 dark:text-stone-200">Mes réflexions passées</h3>
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Rechercher un mot, une humeur..."
-              className="w-full sm:w-64 px-4 py-2.5 bg-white border border-stone-200 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 font-sans text-sm transition"
+              className="w-full sm:w-64 px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 dark:text-stone-100 font-sans text-sm transition"
             />
           </div>
           {filteredJournal.length === 0 && (
-            <p className="text-stone-400 italic text-sm py-4">Aucune réflexion ne correspond à « {search} ».</p>
+            <p className="text-stone-400 dark:text-stone-500 italic text-sm py-4">Aucune réflexion ne correspond à « {search} ».</p>
           )}
           {filteredJournal.map(entry => {
             const moodData = MOODS.find(m => m.label === entry.mood) || MOODS[1];
             const MoodIcon = moodData.icon;
             
             return (
-              <div key={entry.id} className="bg-white border text-left border-stone-100 p-8 rounded-3xl shadow-sm hover:shadow-md transition">
+              <div key={entry.id} className="bg-white dark:bg-stone-900 border text-left border-stone-100 dark:border-stone-800 p-8 rounded-3xl shadow-sm hover:shadow-md transition">
                 <div className="flex justify-between items-center mb-6">
-                  <span className="text-xs font-sans uppercase tracking-widest font-bold text-stone-400">
+                  <span className="text-xs font-sans uppercase tracking-widest font-bold text-stone-400 dark:text-stone-500">
                     {new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(entry.date))}
                   </span>
                   <div className="flex items-center gap-3">
-                    <div className={`px-3 py-1.5 rounded-full text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-1.5 ${moodData.color.split(' ').slice(0,2).join(' ')}`}>
+                    <div className={`px-3 py-1.5 rounded-full text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-1.5 ${moodData.color.split(' ').slice(0,2).join(' ')} ${moodData.color.split(' ').filter(c => c.startsWith('dark:')).slice(0,2).join(' ')}`}>
                       <MoodIcon className="w-3.5 h-3.5" />
                       {entry.mood}
                     </div>
-                    <button onClick={() => deleteJournalEntry(entry.id)} className="text-stone-300 hover:text-red-500 p-1 transition-colors" title="Supprimer">
+                    <button onClick={() => deleteJournalEntry(entry.id)} className="text-stone-300 dark:text-stone-600 hover:text-red-500 p-1 transition-colors" title="Supprimer">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-                <p className="text-stone-800 text-lg whitespace-pre-wrap leading-snug font-light italic">"{entry.content}"</p>
+                <p className="text-stone-800 dark:text-stone-100 text-lg whitespace-pre-wrap leading-snug font-light italic">"{entry.content}"</p>
               </div>
             )
           })}
         </div>
       ) : (
-        <div className="text-center py-16 bg-[#F5F5F0]">
-          <p className="text-stone-400 italic">Aucune réflexion enregistrée pour le moment.</p>
+        <div className="text-center py-16 bg-[#F5F5F0] dark:bg-stone-950">
+          <p className="text-stone-400 dark:text-stone-500 italic">Aucune réflexion enregistrée pour le moment.</p>
         </div>
       )}
     </div>

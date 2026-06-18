@@ -553,16 +553,16 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
   const isEmpty = data.goals.length === 0 && data.tasks.length === 0;
 
   return (
-    <div className={`flex flex-col h-full ${isPreview ? 'bg-transparent' : 'bg-stone-50'}`}>
+    <div className={`flex flex-col h-full ${isPreview ? 'bg-transparent' : 'bg-stone-50 dark:bg-stone-900'}`}>
       {/* Upper header */}
       {!isPreview && (
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-6 bg-white border-b border-stone-100 z-10 shrink-0 select-none">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-6 bg-white dark:bg-stone-900 border-b border-stone-100 dark:border-stone-800 z-10 shrink-0 select-none">
           <div>
-            <h1 className="flex items-center gap-2 text-2xl font-serif font-light text-stone-800">
-              <Network className="w-6 h-6 text-indigo-500 animate-pulse" />
+            <h1 className="flex items-center gap-2 text-2xl font-serif font-light text-stone-800 dark:text-stone-100">
+              <Network className="w-6 h-6 text-indigo-500 dark:text-indigo-400 animate-pulse" />
               <span>Ma Carte Mentale</span>
             </h1>
-            <p className="text-xs text-stone-400 mt-1">
+            <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
               Visualise la constellation de tes objectifs, jalons, actions d'engagement et notes de journal.
             </p>
           </div>
@@ -574,7 +574,7 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                 setOffset({ x: 0, y: 0 });
                 setScale(0.8);
               }}
-              className="bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs font-sans font-bold text-stone-600 hover:bg-stone-50 hover:text-stone-800 shadow-sm transition active:scale-95"
+              className="bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 text-xs font-sans font-bold text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 hover:text-stone-800 dark:hover:text-stone-100 shadow-sm transition active:scale-95"
               title="Recadrer la constellation"
             >
               Tout voir
@@ -584,8 +584,8 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
               onClick={() => setHideTasksAndJournal(!hideTasksAndJournal)}
               className={`flex items-center gap-1.5 border rounded-xl px-3 py-2 text-xs font-sans font-bold shadow-sm transition active:scale-95 ${
                 hideTasksAndJournal
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                  : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
+                  ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
+                  : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700'
               }`}
               title="Masquer les actions et entrées journal"
             >
@@ -597,8 +597,8 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
               onClick={() => setTodayTasksOnlyHighlight(!todayTasksOnlyHighlight)}
               className={`flex items-center gap-1.5 border rounded-xl px-3 py-2 text-xs font-sans font-bold shadow-sm transition active:scale-95 ${
                 todayTasksOnlyHighlight
-                  ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
-                  : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
+                  ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-400'
+                  : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700'
               }`}
               title="Mettre en valeur uniquement les actions prévues aujourd'hui"
             >
@@ -606,20 +606,20 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
               Actions du jour
             </button>
 
-            <div className="flex items-center border border-stone-200 rounded-xl bg-white p-0.5 shadow-sm">
+            <div className="flex items-center border border-stone-200 dark:border-stone-700 rounded-xl bg-white dark:bg-stone-800 p-0.5 shadow-sm">
               <button
                 onClick={() => setScale(prev => Math.min(2.5, prev + 0.2))}
-                className="p-1.5 rounded-lg text-stone-500 hover:bg-stone-50 transition"
+                className="p-1.5 rounded-lg text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-700 transition"
                 title="Zoom avant"
               >
                 <ZoomIn className="w-4 h-4" />
               </button>
-              <div className="text-[10px] font-mono text-stone-400 px-1 select-none w-10 text-center">
+              <div className="text-[10px] font-mono text-stone-400 dark:text-stone-500 px-1 select-none w-10 text-center">
                 {Math.round(scale * 100)}%
               </div>
               <button
                 onClick={() => setScale(prev => Math.max(0.3, prev - 0.2))}
-                className="p-1.5 rounded-lg text-stone-500 hover:bg-stone-50 transition"
+                className="p-1.5 rounded-lg text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-700 transition"
                 title="Zoom arrière"
               >
                 <ZoomOut className="w-4 h-4" />

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useStorage } from './hooks/useStorage';
 import { useMorningRitual } from './hooks/useMorningRitual';
+import { useTheme } from './hooks/useTheme';
 import { ViewType, AppData } from './types';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './views/DashboardView';
 import { GoalsView } from './views/GoalsView';
 import { TasksView } from './views/TasksView';
+import { HabitsView } from './views/HabitsView';
 import { JournalView } from './views/JournalView';
 import { ReviewView } from './views/ReviewView';
 import { CalendarView } from './views/CalendarView';
@@ -21,6 +23,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const { data, updateData, shouldRemindExport, dismissExportReminder } = useStorage();
   const { shouldShowRitual, completeRitual, skipRitual } = useMorningRitual(data, updateData);
+  const { mode: themeMode, setThemeMode } = useTheme();
 
   const [userProfile, setUserProfile] = useState<{ name: string; ageGroup?: string; focusArea?: string } | null>(() => {
     const raw = window.localStorage.getItem('skopos_user_profile');
@@ -52,6 +55,9 @@ export default function App() {
       morningRituals: importedData.morningRituals || [],
       goalsHistory: importedData.goalsHistory || [],
       eveningReflections: importedData.eveningReflections || [],
+      habits: importedData.habits || [],
+      habitCompletions: importedData.habitCompletions || [],
+      weeklyReviews: importedData.weeklyReviews || [],
     };
     updateData(sanitizedData);
   };
@@ -64,16 +70,27 @@ export default function App() {
         return <GoalsView data={data} updateData={updateData} />;
       case 'tasks':
         return <TasksView data={data} updateData={updateData} />;
+      case 'habits':
+        return <HabitsView data={data} updateData={updateData} />;
       case 'journal':
         return <JournalView data={data} updateData={updateData} />;
       case 'calendar':
         return <CalendarView data={data} updateData={updateData} />;
       case 'review':
-        return <ReviewView data={data} />;
+        return <ReviewView data={data} updateData={updateData} />;
       case 'graph':
         return <GraphView data={data} onChangeView={setCurrentView} />;
       case 'settings':
-        return <SettingsView data={data} onImportData={handleImportData} userProfile={userProfile} onUpdateProfile={handleUpdateProfile} />;
+        return (
+          <SettingsView
+            data={data}
+            onImportData={handleImportData}
+            userProfile={userProfile}
+            onUpdateProfile={handleUpdateProfile}
+            themeMode={themeMode}
+            onChangeThemeMode={setThemeMode}
+          />
+        );
       default:
         return <DashboardView data={data} updateData={updateData} onChangeView={setCurrentView} userProfile={userProfile} />;
     }
@@ -84,12 +101,12 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F5F5F0] font-serif text-stone-800 selection:bg-emerald-200 selection:text-emerald-900">
+    <div className="flex min-h-screen bg-[#F5F5F0] dark:bg-stone-950 font-serif text-stone-800 dark:text-stone-200 selection:bg-emerald-200 selection:text-emerald-900">
       <Sidebar currentView={currentView} onChangeView={setCurrentView} />
-      
+
       <div className="flex-1 flex flex-col h-[100dvh] md:ml-64 relative overflow-hidden">
         {/* Mobile Top Header */}
-        <header className="md:hidden flex flex-col items-center justify-center px-5 py-3.5 bg-white border-b border-stone-200 shrink-0 z-40 shadow-xs text-center">
+        <header className="md:hidden flex flex-col items-center justify-center px-5 py-3.5 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0 z-40 shadow-xs text-center">
           <div className="flex items-center gap-3">
             <SkoposLogo className="text-[#047857]" size={26} />
             <span className="text-lg font-sans font-bold tracking-widest text-[#1C1917]">SKOPOS</span>
@@ -109,9 +126,9 @@ export default function App() {
         <main className="flex-1 px-4 py-6 sm:p-6 md:p-8 lg:p-12 pb-44 md:pb-8 lg:pb-12 overflow-y-auto relative h-full">
           <div className="max-w-[1024px] mx-auto min-h-full flex flex-col">
             {shouldRemindExport && (
-              <div className="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 shadow-sm animate-in fade-in">
-                <p className="text-amber-900 font-sans font-medium text-sm">
-                  💾 Il y a plus de 7 jours que tu n'as pas sauvegardé tes données. 
+              <div className="mb-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 shadow-sm animate-in fade-in">
+                <p className="text-amber-900 dark:text-amber-200 font-sans font-medium text-sm">
+                  💾 Il y a plus de 7 jours que tu n'as pas sauvegardé tes données.
                 </p>
                 <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                   <button 

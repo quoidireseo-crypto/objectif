@@ -35,10 +35,10 @@ export function ProgressChart({ tasks }: ProgressChartProps) {
   }, [tasks]);
 
   return (
-    <div className="bg-white p-6 md:p-8 rounded-3xl border border-stone-100 shadow-sm w-full">
+    <div className="bg-white dark:bg-stone-900 p-6 md:p-8 rounded-3xl border border-stone-100 dark:border-stone-800 shadow-sm w-full">
       <div className="mb-6">
-        <h3 className="text-xl md:text-2xl font-light text-stone-900">Rythme d'Accomplissement</h3>
-        <p className="text-[10px] uppercase tracking-widest font-bold text-stone-400 font-sans mt-1">Taux de complétion des actions liées aux objectifs (7 jours)</p>
+        <h3 className="text-xl md:text-2xl font-light text-stone-900 dark:text-stone-100">Rythme d'Accomplissement</h3>
+        <p className="text-[10px] uppercase tracking-widest font-bold text-stone-400 dark:text-stone-500 font-sans mt-1">Taux de complétion des actions liées aux objectifs (7 jours)</p>
       </div>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">

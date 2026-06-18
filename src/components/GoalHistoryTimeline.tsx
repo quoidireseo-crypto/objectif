@@ -43,19 +43,19 @@ export function GoalHistoryTimeline({ goalId, data, updateData, onClose }: GoalH
       {/* Header */}
       <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between cursor-pointer py-3 border-t border-stone-100 mt-4 select-none"
+        className="flex items-center justify-between cursor-pointer py-3 border-t border-stone-100 dark:border-stone-800 mt-4 select-none"
       >
         <div className="flex items-center">
-          <History className="w-4 h-4 text-stone-400" />
-          <span className="font-sans text-xs font-bold uppercase tracking-widest text-stone-500 ml-2">
+          <History className="w-4 h-4 text-stone-400 dark:text-stone-500" />
+          <span className="font-sans text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 ml-2">
             Trace du cheminement
           </span>
-          <span className="bg-stone-100 text-stone-500 text-[10px] font-sans px-2 py-0.5 rounded-full ml-2">
+          <span className="bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 text-[10px] font-sans px-2 py-0.5 rounded-full ml-2">
             {entries.length} modification{entries.length > 1 ? 's' : ''}
           </span>
         </div>
         <ChevronDown
-          className={`w-4 h-4 text-stone-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-stone-400 dark:text-stone-500 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
         />
       </div>
 
@@ -63,7 +63,7 @@ export function GoalHistoryTimeline({ goalId, data, updateData, onClose }: GoalH
       {isExpanded && (
         <div className="animate-in fade-in slide-in-from-top-1 duration-200">
           {entries.length === 0 ? (
-            <p className="text-sm italic text-stone-400 text-center py-4">
+            <p className="text-sm italic text-stone-400 dark:text-stone-500 text-center py-4">
               Aucun historique pour le moment.<br /> Les modifications futures seront tracées ici.
             </p>
           ) : (
@@ -79,7 +79,7 @@ export function GoalHistoryTimeline({ goalId, data, updateData, onClose }: GoalH
                     <div key={entry.id} className="relative flex items-start gap-3 pb-4 last:pb-0">
                       {/* Vertical Connecting Line */}
                       {!isLast && (
-                        <div className="absolute left-[7px] top-4 bottom-0 w-px bg-stone-100" />
+                        <div className="absolute left-[7px] top-4 bottom-0 w-px bg-stone-100 dark:bg-stone-800" />
                       )}
 
                       {/* Timeline Dot */}
@@ -92,14 +92,14 @@ export function GoalHistoryTimeline({ goalId, data, updateData, onClose }: GoalH
                       {/* Text Content */}
                       <div className="flex-1 min-w-0">
                         <p
-                          className={`font-serif text-sm leading-snug text-stone-750 ${
-                            isCreated ? 'font-bold text-stone-800' : 'text-stone-700'
+                          className={`font-serif text-sm leading-snug text-stone-750 dark:text-stone-300 ${
+                            isCreated ? 'font-bold text-stone-800 dark:text-stone-100' : 'text-stone-700 dark:text-stone-300'
                           }`}
                         >
-                          {isAchieved && <span className="text-emerald-600 mr-1">✦</span>}
+                          {isAchieved && <span className="text-emerald-600 dark:text-emerald-400 mr-1">✦</span>}
                           {entry.description}
                         </p>
-                        <p className="font-sans text-[10px] text-stone-400 mt-1">
+                        <p className="font-sans text-[10px] text-stone-400 dark:text-stone-500 mt-1">
                           {entry.date}
                         </p>
                       </div>
@@ -109,11 +109,11 @@ export function GoalHistoryTimeline({ goalId, data, updateData, onClose }: GoalH
               </div>
 
               {/* Clear History Button */}
-              <div className="flex justify-end mt-2 pt-2 border-t border-stone-100/50">
+              <div className="flex justify-end mt-2 pt-2 border-t border-stone-100/50 dark:border-stone-800/50">
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="text-[10px] text-stone-300 font-sans hover:text-red-400 transition cursor-pointer underline"
+                  className="text-[10px] text-stone-300 dark:text-stone-600 font-sans hover:text-red-400 transition cursor-pointer underline"
                 >
                   Effacer l'historique
                 </button>

@@ -37,17 +37,17 @@ export function OrphanCard({ orphan, onReactivate, onArchive }: OrphanCardProps)
     ? 'text-stone-500'
     : 'text-stone-400';
 
-  const badgeColorStyleChanged = 
+  const badgeColorStyleChanged =
     orphan.reason === 'goal-inactive' || orphan.reason === 'milestone-abandoned'
-      ? 'text-amber-700 bg-amber-50 border border-amber-200'
+      ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20'
       : orphan.reason === 'goal-no-action'
-      ? 'text-stone-600 bg-stone-100 border border-stone-200'
-      : 'text-stone-500 bg-white border border-stone-200';
+      ? 'text-stone-600 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700'
+      : 'text-stone-500 dark:text-stone-400 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700';
 
   return (
-    <div className="flex items-start gap-4 p-5 bg-stone-50 border border-stone-100 rounded-2xl hover:border-amber-200 hover:bg-amber-50/30 transition-all duration-300 group">
+    <div className="flex items-start gap-4 p-5 bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-2xl hover:border-amber-200 dark:hover:border-amber-500/30 hover:bg-amber-50/30 dark:hover:bg-amber-500/10 transition-all duration-300 group">
       {/* Type Icon */}
-      <div className={`p-2 bg-white rounded-xl shadow-xs border border-stone-100/50 shrink-0 ${iconColor}`}>
+      <div className={`p-2 bg-white dark:bg-stone-900 rounded-xl shadow-xs border border-stone-100/50 dark:border-stone-800 shrink-0 ${iconColor}`}>
         <Icon className="w-5 h-5 shrink-0" />
       </div>
 
@@ -59,21 +59,21 @@ export function OrphanCard({ orphan, onReactivate, onArchive }: OrphanCardProps)
           </span>
         </div>
 
-        <h4 className="font-serif font-light text-stone-800 text-base leading-snug break-words">
+        <h4 className="font-serif font-light text-stone-800 dark:text-stone-100 text-base leading-snug break-words">
           {orphan.title}
         </h4>
 
         {orphan.linkedGoalTitle && (
-          <p className="text-xs text-stone-400 font-sans italic mt-1 truncate">
+          <p className="text-xs text-stone-400 dark:text-stone-500 font-sans italic mt-1 truncate">
             ↳ {orphan.linkedGoalTitle}
           </p>
         )}
 
-        <p className="text-xs text-stone-400 font-sans mt-2">
+        <p className="text-xs text-stone-400 dark:text-stone-500 font-sans mt-2">
           Inactif depuis {orphan.daysSinceLastActivity} {orphan.daysSinceLastActivity > 1 ? 'jours' : 'jour'}
         </p>
 
-        <p className="text-xs italic text-stone-500 mt-2 leading-relaxed">
+        <p className="text-xs italic text-stone-500 dark:text-stone-400 mt-2 leading-relaxed">
           {GENTLE_MESSAGES[orphan.reason]}
         </p>
 
@@ -82,14 +82,14 @@ export function OrphanCard({ orphan, onReactivate, onArchive }: OrphanCardProps)
           <button
             type="button"
             onClick={() => onReactivate(orphan)}
-            className="bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl px-4 py-2 text-xs font-sans font-bold uppercase tracking-wider hover:bg-emerald-100 transition cursor-pointer"
+            className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-xl px-4 py-2 text-xs font-sans font-bold uppercase tracking-wider hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition cursor-pointer"
           >
             Réactiver
           </button>
           <button
             type="button"
             onClick={() => onArchive(orphan)}
-            className="bg-white text-stone-400 border border-stone-200 rounded-xl px-4 py-2 text-xs font-sans font-bold uppercase tracking-wider hover:text-stone-600 transition cursor-pointer"
+            className="bg-white dark:bg-stone-900 text-stone-400 dark:text-stone-500 border border-stone-200 dark:border-stone-700 rounded-xl px-4 py-2 text-xs font-sans font-bold uppercase tracking-wider hover:text-stone-600 dark:hover:text-stone-300 transition cursor-pointer"
           >
             Archiver
           </button>

@@ -187,23 +187,23 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
     return QUOTES[dayOfYear % QUOTES.length];
   }, []);
 
-  let streakColor = 'bg-stone-50 text-stone-500 border-stone-200';
-  let streakIconColor = 'text-stone-400 bg-white border-stone-100';
+  let streakColor = 'bg-stone-50 text-stone-500 border-stone-200 dark:bg-stone-800 dark:text-stone-400 dark:border-stone-700';
+  let streakIconColor = 'text-stone-400 bg-white border-stone-100 dark:text-stone-500 dark:bg-stone-900 dark:border-stone-800';
   let streakMessage = "Commence aujourd'hui.";
-  let streakValueColor = 'text-stone-900';
+  let streakValueColor = 'text-stone-900 dark:text-stone-100';
 
   if (currentStreak >= 7) {
-    streakColor = 'bg-emerald-50 text-emerald-800 border-emerald-100';
-    streakIconColor = 'text-emerald-600 bg-white border-emerald-50';
+    streakColor = 'bg-emerald-50 text-emerald-800 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
+    streakIconColor = 'text-emerald-600 bg-white border-emerald-50 dark:text-emerald-400 dark:bg-stone-900 dark:border-emerald-500/20';
     streakMessage = "Remarquable constance.";
   } else if (currentStreak >= 3) {
-    streakColor = 'bg-amber-50 text-amber-800 border-amber-100';
-    streakIconColor = 'text-amber-600 bg-white border-amber-50';
+    streakColor = 'bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
+    streakIconColor = 'text-amber-600 bg-white border-amber-50 dark:text-amber-400 dark:bg-stone-900 dark:border-amber-500/20';
     streakMessage = "Tu tiens le rythme !";
   } else if (currentStreak > 0) {
     // 1 or 2 days
-    streakColor = 'bg-stone-50 text-stone-600 border-stone-100';
-    streakIconColor = 'text-amber-500 bg-white border-stone-100';
+    streakColor = 'bg-stone-50 text-stone-600 border-stone-100 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700';
+    streakIconColor = 'text-amber-500 bg-white border-stone-100 dark:text-amber-400 dark:bg-stone-900 dark:border-stone-800';
     streakMessage = "Continue sur ta lancée.";
   }
 
@@ -211,55 +211,55 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col min-h-full py-2">
 
       {/* Greeting Banner */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-stone-200/55 pb-6">
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-stone-200/55 dark:border-stone-800 pb-6">
         <div>
-          <h2 className="text-3xl font-light text-stone-900">
-            Bonjour, <span className="font-serif italic text-[#047857]">{userProfile?.name}</span>
+          <h2 className="text-3xl font-light text-stone-900 dark:text-stone-100">
+            Bonjour, <span className="font-serif italic text-[#047857] dark:text-emerald-400">{userProfile?.name}</span>
           </h2>
-          <p className="text-stone-500 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">
+          <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">
             Chaque jour est un nouveau départ.
           </p>
         </div>
         <div className="text-left md:text-right">
-          <p className="text-[10px] md:text-xs text-stone-400 font-sans uppercase tracking-widest leading-none capitalize mb-1">
+          <p className="text-[10px] md:text-xs text-stone-400 dark:text-stone-500 font-sans uppercase tracking-widest leading-none capitalize mb-1">
             {new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}
           </p>
-          <p className="text-sm font-serif italic text-[#047857] leading-snug">Se donner la direction pour ne pas subir.</p>
+          <p className="text-sm font-serif italic text-[#047857] dark:text-emerald-400 leading-snug">Se donner la direction pour ne pas subir.</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 text-stone-800">
-        <div className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm flex flex-col justify-between">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 text-stone-800 dark:text-stone-200">
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-emerald-50 text-emerald-700 rounded-xl">
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
               <Target className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs text-stone-400 uppercase font-sans font-bold">Cap en cours</p>
-              <p className="text-2xl font-light text-stone-900">{activeGoals} Objectif{activeGoals > 1 ? 's' : ''}</p>
+              <p className="text-xs text-stone-400 dark:text-stone-500 uppercase font-sans font-bold">Cap en cours</p>
+              <p className="text-2xl font-light text-stone-900 dark:text-stone-100">{activeGoals} Objectif{activeGoals > 1 ? 's' : ''}</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => onChangeView('goals')}
-            className="text-left text-sm text-emerald-700 font-sans uppercase tracking-widest hover:text-emerald-800 transition"
+            className="text-left text-sm text-emerald-700 dark:text-emerald-400 font-sans uppercase tracking-widest hover:text-emerald-800 dark:hover:text-emerald-300 transition"
           >
             Examiner la direction &rarr;
           </button>
         </div>
 
-        <div className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm flex flex-col justify-between">
+        <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-emerald-50 text-emerald-700 rounded-xl">
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-xl">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs text-stone-400 uppercase font-sans font-bold">Actions du jour</p>
-              <p className="text-2xl font-light text-stone-900">{completedToday} / {todayTasks.length} accomplis</p>
+              <p className="text-xs text-stone-400 dark:text-stone-500 uppercase font-sans font-bold">Actions du jour</p>
+              <p className="text-2xl font-light text-stone-900 dark:text-stone-100">{completedToday} / {todayTasks.length} accomplis</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => onChangeView('tasks')}
-            className="text-left text-sm text-emerald-700 font-sans uppercase tracking-widest hover:text-emerald-800 transition"
+            className="text-left text-sm text-emerald-700 dark:text-emerald-400 font-sans uppercase tracking-widest hover:text-emerald-800 dark:hover:text-emerald-300 transition"
           >
             Voir mon quotidien &rarr;
           </button>
@@ -280,7 +280,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </p>
         </div>
 
-        <div className="bg-emerald-900 text-stone-100 rounded-3xl p-6 shadow-md flex flex-col justify-center relative overflow-hidden group">
+        <div className="bg-emerald-900 dark:bg-emerald-950 text-stone-100 rounded-3xl p-6 shadow-md flex flex-col justify-center relative overflow-hidden group">
           <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Sparkles className="w-16 h-16" />
           </div>
@@ -297,9 +297,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       </div>
 
       {/* Rituels du matin */}
-      <div className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm mb-8 animate-in fade-in slide-in-from-bottom-4 duration-550">
-        <h3 className="text-xl font-light text-stone-900">Régularité du rituel</h3>
-        <p className="text-xs font-sans uppercase tracking-widest text-stone-400 mt-1">7 jours glissants</p>
+      <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm mb-8 animate-in fade-in slide-in-from-bottom-4 duration-550">
+        <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Régularité du rituel</h3>
+        <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-1">7 jours glissants</p>
         
         <div className="flex flex-wrap items-center gap-5 mt-6">
           {recentRitualDays.map((day) => {
@@ -308,10 +308,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
             let statusTitle = "";
             
             if (!ritual) {
-              colorClass = "bg-stone-100 border border-dashed border-stone-300";
+              colorClass = "bg-stone-100 dark:bg-stone-800 border border-dashed border-stone-300 dark:border-stone-700";
               statusTitle = "Aucun rituel";
             } else if (ritual.status === 'skipped') {
-              colorClass = "bg-stone-200";
+              colorClass = "bg-stone-200 dark:bg-stone-700";
               statusTitle = "Passé";
             } else if (ritual.status === 'completed') {
               if (ritual.mood === 'Super') {
@@ -321,10 +321,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                 colorClass = "bg-emerald-500";
                 statusTitle = "Bien";
               } else if (ritual.mood === 'Moyen') {
-                colorClass = "bg-stone-400";
+                colorClass = "bg-stone-400 dark:bg-stone-500";
                 statusTitle = "Moyen";
               } else if (ritual.mood === 'Difficile') {
-                colorClass = "bg-stone-600";
+                colorClass = "bg-stone-600 dark:bg-stone-700";
                 statusTitle = "Difficile";
               }
             }
@@ -339,7 +339,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                   title={finalTitle}
                 >
                 </div>
-                <span className="text-[10px] text-stone-400 font-sans font-medium">
+                <span className="text-[10px] text-stone-400 dark:text-stone-500 font-sans font-medium">
                   {day.dayName}
                 </span>
               </div>
@@ -348,7 +348,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         </div>
 
         {todayRitual?.status === 'completed' && todayRitual?.priority && (
-          <p className="italic text-stone-600 text-sm mt-4">
+          <p className="italic text-stone-600 dark:text-stone-300 text-sm mt-4">
             Priorité du jour : {todayRitual.priority}
           </p>
         )}
@@ -363,26 +363,26 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       </div>
 
       {/* Aperçu de la carte mentale */}
-      <div className="bg-white border border-stone-200/60 rounded-3xl p-6 md:p-8 mb-8 shadow-xs">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-8 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h3 className="text-xl font-serif font-light text-stone-800">
+            <h3 className="text-xl font-serif font-light text-stone-800 dark:text-stone-200">
               Ta Constellation d'Intentions
             </h3>
-            <p className="text-xs text-stone-400 mt-1">
+            <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
               Chaque action relie à un cap plus grand.
             </p>
           </div>
           <button
             onClick={() => onChangeView('graph')}
-            className="text-emerald-700 hover:text-emerald-800 transition font-sans text-sm font-bold uppercase tracking-widest text-left sm:text-right shrink-0"
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition font-sans text-sm font-bold uppercase tracking-widest text-left sm:text-right shrink-0"
           >
             Explorer ma carte complète &rarr;
           </button>
         </div>
 
         {/* Thumbnail Preview Area */}
-        <div className="relative h-[200px] w-full overflow-hidden rounded-3xl border border-stone-100 bg-stone-50/20 pointer-events-none select-none">
+        <div className="relative h-[200px] w-full overflow-hidden rounded-3xl border border-stone-100 dark:border-stone-800 bg-stone-50/20 dark:bg-stone-800/20 pointer-events-none select-none">
           <div className="absolute inset-0 flex items-center justify-center">
             <div
               style={{

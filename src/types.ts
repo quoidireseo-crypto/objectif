@@ -1,4 +1,4 @@
-export type ViewType = 'dashboard' | 'goals' | 'tasks' | 'journal' | 'review' | 'calendar' | 'settings' | 'graph';
+export type ViewType = 'dashboard' | 'goals' | 'tasks' | 'habits' | 'journal' | 'review' | 'calendar' | 'settings' | 'graph';
 
 export type LifeDomain = 'Santé & Bien-être' | 'Projet Personnel' | 'Relations & Famille' | 'Apprentissage' | 'Finances' | 'Spiritualité' | 'Autre';
 
@@ -52,6 +52,36 @@ export interface AppData {
   morningRituals: MorningRitual[];
   goalsHistory: GoalHistoryEntry[];
   eveningReflections: EveningReflection[];
+  habits: Habit[];
+  habitCompletions: HabitCompletion[];
+  weeklyReviews: WeeklyReview[];
+}
+
+export type HabitFrequency = 'daily' | 'weekly';
+
+export interface Habit {
+  id: string;
+  title: string;
+  domain?: LifeDomain;
+  frequency: HabitFrequency;
+  daysOfWeek?: number[]; // 0 = dimanche ... 6 = samedi, utilisé si frequency === 'weekly'
+  createdAt: string;
+  isArchived?: boolean;
+}
+
+export interface HabitCompletion {
+  id: string;
+  habitId: string;
+  date: string; // format YYYY-MM-DD
+}
+
+export interface WeeklyReview {
+  id: string;
+  weekStartDate: string; // lundi de la semaine concernée, format YYYY-MM-DD
+  win: string;
+  challenge: string;
+  intention: string;
+  createdAt: string;
 }
 
 export type MorningRitualStatus = 'pending' | 'completed' | 'skipped';

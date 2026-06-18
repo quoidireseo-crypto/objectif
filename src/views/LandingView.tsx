@@ -34,17 +34,17 @@ export function LandingView({ onComplete }: LandingViewProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0] flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden font-serif selection:bg-emerald-200 selection:text-emerald-900">
-      
-      {/* Soft ethereal ambient background lights */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-100/40 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-[#F5F5F0] dark:bg-stone-950 flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden font-serif selection:bg-emerald-200 selection:text-emerald-900">
 
-      <motion.div 
+      {/* Soft ethereal ambient background lights */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-100/40 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-100/40 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-full max-w-xl bg-white border border-stone-200/50 rounded-3xl p-8 md:p-12 shadow-md relative z-10"
+        className="w-full max-w-xl bg-white dark:bg-stone-900 border border-stone-200/50 dark:border-stone-800 rounded-3xl p-8 md:p-12 shadow-md relative z-10"
       >
         {/* LOGO & TITLE */}
         <div className="flex flex-col items-center text-center mb-8">
@@ -52,15 +52,15 @@ export function LandingView({ onComplete }: LandingViewProps) {
             initial={{ scale: 0.9, rotate: -5 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', stiffness: 100 }}
-            className="p-3 bg-emerald-50 rounded-2xl mb-4 text-[#047857]"
+            className="p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl mb-4 text-[#047857] dark:text-emerald-400"
           >
             <SkoposLogo size={36} />
           </motion.div>
-          
-          <h1 className="text-3xl font-sans tracking-widest font-bold text-stone-900">
+
+          <h1 className="text-3xl font-sans tracking-widest font-bold text-stone-900 dark:text-stone-100">
             SKOPOS
           </h1>
-          <p className="text-xs text-[#047857] uppercase tracking-widest font-sans font-bold mt-1">
+          <p className="text-xs text-[#047857] dark:text-emerald-400 uppercase tracking-widest font-sans font-bold mt-1">
             Chaque jour son nouveau départ
           </p>
         </div>
@@ -75,21 +75,21 @@ export function LandingView({ onComplete }: LandingViewProps) {
             className="space-y-6"
           >
             <div className="text-center space-y-2">
-              <h2 className="text-xl md:text-2xl font-light text-stone-800 leading-snug">
+              <h2 className="text-xl md:text-2xl font-light text-stone-800 dark:text-stone-100 leading-snug">
                 Bienvenue dans votre nouvel espace d'alignement.
               </h2>
-              <p className="text-stone-500 font-sans text-xs md:text-sm leading-relaxed max-w-md mx-auto">
+              <p className="text-stone-500 dark:text-stone-400 font-sans text-xs md:text-sm leading-relaxed max-w-md mx-auto">
                 Skopos est un outil bienveillant conçu pour vous aider à fixer des objectifs porteurs de sens et avancer sereinement à votre rythme.
               </p>
             </div>
 
-            <div className="space-y-4 pt-4 border-t border-stone-100">
+            <div className="space-y-4 pt-4 border-t border-stone-100 dark:border-stone-800">
               <div className="space-y-1">
-                <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 block">
+                <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 dark:text-stone-500 block">
                   Quel est votre prénom ?
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500">
                     <User className="w-4 h-4" />
                   </span>
                   <input
@@ -97,7 +97,7 @@ export function LandingView({ onComplete }: LandingViewProps) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ex: Claire, Robert, Marc..."
-                    className="w-full pl-11 pr-4 py-3.5 bg-stone-50 border border-stone-200 rounded-2xl outline-none focus:ring-1 focus:ring-[#047857] focus:border-[#047857] text-stone-800 font-sans text-sm transition"
+                    className="w-full pl-11 pr-4 py-3.5 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl outline-none focus:ring-1 focus:ring-[#047857] focus:border-[#047857] text-stone-800 dark:text-stone-100 font-sans text-sm transition placeholder-stone-400 dark:placeholder-stone-500"
                     maxLength={20}
                     autoFocus
                   />
@@ -105,13 +105,13 @@ export function LandingView({ onComplete }: LandingViewProps) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 block">
+                <label className="text-xs uppercase tracking-wider font-sans font-bold text-stone-400 dark:text-stone-500 block">
                   Tranche de vie / Décennie (Optionnel)
                 </label>
                 <select
                   value={ageGroup}
                   onChange={(e) => setAgeGroup(e.target.value)}
-                  className="w-full px-4 py-3.5 bg-stone-50 border border-stone-200 rounded-2xl outline-none focus:ring-1 focus:ring-[#047857] focus:border-[#047857] text-stone-700 font-sans text-sm transition cursor-pointer appearance-none"
+                  className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl outline-none focus:ring-1 focus:ring-[#047857] focus:border-[#047857] text-stone-700 dark:text-stone-300 font-sans text-sm transition cursor-pointer appearance-none"
                 >
                   <option value="">Sélectionner (ou laisser vide)...</option>
                   <option value="Trente">La trentaine — Consolider mes bases</option>
@@ -142,10 +142,10 @@ export function LandingView({ onComplete }: LandingViewProps) {
             className="space-y-6"
           >
             <div className="text-center space-y-2">
-              <h2 className="text-xl md:text-2xl font-light text-stone-800 leading-snug">
+              <h2 className="text-xl md:text-2xl font-light text-stone-800 dark:text-stone-100 leading-snug">
                 Ravi de faire votre connaissance, {name}.
               </h2>
-              <p className="text-stone-500 font-sans text-xs md:text-sm leading-relaxed max-w-sm mx-auto">
+              <p className="text-stone-500 dark:text-stone-400 font-sans text-xs md:text-sm leading-relaxed max-w-sm mx-auto">
                 Quel est votre point d'ancrage prioritaire en ce moment ? Cela nous aidera à personnaliser votre tableau de bord.
               </p>
             </div>
@@ -156,28 +156,28 @@ export function LandingView({ onComplete }: LandingViewProps) {
                   key={opt.id}
                   onClick={() => setFocusArea(opt.label)}
                   className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex gap-3.5 ${
-                    focusArea === opt.label 
-                      ? 'bg-[#FFFBEB] border-amber-300 shadow-sm' 
-                      : 'bg-stone-50/50 hover:bg-stone-50 border-stone-200/60'
+                    focusArea === opt.label
+                      ? 'bg-[#FFFBEB] dark:bg-amber-500/10 border-amber-300 dark:border-amber-500/30 shadow-sm'
+                      : 'bg-stone-50/50 dark:bg-stone-800/50 hover:bg-stone-50 dark:hover:bg-stone-800 border-stone-200/60 dark:border-stone-700/60'
                   }`}
                 >
                   <div className={`p-2 rounded-xl border shrink-0 ${
-                    focusArea === opt.label ? 'bg-amber-100 text-amber-700' : 'bg-white text-stone-400'
+                    focusArea === opt.label ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-500/20' : 'bg-white dark:bg-stone-900 text-stone-400 dark:text-stone-500 border-stone-200/60 dark:border-stone-700/60'
                   }`}>
                     <Compass className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-sans font-bold text-stone-800">{opt.label}</h4>
-                    <p className="text-[11px] font-sans text-stone-500 leading-normal mt-0.5">{opt.desc}</p>
+                    <h4 className="text-xs font-sans font-bold text-stone-800 dark:text-stone-100">{opt.label}</h4>
+                    <p className="text-[11px] font-sans text-stone-500 dark:text-stone-400 leading-normal mt-0.5">{opt.desc}</p>
                   </div>
                 </button>
               ))}
             </div>
 
-            <div className="flex gap-3 pt-4 border-t border-stone-100">
+            <div className="flex gap-3 pt-4 border-t border-stone-100 dark:border-stone-800">
               <button
                 onClick={() => setStep(1)}
-                className="flex-1 border-2 border-stone-150 py-3.5 px-6 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold text-stone-500 hover:bg-stone-50 active:scale-98 transition-all cursor-pointer"
+                className="flex-1 border-2 border-stone-150 dark:border-stone-700 py-3.5 px-6 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 active:scale-98 transition-all cursor-pointer"
               >
                 Retour
               </button>
@@ -193,7 +193,7 @@ export function LandingView({ onComplete }: LandingViewProps) {
         )}
 
         {/* Philosophy Footnote */}
-        <p className="text-center text-[10px] text-stone-400 mt-8 font-sans leading-relaxed">
+        <p className="text-center text-[10px] text-stone-400 dark:text-stone-500 mt-8 font-sans leading-relaxed">
           🔒 Stockage local privé. Aucune donnée ne quitte votre ordinateur.
         </p>
 

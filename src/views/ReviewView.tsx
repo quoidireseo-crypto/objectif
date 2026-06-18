@@ -1,12 +1,15 @@
 import { useState, useMemo } from 'react';
 import { AppData, OrphanReason } from '../types';
-import { Activity, CheckCircle2, CalendarDays, BookOpen, Quote, BarChart as BarChartIcon } from 'lucide-react';
+import { Activity, CheckCircle2, CalendarDays, BookOpen, Quote, BarChart as BarChartIcon, Compass, Sparkles, Mountain } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useOrphans } from '../hooks/useOrphans';
 import { useGoalHistory } from '../hooks/useGoalHistory';
+import { useWeeklyReview } from '../hooks/useWeeklyReview';
+import { WeeklyReviewScreen } from '../components/WeeklyReviewScreen';
 
 interface ReviewProps {
   data: AppData;
+  updateData: (data: Partial<AppData>) => void;
 }
 
 const REASON_TEXTS: Record<OrphanReason, string> = {
@@ -31,10 +34,12 @@ const DOT_COLORS: Record<string, string> = {
   'status-changed': 'bg-stone-500',
 };
 
-export function ReviewView({ data }: ReviewProps) {
+export function ReviewView({ data, updateData }: ReviewProps) {
   const [period, setPeriod] = useState<'weekly' | 'monthly'>('weekly');
   const orphans = useOrphans(data);
   const { getHistoryForGoal } = useGoalHistory(data, () => {});
+  const { reviews: weeklyReviews, currentWeekReview, completeReview } = useWeeklyReview(data, updateData);
+  const [showWeeklyReviewScreen, setShowWeeklyReviewScreen] = useState(false);
 
   const { stats, chartData } = useMemo(() => {
     const days = period === 'weekly' ? 7 : 30;
@@ -92,6 +97,33 @@ export function ReviewView({ data }: ReviewProps) {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
+      {showWeeklyReviewScreen && (
+        <WeeklyReviewScreen
+          onComplete={(input) => {
+            completeReview(input);
+            setShowWeeklyReviewScreen(false);
+          }}
+          onClose={() => setShowWeeklyReviewScreen(false)}
+        />
+      )}
+
+      {!currentWeekReview && (
+        <div className="mb-8 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in">
+          <div className="flex items-center gap-3">
+            <Compass className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0" />
+            <p className="text-emerald-900 dark:text-emerald-200 font-sans font-medium text-sm">
+              Cette semaine n'a pas encore son bilan. Prends 2 minutes pour faire le point.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowWeeklyReviewScreen(true)}
+            className="bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-emerald-800 transition shrink-0 w-full sm:w-auto"
+          >
+            Commencer mon bilan guidé
+          </button>
+        </div>
+      )}
+
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-stone-200 pb-6">
         <div>
           <h2 className="text-3xl md:text-4xl font-light text-stone-900">Mon Bilan</h2>
@@ -245,6 +277,44 @@ export function ReviewView({ data }: ReviewProps) {
           </div>
         )}
       </div>
+
+      {/* Bilans hebdomadaires */}
+      {weeklyReviews.length > 0 && (
+        <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm mb-8">
+          <div className="flex items-center gap-3 mb-8 border-b border-stone-100 pb-4">
+            <Compass className="w-6 h-6 text-stone-400" />
+            <h3 className="text-xl font-light text-stone-900">Bilans hebdomadaires</h3>
+          </div>
+          <div className="space-y-6">
+            {weeklyReviews.map(review => {
+              const weekStart = new Date(review.weekStartDate + 'T00:00:00');
+              const weekEnd = new Date(weekStart);
+              weekEnd.setDate(weekStart.getDate() + 6);
+              const label = `${weekStart.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} → ${weekEnd.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`;
+
+              return (
+                <div key={review.id} className="p-5 bg-stone-50 rounded-2xl border border-stone-100">
+                  <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-stone-400 block mb-3">{label}</span>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-start gap-2.5">
+                      <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                      <p className="text-stone-700 italic">{review.win}</p>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <Mountain className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
+                      <p className="text-stone-700 italic">{review.challenge}</p>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <Compass className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <p className="text-stone-700 italic">{review.intention}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Rétrospective */}
       <div className="bg-white rounded-3xl p-6 md:p-8 border border-stone-100 shadow-sm">

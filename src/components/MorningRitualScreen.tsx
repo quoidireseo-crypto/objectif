@@ -10,20 +10,20 @@ interface MorningRitualScreenProps {
 }
 
 const DOMAINS: { label: LifeDomain; icon: LucideIcon; color: string }[] = [
-  { label: 'Santé & Bien-être', icon: Activity, color: 'text-amber-700 bg-amber-50 border-amber-100' },
-  { label: 'Projet Personnel', icon: Target, color: 'text-stone-700 bg-stone-100 border-stone-200' },
-  { label: 'Relations & Famille', icon: Heart, color: 'text-rose-700 bg-rose-50 border-rose-100' },
-  { label: 'Apprentissage', icon: Briefcase, color: 'text-blue-700 bg-blue-50 border-blue-100' },
-  { label: 'Finances', icon: Coins, color: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
-  { label: 'Spiritualité', icon: Sparkles, color: 'text-indigo-700 bg-indigo-50 border-indigo-100' },
-  { label: 'Autre', icon: Home, color: 'text-stone-600 bg-stone-50 border-stone-200' },
+  { label: 'Santé & Bien-être', icon: Activity, color: 'text-amber-700 bg-amber-50 border-amber-100 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20' },
+  { label: 'Projet Personnel', icon: Target, color: 'text-stone-700 bg-stone-100 border-stone-200 dark:text-stone-300 dark:bg-stone-800 dark:border-stone-700' },
+  { label: 'Relations & Famille', icon: Heart, color: 'text-rose-700 bg-rose-50 border-rose-100 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20' },
+  { label: 'Apprentissage', icon: Briefcase, color: 'text-blue-700 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-500/10 dark:border-blue-500/20' },
+  { label: 'Finances', icon: Coins, color: 'text-emerald-700 bg-emerald-50 border-emerald-100 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20' },
+  { label: 'Spiritualité', icon: Sparkles, color: 'text-indigo-700 bg-indigo-50 border-indigo-100 dark:text-indigo-400 dark:bg-indigo-500/10 dark:border-indigo-500/20' },
+  { label: 'Autre', icon: Home, color: 'text-stone-600 bg-stone-50 border-stone-200 dark:text-stone-300 dark:bg-stone-800 dark:border-stone-700' },
 ];
 
 const MOODS = [
-  { label: 'Super', icon: Sparkles, color: 'text-amber-800 bg-amber-50 border-amber-200 hover:bg-amber-100' },
-  { label: 'Bien', icon: Smile, color: 'text-emerald-800 bg-emerald-50 border-emerald-200 hover:bg-emerald-100' },
-  { label: 'Moyen', icon: Meh, color: 'text-stone-600 bg-stone-100 border-stone-200 hover:bg-stone-200' },
-  { label: 'Difficile', icon: Frown, color: 'text-amber-900 bg-amber-100 border-amber-300 hover:bg-amber-200' },
+  { label: 'Super', icon: Sparkles, color: 'text-amber-800 bg-amber-50 border-amber-200 hover:bg-amber-100 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20 dark:hover:bg-amber-500/20' },
+  { label: 'Bien', icon: Smile, color: 'text-emerald-800 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:hover:bg-emerald-500/20' },
+  { label: 'Moyen', icon: Meh, color: 'text-stone-600 bg-stone-100 border-stone-200 hover:bg-stone-200 dark:text-stone-300 dark:bg-stone-800 dark:border-stone-700 dark:hover:bg-stone-700' },
+  { label: 'Difficile', icon: Frown, color: 'text-amber-900 bg-amber-100 border-amber-300 hover:bg-amber-200 dark:text-amber-200 dark:bg-amber-500/20 dark:border-amber-500/30 dark:hover:bg-amber-500/30' },
 ] as const;
 
 export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: MorningRitualScreenProps) {
@@ -64,25 +64,25 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
 
   const getDomainBadgeStyle = (domainName: LifeDomain) => {
     const dom = DOMAINS.find(d => d.label === domainName);
-    return dom ? dom.color : 'text-stone-600 bg-stone-50 border-stone-200';
+    return dom ? dom.color : 'text-stone-600 bg-stone-50 border-stone-200 dark:text-stone-300 dark:bg-stone-800 dark:border-stone-700';
   };
 
   const currentMoodObj = MOODS.find(m => m.label === mood);
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#F5F5F0] flex flex-col items-center justify-between p-8 md:p-12 animate-in fade-in duration-700 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-[#F5F5F0] dark:bg-stone-950 flex flex-col items-center justify-between p-8 md:p-12 animate-in fade-in duration-700 overflow-y-auto">
       {/* Top Header & Progress */}
       <div className="w-full max-w-2xl flex flex-col items-center gap-6 mt-4 select-none shrink-0">
         <div className="flex flex-col items-center gap-2">
-          <Compass className="w-8 h-8 text-emerald-600 animate-spin-slow" />
-          <span className="font-sans text-xs uppercase tracking-widest text-stone-400 font-medium">Rituel du matin</span>
+          <Compass className="w-8 h-8 text-emerald-600 dark:text-emerald-500 animate-spin-slow" />
+          <span className="font-sans text-xs uppercase tracking-widest text-stone-400 dark:text-stone-500 font-medium">Rituel du matin</span>
         </div>
 
         {/* Progress Indicator Dots */}
         <div className="flex gap-2.5 items-center">
-          <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${step > 1 ? 'bg-emerald-500' : (step === 1 ? 'bg-stone-300' : 'bg-stone-100')}`} />
-          <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${step > 2 ? 'bg-emerald-500' : (step === 2 ? 'bg-stone-300' : 'bg-stone-100')}`} />
-          <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${step > 3 ? 'bg-emerald-500' : (step === 3 ? 'bg-stone-300' : 'bg-stone-100')}`} />
+          <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${step > 1 ? 'bg-emerald-500' : (step === 1 ? 'bg-stone-300 dark:bg-stone-600' : 'bg-stone-100 dark:bg-stone-800')}`} />
+          <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${step > 2 ? 'bg-emerald-500' : (step === 2 ? 'bg-stone-300 dark:bg-stone-600' : 'bg-stone-100 dark:bg-stone-800')}`} />
+          <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${step > 3 ? 'bg-emerald-500' : (step === 3 ? 'bg-stone-300 dark:bg-stone-600' : 'bg-stone-100 dark:bg-stone-800')}`} />
         </div>
       </div>
 
