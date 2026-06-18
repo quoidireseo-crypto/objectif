@@ -598,26 +598,26 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                       
                       if (diffDays < 0) {
                         return (
-                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider bg-red-50 text-red-800 border border-red-100 px-2.5 py-1.5 rounded-full">
+                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider bg-red-50 dark:bg-red-500/10 text-red-800 dark:text-red-400 border border-red-100 dark:border-red-500/20 px-2.5 py-1.5 rounded-full">
                             Échéance dépassée
                           </span>
                         );
                       } else if (diffDays === 0) {
                         return (
-                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-100 px-2.5 py-1.5 rounded-full">
+                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 px-2.5 py-1.5 rounded-full">
                             Aujourd’hui
                           </span>
                         );
                       } else {
                         return (
-                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider bg-blue-50 text-blue-800 border border-blue-100 px-2.5 py-1.5 rounded-full">
+                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 px-2.5 py-1.5 rounded-full">
                             J-{diffDays}
                           </span>
                         );
                       }
                     })()}
                   </div>
-                  <span className="text-[10px] text-stone-400 font-sans uppercase">
+                  <span className="text-[10px] text-stone-400 dark:text-stone-500 font-sans uppercase">
                     Créé le {new Intl.DateTimeFormat('fr-FR').format(new Date(goal.createdAt))}
                   </span>
                 </div>
@@ -628,29 +628,29 @@ export function GoalsView({ data, updateData }: GoalsProps) {
       )}
 
       {achievedGoals.length > 0 && (
-        <div className="mt-16 pt-10 border-t border-stone-200">
-          <h3 className="text-lg font-light text-stone-500 mb-6 flex items-center gap-2">
-            <Target className="w-5 h-5 text-emerald-600" />
+        <div className="mt-16 pt-10 border-t border-stone-200 dark:border-stone-800">
+          <h3 className="text-lg font-light text-stone-500 dark:text-stone-400 mb-6 flex items-center gap-2">
+            <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             Caps honorés
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {achievedGoals.map(goal => {
               const theme = getDomainTheme(goal.domain);
-              
+
               return (
-                <div key={goal.id} className="bg-stone-50/50 border border-stone-100 rounded-2xl p-5 opacity-70 hover:opacity-100 transition-opacity flex flex-col h-full group">
+                <div key={goal.id} className="bg-stone-50/50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-2xl p-5 opacity-70 hover:opacity-100 transition-opacity flex flex-col h-full group">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-[9px] font-sans font-bold text-emerald-800 uppercase tracking-wider">{goal.domain}</span>
-                    <button onClick={() => deleteGoal(goal.id)} className="text-stone-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[9px] font-sans font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider">{goal.domain}</span>
+                    <button onClick={() => deleteGoal(goal.id)} className="text-stone-300 dark:text-stone-600 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                  <h4 className="text-lg font-medium text-stone-800 line-through mb-2">{goal.title}</h4>
-                  <div className="mt-auto pt-3 border-t border-stone-100/50 flex items-center justify-between gap-2">
+                  <h4 className="text-lg font-medium text-stone-800 dark:text-stone-200 line-through mb-2">{goal.title}</h4>
+                  <div className="mt-auto pt-3 border-t border-stone-100/50 dark:border-stone-800 flex items-center justify-between gap-2">
                     <select
                       value={goal.status}
                       onChange={(e) => handleStatusChange(goal.id, e.target.value as Goal['status'])}
-                      className="text-xs font-sans uppercase font-bold tracking-wider px-3 py-1.5 rounded-full border cursor-pointer outline-none transition text-emerald-850 bg-emerald-50 border-emerald-100 hover:bg-emerald-100/50"
+                      className="text-xs font-sans uppercase font-bold tracking-wider px-3 py-1.5 rounded-full border cursor-pointer outline-none transition text-emerald-850 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100/50 dark:hover:bg-emerald-500/20"
                     >
                       <option value="En cours">En cours</option>
                       <option value="En pause">En pause</option>

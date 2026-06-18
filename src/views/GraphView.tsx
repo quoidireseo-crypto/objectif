@@ -632,21 +632,21 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
       {isEmpty ? (
         isPreview ? (
           <div className="flex-1 flex flex-col items-center justify-center p-4 text-center select-none pointer-events-none">
-            <Network className="w-8 h-8 text-stone-300 mb-2 animate-pulse" />
-            <p className="text-xs text-stone-400 italic">Aucune intention à afficher</p>
+            <Network className="w-8 h-8 text-stone-300 dark:text-stone-600 mb-2 animate-pulse" />
+            <p className="text-xs text-stone-400 dark:text-stone-500 italic">Aucune intention à afficher</p>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white z-0 max-w-lg mx-auto my-12 rounded-3xl border border-stone-100 shadow-sm">
-            <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
-              <Network className="w-8 h-8 text-indigo-500" />
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-stone-900 z-0 max-w-lg mx-auto my-12 rounded-3xl border border-stone-100 dark:border-stone-800 shadow-sm">
+            <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center mb-6">
+              <Network className="w-8 h-8 text-indigo-500 dark:text-indigo-400" />
             </div>
-            <h2 className="text-xl font-serif font-light text-stone-800 mb-2">Ton graphe est vide</h2>
-            <p className="text-sm text-stone-500 mb-6 leading-relaxed max-w-sm">
+            <h2 className="text-xl font-serif font-light text-stone-800 dark:text-stone-100 mb-2">Ton graphe est vide</h2>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mb-6 leading-relaxed max-w-sm">
               Commence par définir un objectif pour voir tes intentions prendre forme ici.
             </p>
             <button
               onClick={() => onChangeView && onChangeView('goals')}
-              className="inline-flex items-center gap-2 bg-indigo-600 text-white font-medium rounded-2xl px-5 py-3 text-sm hover:bg-indigo-700 active:scale-95 transition"
+              className="inline-flex items-center gap-2 bg-indigo-600 dark:bg-indigo-700 text-white font-medium rounded-2xl px-5 py-3 text-sm hover:bg-indigo-700 dark:hover:bg-indigo-800 active:scale-95 transition"
             >
               Fixer mon premier cap
             </button>
@@ -656,7 +656,7 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
         <div className="flex-1 overflow-hidden relative select-none">
           {/* Floating status text during organization simulation */}
           {!isPreview && isSimulating && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur border border-stone-200/50 px-4 py-1.5 rounded-full text-xs text-stone-400 italic shadow-sm z-30 flex items-center gap-2 select-none animate-pulse">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-stone-900/95 backdrop-blur border border-stone-200/50 dark:border-stone-700/50 px-4 py-1.5 rounded-full text-xs text-stone-400 dark:text-stone-500 italic shadow-sm z-30 flex items-center gap-2 select-none animate-pulse">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping" />
               Organisation en cours...
             </div>
@@ -669,7 +669,7 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
               height="100%"
               viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
               style={{ display: 'block' }}
-              className="bg-stone-50/40 cursor-grab active:cursor-grabbing outline-none"
+              className="bg-stone-50/40 dark:bg-stone-900/40 cursor-grab active:cursor-grabbing outline-none"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -825,7 +825,7 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                         x={node.x}
                         y={node.y + node.radius + 15}
                         textAnchor="middle"
-                        className="font-sans select-none pointer-events-none fill-stone-600 font-medium tracking-tight"
+                        className="font-sans select-none pointer-events-none fill-stone-600 dark:fill-stone-300 font-medium tracking-tight"
                         style={{
                           fontSize: '10px',
                           opacity,

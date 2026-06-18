@@ -397,7 +397,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
             </div>
           </div>
           {/* Bottom Fade Gradient for "Aperçu" style */}
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-white pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-white dark:to-stone-900 pointer-events-none" />
         </div>
       </div>
 
@@ -407,29 +407,29 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       </div>
 
       {/* BILAN DU SOIR SECTION */}
-      <div className="bg-white border border-stone-200 rounded-3xl p-6 md:p-8 mb-8 shadow-xs relative overflow-hidden">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-8 shadow-xs relative overflow-hidden">
         {/* Decorative Top Line/Indicator */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500/10"></div>
-        
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-stone-100">
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-stone-100 dark:border-stone-800">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
+            <div className="p-2 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl">
               <Moon className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-400">
+              <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-400 dark:text-stone-500">
                 Le Bilan du Soir
               </h3>
-              <p className="text-lg font-serif italic text-stone-800">
+              <p className="text-lg font-serif italic text-stone-800 dark:text-stone-200">
                 Le Bilan des Réussites
               </p>
             </div>
           </div>
-          
+
           {/* Badge Count Subtitle */}
-          <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full">
-            <Award className="w-4 h-4 text-amber-500 animate-pulse" />
-            <span className="text-xs font-sans font-semibold text-amber-700">
+          <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 rounded-full">
+            <Award className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-pulse" />
+            <span className="text-xs font-sans font-semibold text-amber-700 dark:text-amber-400">
               {recentDays.filter(d => d.success).length} badge{recentDays.filter(d => d.success).length > 1 ? 's' : ''} cette semaine
             </span>
           </div>

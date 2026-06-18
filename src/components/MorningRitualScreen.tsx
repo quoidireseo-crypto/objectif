@@ -92,20 +92,20 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
           <div className="space-y-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Salutation & Date */}
             <div className="space-y-2">
-              <h1 className="font-serif text-4xl md:text-5xl font-light text-stone-900 leading-tight">
+              <h1 className="font-serif text-4xl md:text-5xl font-light text-stone-900 dark:text-stone-100 leading-tight">
                 Bonjour{userProfile?.name ? `, ${userProfile.name}` : ''}.
               </h1>
-              <p className="text-stone-400 font-sans text-sm capitalize font-light">{formattedDate}</p>
+              <p className="text-stone-400 dark:text-stone-500 font-sans text-sm capitalize font-light">{formattedDate}</p>
               {yesterdayTasksSummary && (
-                <p className="italic text-stone-500 text-sm mt-3 font-serif font-light">{yesterdayTasksSummary}</p>
+                <p className="italic text-stone-500 dark:text-stone-400 text-sm mt-3 font-serif font-light">{yesterdayTasksSummary}</p>
               )}
             </div>
 
             {/* Step Question */}
             <div className="space-y-6">
               <div className="space-y-2">
-                <h2 className="text-xl md:text-2xl font-serif text-stone-800">Quelle est ta priorité absolue aujourd'hui ?</h2>
-                <p className="italic text-stone-400 font-serif font-light text-sm max-w-md mx-auto">
+                <h2 className="text-xl md:text-2xl font-serif text-stone-800 dark:text-stone-200">Quelle est ta priorité absolue aujourd'hui ?</h2>
+                <p className="italic text-stone-400 dark:text-stone-500 font-serif font-light text-sm max-w-md mx-auto">
                   "Une seule chose. Si tu ne fais que ça, la journée aura eu du sens."
                 </p>
               </div>
@@ -113,7 +113,7 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
               <div className="flex flex-col items-center gap-5 w-full">
                 <input
                   type="text"
-                  className="w-full max-w-lg bg-white border border-stone-200 rounded-2xl px-6 py-4 text-xl font-serif font-light text-stone-800 outline-none focus:ring-1 focus:ring-emerald-600 placeholder-stone-300 text-center shadow-sm"
+                  className="w-full max-w-lg bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-2xl px-6 py-4 text-xl font-serif font-light text-stone-800 dark:text-stone-100 outline-none focus:ring-1 focus:ring-emerald-600 placeholder-stone-300 dark:placeholder-stone-600 text-center shadow-sm"
                   placeholder="Ce qui compte vraiment aujourd'hui..."
                   value={priority}
                   onChange={(e) => setPriority(e.target.value)}
@@ -124,7 +124,7 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
                   type="button"
                   onClick={() => setStep(2)}
                   disabled={!priority.trim()}
-                  className="bg-stone-800 text-white px-8 py-3.5 rounded-xl font-sans text-xs uppercase tracking-widest font-bold border-none cursor-pointer transition disabled:opacity-30 disabled:cursor-not-allowed hover:bg-stone-900 active:scale-95 shadow-sm"
+                  className="bg-stone-800 dark:bg-emerald-700 text-white px-8 py-3.5 rounded-xl font-sans text-xs uppercase tracking-widest font-bold border-none cursor-pointer transition disabled:opacity-30 disabled:cursor-not-allowed hover:bg-stone-900 dark:hover:bg-emerald-800 active:scale-95 shadow-sm"
                 >
                   Continuer →
                 </button>
@@ -136,19 +136,19 @@ export function MorningRitualScreen({ data, userProfile, onComplete, onSkip }: M
         {step === 2 && (
           <div className="space-y-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="space-y-2">
-              <h2 className="text-xl md:text-2xl font-serif text-stone-800">Sur quel cap veux-tu avancer aujourd'hui ?</h2>
-              <p className="italic text-stone-400 font-serif font-light text-sm">
+              <h2 className="text-xl md:text-2xl font-serif text-stone-800 dark:text-stone-200">Sur quel cap veux-tu avancer aujourd'hui ?</h2>
+              <p className="italic text-stone-400 dark:text-stone-500 font-serif font-light text-sm">
                 Optionnel. Sauter si aucun ne s'applique.
               </p>
             </div>
 
             {activeGoals.length === 0 ? (
               <div className="space-y-5">
-                <p className="text-stone-500 font-serif italic text-base">Tu n'as pas encore de cap défini.</p>
+                <p className="text-stone-500 dark:text-stone-400 font-serif italic text-base">Tu n'as pas encore de cap défini.</p>
                 <button
                   type="button"
                   onClick={() => setStep(3)}
-                  className="bg-stone-800 text-white px-8 py-3.5 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 transition active:scale-95 shadow-sm"
+                  className="bg-stone-800 dark:bg-emerald-700 text-white px-8 py-3.5 rounded-xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-900 dark:hover:bg-emerald-800 transition active:scale-95 shadow-sm"
                 >
                   Continuer →
                 </button>
