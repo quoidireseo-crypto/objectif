@@ -1,4 +1,4 @@
-export type ViewType = 'dashboard' | 'goals' | 'tasks' | 'journal' | 'review' | 'calendar' | 'cartography' | 'settings';
+export type ViewType = 'dashboard' | 'goals' | 'tasks' | 'journal' | 'review' | 'calendar' | 'settings' | 'graph';
 
 export type LifeDomain = 'Santé & Bien-être' | 'Projet Personnel' | 'Relations & Famille' | 'Apprentissage' | 'Finances' | 'Spiritualité' | 'Autre';
 
@@ -43,4 +43,17 @@ export interface AppData {
   milestones: Milestone[];
   tasks: Task[];
   journal: JournalEntry[];
+  morningRituals: MorningRitual[];
+}
+
+export type MorningRitualStatus = 'pending' | 'completed' | 'skipped';
+
+export interface MorningRitual {
+  id: string;
+  date: string; // (format YYYY-MM-DD)
+  priority: string; // (la priorité absolue du jour, texte libre)
+  goalId?: string; // (cap choisi pour aujourd'hui)
+  mood: 'Super' | 'Bien' | 'Moyen' | 'Difficile';
+  status: MorningRitualStatus;
+  createdAt: string;
 }

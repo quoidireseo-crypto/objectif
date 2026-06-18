@@ -17,8 +17,8 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     { id: 'tasks', label: 'Mon Quotidien', icon: CheckSquare },
     { id: 'calendar', label: 'Calendrier', icon: CalendarIcon },
     { id: 'journal', label: 'Journal de bord', icon: BookHeart },
-    { id: 'cartography', label: 'Cartographie', icon: Network },
     { id: 'review', label: 'Mon Bilan', icon: PieChart },
+    { id: 'graph', label: 'Ma Carte Mentale', icon: Network },
     { id: 'settings', label: 'Paramètres', icon: Settings },
   ];
 
@@ -41,8 +41,8 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
       iconColor: 'text-rose-600'
     },
     { 
-      id: 'cartography', 
-      label: 'Cartographie', 
+      id: 'graph', 
+      label: 'Ma Carte Mentale', 
       description: 'Visualiser les liens objectifs et actions', 
       icon: Network,
       colorClass: 'bg-indigo-50 text-indigo-700 border-indigo-100',
@@ -71,7 +71,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     setIsSpaceMenuOpen(false);
   };
 
-  const isMoreSpaceActive = ['calendar', 'journal', 'review', 'settings', 'cartography'].includes(currentView);
+  const isMoreSpaceActive = ['calendar', 'journal', 'review', 'settings', 'graph'].includes(currentView);
 
   return (
     <>

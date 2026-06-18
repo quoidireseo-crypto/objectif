@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useStorage } from './hooks/useStorage';
+import { useMorningRitual } from './hooks/useMorningRitual';
 import { ViewType, AppData } from './types';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './views/DashboardView';
@@ -13,11 +14,13 @@ import { NotificationToast } from './components/NotificationToast';
 import { useReminder } from './hooks/useReminder';
 import { SkoposLogo } from './components/SkoposLogo';
 import { LandingView } from './views/LandingView';
-import { CartographyView } from './views/CartographyView';
+import { GraphView } from './views/GraphView';
+import { MorningRitualScreen } from './components/MorningRitualScreen';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const { data, updateData, shouldRemindExport, dismissExportReminder } = useStorage();
+  const { shouldShowRitual, completeRitual, skipRitual } = useMorningRitual(data, updateData);
 
   const [userProfile, setUserProfile] = useState<{ name: string; ageGroup?: string; focusArea?: string } | null>(() => {
     const raw = window.localStorage.getItem('skopos_user_profile');
@@ -40,7 +43,12 @@ export default function App() {
   useReminder();
 
   const handleImportData = (importedData: AppData) => {
-    updateData(importedData);
+    const sanitizedData = {
+      ...importedData,
+      milestones: importedData.milestones || [],
+      morningRituals: importedData.morningRituals || [],
+    };
+    updateData(sanitizedData);
   };
 
   const renderView = () => {
@@ -57,8 +65,8 @@ export default function App() {
         return <CalendarView data={data} updateData={updateData} />;
       case 'review':
         return <ReviewView data={data} />;
-      case 'cartography':
-        return <CartographyView data={data} userProfile={userProfile} />;
+      case 'graph':
+        return <GraphView data={data} onChangeView={setCurrentView} />;
       case 'settings':
         return <SettingsView data={data} onImportData={handleImportData} userProfile={userProfile} onUpdateProfile={handleUpdateProfile} />;
       default:
@@ -83,6 +91,14 @@ export default function App() {
           </div>
           <p className="text-[11px] text-[#047857] font-serif italic mt-1">chaque jour son nouveau départ</p>
         </header>
+
+        {shouldShowRitual && (
+          <MorningRitualScreen 
+            data={data} 
+            onComplete={completeRitual} 
+            onSkip={skipRitual} 
+          />
+        )}
 
         <main className="flex-1 px-4 py-6 sm:p-6 md:p-8 lg:p-12 pb-44 md:pb-8 lg:pb-12 overflow-y-auto relative h-full">
           <div className="max-w-[1024px] mx-auto min-h-full flex flex-col">

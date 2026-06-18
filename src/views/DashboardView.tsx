@@ -4,6 +4,7 @@ import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award,
 import { ProgressChart } from '../components/ProgressChart';
 import { GoalDomainChart } from '../components/GoalDomainChart';
 import { useStreak } from '../hooks/useStreak';
+import { GraphView } from './GraphView';
 
 interface DashboardProps {
   data: AppData;
@@ -100,6 +101,40 @@ export function DashboardView({ data, onChangeView, userProfile }: DashboardProp
     }
     return list;
   }, [todayDate, successUpdateTicket]);
+
+  const recentRitualDays = useMemo(() => {
+    const list = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      
+      const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '');
+      const dayNameCap = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+      
+      const formattedDateFull = d.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+      });
+      const formattedDateFullCap = formattedDateFull.charAt(0).toUpperCase() + formattedDateFull.slice(1);
+
+      const ritual = (data.morningRituals || []).find(r => r.date === dateStr);
+      
+      list.push({
+        dateStr,
+        dayName: dayNameCap,
+        formattedDate: formattedDateFullCap,
+        ritual
+      });
+    }
+    return list;
+  }, [data.morningRituals]);
+
+  const todayRitual = useMemo(() => {
+    return (data.morningRituals || []).find(r => r.date === todayDate);
+  }, [data.morningRituals, todayDate]);
 
   useEffect(() => {
     const currentChallengeStr = window.localStorage.getItem('didier_weekly_challenge');
@@ -257,6 +292,103 @@ export function DashboardView({ data, onChangeView, userProfile }: DashboardProp
             </div>
             <p className="text-xs text-right mt-4 opacity-50 font-sans font-bold">— {dailyQuote.author}</p>
           </div>
+        </div>
+      </div>
+
+      {/* Rituels du matin */}
+      <div className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm mb-8 animate-in fade-in slide-in-from-bottom-4 duration-550">
+        <h3 className="text-xl font-light text-stone-900">Régularité du rituel</h3>
+        <p className="text-xs font-sans uppercase tracking-widest text-stone-400 mt-1">7 jours glissants</p>
+        
+        <div className="flex flex-wrap items-center gap-5 mt-6">
+          {recentRitualDays.map((day) => {
+            const ritual = day.ritual;
+            let colorClass = "";
+            let statusTitle = "";
+            
+            if (!ritual) {
+              colorClass = "bg-stone-100 border border-dashed border-stone-300";
+              statusTitle = "Aucun rituel";
+            } else if (ritual.status === 'skipped') {
+              colorClass = "bg-stone-200";
+              statusTitle = "Passé";
+            } else if (ritual.status === 'completed') {
+              if (ritual.mood === 'Super') {
+                colorClass = "bg-amber-400";
+                statusTitle = "Super";
+              } else if (ritual.mood === 'Bien') {
+                colorClass = "bg-emerald-500";
+                statusTitle = "Bien";
+              } else if (ritual.mood === 'Moyen') {
+                colorClass = "bg-stone-400";
+                statusTitle = "Moyen";
+              } else if (ritual.mood === 'Difficile') {
+                colorClass = "bg-stone-600";
+                statusTitle = "Difficile";
+              }
+            }
+
+            const priorityText = ritual?.priority ? ` - Priorité : ${ritual.priority}` : '';
+            const finalTitle = `${statusTitle} - ${day.formattedDate}${priorityText}`;
+
+            return (
+              <div key={day.dateStr} className="flex flex-col items-center gap-2">
+                <div 
+                  className={`w-8 h-8 rounded-full ${colorClass} transition transform hover:scale-110 cursor-help flex items-center justify-center`}
+                  title={finalTitle}
+                >
+                </div>
+                <span className="text-[10px] text-stone-400 font-sans font-medium">
+                  {day.dayName}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {todayRitual?.status === 'completed' && todayRitual?.priority && (
+          <p className="italic text-stone-600 text-sm mt-4">
+            Priorité du jour : {todayRitual.priority}
+          </p>
+        )}
+      </div>
+
+      {/* Aperçu de la carte mentale */}
+      <div className="bg-white border border-stone-200/60 rounded-3xl p-6 md:p-8 mb-8 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h3 className="text-xl font-serif font-light text-stone-800">
+              Ta Constellation d'Intentions
+            </h3>
+            <p className="text-xs text-stone-400 mt-1">
+              Chaque action relie à un cap plus grand.
+            </p>
+          </div>
+          <button
+            onClick={() => onChangeView('graph')}
+            className="text-emerald-700 hover:text-emerald-800 transition font-sans text-sm font-bold uppercase tracking-widest text-left sm:text-right shrink-0"
+          >
+            Explorer ma carte complète &rarr;
+          </button>
+        </div>
+
+        {/* Thumbnail Preview Area */}
+        <div className="relative h-[200px] w-full overflow-hidden rounded-3xl border border-stone-100 bg-stone-50/20 pointer-events-none select-none">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div
+              style={{
+                width: '1000px',
+                height: '600px',
+                transform: 'scale(0.4)',
+                transformOrigin: 'center',
+              }}
+              className="shrink-0"
+            >
+              <GraphView data={data} isPreview={true} />
+            </div>
+          </div>
+          {/* Bottom Fade Gradient for "Aperçu" style */}
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-white pointer-events-none" />
         </div>
       </div>
 

@@ -9,7 +9,8 @@ const defaultData: AppData = {
   goals: [],
   milestones: [],
   tasks: [],
-  journal: []
+  journal: [],
+  morningRituals: []
 };
 
 export function useStorage() {
@@ -17,20 +18,15 @@ export function useStorage() {
     try {
       const item = window.localStorage.getItem(STORAGE_KEY);
       if (item) {
-        let parsed = JSON.parse(item);
-        if (!parsed || typeof parsed !== 'object') {
-          parsed = {};
-        }
-        // Ensure backward compatibility and guarantee arrays
-        if (!parsed.goals || !Array.isArray(parsed.goals)) parsed.goals = [];
-        if (!parsed.tasks || !Array.isArray(parsed.tasks)) parsed.tasks = [];
-        if (!parsed.journal || !Array.isArray(parsed.journal)) parsed.journal = [];
-        if (!parsed.milestones || !Array.isArray(parsed.milestones)) parsed.milestones = [];
+        const parsed: AppData = JSON.parse(item);
+        // Ensure backward compatibility
+        if (!parsed.milestones) parsed.milestones = [];
+        if (!parsed.morningRituals) parsed.morningRituals = [];
         
         let hasChanges = false;
         
         // Auto-pause goals if deadline passed by more than 7 days
-        const updatedGoals = parsed.goals.map((g: any) => {
+        const updatedGoals = parsed.goals.map(g => {
           if (g.status === 'En cours' && g.deadline) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -131,14 +127,7 @@ export function useStorage() {
   }, [data]);
 
   const updateData = (newData: Partial<AppData>) => {
-    setData(prev => {
-      const merged = { ...prev, ...newData };
-      if (!merged.goals || !Array.isArray(merged.goals)) merged.goals = [];
-      if (!merged.tasks || !Array.isArray(merged.tasks)) merged.tasks = [];
-      if (!merged.journal || !Array.isArray(merged.journal)) merged.journal = [];
-      if (!merged.milestones || !Array.isArray(merged.milestones)) merged.milestones = [];
-      return merged;
-    });
+    setData(prev => ({ ...prev, ...newData }));
   };
 
   const dismissExportReminder = () => {
