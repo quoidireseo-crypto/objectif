@@ -12,6 +12,7 @@ import { HelpTooltip } from '../components/HelpTooltip';
 import { TodayCommandCenter } from '../components/TodayCommandCenter';
 import { NextActionNudge } from '../components/NextActionNudge';
 import { LifeBalancePanel } from '../components/LifeBalancePanel';
+import { WeekInsightsPanel } from '../components/WeekInsightsPanel';
 
 interface DashboardProps {
   data: AppData;
@@ -793,6 +794,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
 
       {/* ===================== ZONE 3 — PRENDRE DU RECUL ===================== */}
       <SectionLabel help="Des graphiques et des repères pour observer ton évolution sur la durée.">Prendre du recul</SectionLabel>
+
+      {/* Charge de la semaine + habitude-levier */}
+      <WeekInsightsPanel data={data} onChangeView={onChangeView} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <ProgressChart tasks={data.tasks} />
