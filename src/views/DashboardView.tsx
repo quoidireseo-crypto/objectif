@@ -817,12 +817,12 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-xl font-serif font-light text-stone-800 dark:text-stone-200">
-                Mes objectifs et leurs actions
+                La carte de ma vie
               </h3>
-              <HelpTooltip text="Une carte visuelle qui relie chaque objectif aux étapes et aux actions du quotidien qui y mènent." />
+              <HelpTooltip text="Tes piliers de vie au centre, entourés des objectifs, étapes, actions et habitudes qui les nourrissent." />
             </div>
             <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
-              Chaque action est reliée à un objectif plus grand.
+              Tes piliers de vie et tout ce qui les fait grandir.
             </p>
           </div>
           <button

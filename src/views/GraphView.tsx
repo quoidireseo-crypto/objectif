@@ -16,7 +16,7 @@ export interface GraphNode {
   id: string;
   label: string;
   fullTitle: string;
-  type: 'goal' | 'milestone' | 'task' | 'journal';
+  type: 'goal' | 'milestone' | 'task' | 'journal' | 'pillar' | 'habit';
   domain?: LifeDomain;
   isCompleted?: boolean;
   x: number;
@@ -26,12 +26,13 @@ export interface GraphNode {
   radius: number;
   color: string;
   date?: string;
+  count?: number; // pour les piliers : nombre d'objectifs rattachés
 }
 
 export interface GraphEdge {
   source: string;
   target: string;
-  type: 'goal-milestone' | 'goal-task' | 'milestone-task' | 'task-journal';
+  type: 'goal-milestone' | 'goal-task' | 'milestone-task' | 'task-journal' | 'pillar-goal' | 'pillar-habit';
 }
 
 const DOMAIN_COLORS: Record<LifeDomain, string> = {
@@ -44,11 +45,28 @@ const DOMAIN_COLORS: Record<LifeDomain, string> = {
   'Autre': '#a8a29e',                // stone light
 };
 
+// Les 6 piliers de vie deviennent les cœurs de la carte (« Autre » n'en est pas un).
+const PILLAR_DOMAINS: LifeDomain[] = [
+  'Santé & Bien-être', 'Projet Personnel', 'Relations & Famille', 'Apprentissage', 'Finances', 'Spiritualité',
+];
+const PILLAR_SET = new Set<LifeDomain>(PILLAR_DOMAINS);
+const SHORT_DOMAIN: Record<LifeDomain, string> = {
+  'Santé & Bien-être': 'Santé',
+  'Projet Personnel': 'Projet',
+  'Relations & Famille': 'Relations',
+  'Apprentissage': 'Apprendre',
+  'Finances': 'Finances',
+  'Spiritualité': 'Spiritualité',
+  'Autre': 'Autre',
+};
+
 const EDGE_STYLES = {
-  'goal-milestone': { stroke: '#86efac', strokeWidth: 2, defaultOpacity: 0.6 }, // emerald-300
-  'goal-task': { stroke: '#d6d3d1', strokeWidth: 1.5, defaultOpacity: 0.5 },    // stone-300
-  'milestone-task': { stroke: '#a7f3d0', strokeWidth: 1, opacity: 0.4 },        // emerald-200
-  'task-journal': { stroke: '#c7d2fe', strokeWidth: 1, opacity: 0.4 },          // indigo-200
+  'goal-milestone': { stroke: '#86efac', strokeWidth: 2, opacity: 0.55 }, // emerald-300
+  'goal-task': { stroke: '#d6d3d1', strokeWidth: 1.5, opacity: 0.45 },    // stone-300
+  'milestone-task': { stroke: '#a7f3d0', strokeWidth: 1, opacity: 0.4 },  // emerald-200
+  'task-journal': { stroke: '#c7d2fe', strokeWidth: 1, opacity: 0.4 },    // indigo-200
+  'pillar-goal': { stroke: '#e7e5e4', strokeWidth: 2, opacity: 0.5 },     // stone-200
+  'pillar-habit': { stroke: '#a7f3d0', strokeWidth: 1.5, opacity: 0.4 },  // emerald-200
 };
 
 // Main Graph Data construction helper function
@@ -71,7 +89,24 @@ export function buildGraphData(data: AppData) {
     return getGoalDomain(milestone.goalId);
   };
 
-  // 1. Add Goals
+  // 0. Add Pillars (les cœurs de la carte) — un par domaine de vie.
+  PILLAR_DOMAINS.forEach(domain => {
+    const count = data.goals.filter(g => g.domain === domain).length;
+    nodes.push({
+      id: `pillar-${domain}`,
+      label: domain,
+      fullTitle: domain,
+      type: 'pillar',
+      domain,
+      radius: count > 0 ? Math.min(42, 22 + count * 4) : 15,
+      color: DOMAIN_COLORS[domain],
+      count,
+      x: 0,
+      y: 0,
+    });
+  });
+
+  // 1. Add Goals (rattachés à leur pilier)
   data.goals.forEach(goal => {
     nodes.push({
       id: goal.id,
@@ -85,6 +120,14 @@ export function buildGraphData(data: AppData) {
       x: 0,
       y: 0,
     });
+
+    if (PILLAR_SET.has(goal.domain)) {
+      edges.push({
+        source: `pillar-${goal.domain}`,
+        target: goal.id,
+        type: 'pillar-goal',
+      });
+    }
   });
 
   // 2. Add Milestones
@@ -193,6 +236,27 @@ export function buildGraphData(data: AppData) {
     });
   });
 
+  // 5. Add Habits (rattachées à leur pilier — l'« habitude-levier » devient visible)
+  (data.habits || []).forEach(habit => {
+    if (habit.isArchived || !habit.domain || !PILLAR_SET.has(habit.domain)) return;
+    nodes.push({
+      id: `habit-${habit.id}`,
+      label: truncate(habit.title, 30),
+      fullTitle: habit.title,
+      type: 'habit',
+      domain: habit.domain,
+      radius: 11,
+      color: DOMAIN_COLORS[habit.domain],
+      x: 0,
+      y: 0,
+    });
+    edges.push({
+      source: `pillar-${habit.domain}`,
+      target: `habit-${habit.id}`,
+      type: 'pillar-habit',
+    });
+  });
+
   return { nodes, edges };
 }
 
@@ -203,24 +267,50 @@ export function getInitialLayout(data: AppData, hideTasksAndJournal: boolean) {
   // Apply view masks
   let filteredNodes = rawNodes;
   if (hideTasksAndJournal) {
-    filteredNodes = rawNodes.filter(n => n.type === 'goal' || n.type === 'milestone');
+    filteredNodes = rawNodes.filter(n => n.type === 'goal' || n.type === 'milestone' || n.type === 'pillar');
   }
 
   const nodeIds = new Set(filteredNodes.map(n => n.id));
   const filteredEdges = rawEdges.filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
 
-  // Initialize coordinate maps and placements centered at (0,0)
-  const goals = filteredNodes.filter(n => n.type === 'goal');
-  goals.forEach((goal, i) => {
-    const angle = goals.length > 1 ? (i / goals.length) * 2 * Math.PI : 0;
-    goal.x = 200 * Math.cos(angle);
-    goal.y = 200 * Math.sin(angle);
-    goal.vx = 0;
-    goal.vy = 0;
+  const coords = new Map<string, { x: number, y: number }>();
+
+  // Pillars : les cœurs, répartis en cercle au centre.
+  const pillars = filteredNodes.filter(n => n.type === 'pillar');
+  pillars.forEach((p, i) => {
+    const angle = pillars.length > 1 ? (i / pillars.length) * 2 * Math.PI : 0;
+    p.x = 300 * Math.cos(angle);
+    p.y = 300 * Math.sin(angle);
+    p.vx = 0;
+    p.vy = 0;
+    coords.set(p.id, { x: p.x, y: p.y });
   });
 
-  const coords = new Map<string, { x: number, y: number }>();
-  goals.forEach(g => coords.set(g.id, { x: g.x, y: g.y }));
+  // Goals : en orbite autour de leur pilier (sinon, cercle de repli).
+  const goals = filteredNodes.filter(n => n.type === 'goal');
+  const goalsByPillar = new Map<string, GraphNode[]>();
+  goals.forEach(g => {
+    const key = g.domain && PILLAR_SET.has(g.domain) ? `pillar-${g.domain}` : 'none';
+    const list = goalsByPillar.get(key) || [];
+    list.push(g);
+    goalsByPillar.set(key, list);
+  });
+  goalsByPillar.forEach((list, key) => {
+    const center = key !== 'none' ? coords.get(key) : null;
+    list.forEach((goal, idx) => {
+      const angle = (idx / Math.max(1, list.length)) * 2 * Math.PI;
+      if (center) {
+        goal.x = center.x + 130 * Math.cos(angle) + (Math.random() - 0.5) * 10;
+        goal.y = center.y + 130 * Math.sin(angle) + (Math.random() - 0.5) * 10;
+      } else {
+        goal.x = 180 * Math.cos(angle);
+        goal.y = 180 * Math.sin(angle);
+      }
+      goal.vx = 0;
+      goal.vy = 0;
+      coords.set(goal.id, { x: goal.x, y: goal.y });
+    });
+  });
 
   // Placement of Milestones
   const milestones = filteredNodes.filter(n => n.type === 'milestone');
@@ -309,6 +399,27 @@ export function getInitialLayout(data: AppData, hideTasksAndJournal: boolean) {
     coords.set(j.id, { x: j.x, y: j.y });
   });
 
+  // Habits : en orbite autour de leur pilier.
+  const habits = filteredNodes.filter(n => n.type === 'habit');
+  const habitsByPillar = new Map<string, GraphNode[]>();
+  habits.forEach(h => {
+    const key = h.domain ? `pillar-${h.domain}` : 'none';
+    const list = habitsByPillar.get(key) || [];
+    list.push(h);
+    habitsByPillar.set(key, list);
+  });
+  habitsByPillar.forEach((list, key) => {
+    const center = coords.get(key) || { x: 0, y: 0 };
+    list.forEach((h, idx) => {
+      const angle = Math.PI + (idx / Math.max(1, list.length)) * 2 * Math.PI;
+      h.x = center.x + 150 * Math.cos(angle) + (Math.random() - 0.5) * 8;
+      h.y = center.y + 150 * Math.sin(angle) + (Math.random() - 0.5) * 8;
+      h.vx = 0;
+      h.vy = 0;
+      coords.set(h.id, { x: h.x, y: h.y });
+    });
+  });
+
   return { initialNodes: filteredNodes, initialEdges: filteredEdges };
 }
 
@@ -353,7 +464,9 @@ export function runSimulationStep(currentNodes: GraphNode[], edgesList: GraphEdg
       const distance = Math.sqrt(dx * dx + dy * dy) || 1;
       
       let idealLength = 80;
-      if (edge.type === 'goal-milestone') idealLength = 160;
+      if (edge.type === 'pillar-goal') idealLength = 175;
+      else if (edge.type === 'pillar-habit') idealLength = 120;
+      else if (edge.type === 'goal-milestone') idealLength = 160;
       else if (edge.type === 'goal-task') idealLength = 200;
       else if (edge.type === 'milestone-task') idealLength = 100;
       else if (edge.type === 'task-journal') idealLength = 80;
@@ -399,6 +512,7 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
   // Vue Filters
   const [hideTasksAndJournal, setHideTasksAndJournal] = useState(false);
   const [todayTasksOnlyHighlight, setTodayTasksOnlyHighlight] = useState(false);
+  const [domainFilter, setDomainFilter] = useState<LifeDomain | null>(null);
 
   // States for organized nodes and edges managed by physics simulation
   const [nodes, setNodes] = useState<GraphNode[]>([]);
@@ -460,6 +574,19 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
   const todayStr = useMemo(() => {
     return new Date().toISOString().split('T')[0];
   }, []);
+
+  // Objectifs en sommeil : en cours, anciens (> 14 j) et sans action à faire.
+  // Ils respireront doucement sur la carte (halo pulsé).
+  const stalledSet = useMemo(() => {
+    const set = new Set<string>();
+    data.goals.forEach(g => {
+      if (g.status !== 'En cours') return;
+      const ageDays = (Date.now() - new Date(g.createdAt).getTime()) / 86400000;
+      const hasIncomplete = data.tasks.some(t => t.goalId === g.id && !t.isCompleted);
+      if (ageDays > 14 && !hasIncomplete) set.add(g.id);
+    });
+    return set;
+  }, [data.goals, data.tasks]);
 
   // Set of connected nodes for high performance checks
   const connectedNodeIds = useMemo(() => {
@@ -560,10 +687,10 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
           <div>
             <h1 className="flex items-center gap-2 text-2xl font-serif font-light text-stone-800 dark:text-stone-100">
               <Network className="w-6 h-6 text-indigo-500 dark:text-indigo-400 animate-pulse" />
-              <span>Ma Carte Mentale</span>
+              <span>La carte de ma vie</span>
             </h1>
             <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
-              Visualise la constellation de tes objectifs, jalons, actions d'engagement et notes de journal.
+              Tes piliers de vie au centre, et tout ce qui les nourrit : objectifs, étapes, actions et habitudes.
             </p>
           </div>
 
@@ -629,6 +756,41 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
         </div>
       )}
 
+      {/* Filtre par domaine de vie */}
+      {!isPreview && !isEmpty && (
+        <div className="flex items-center gap-1.5 overflow-x-auto px-6 py-2.5 bg-white dark:bg-stone-900 border-b border-stone-100 dark:border-stone-800 shrink-0 select-none">
+          <span className="text-[10px] uppercase tracking-widest font-sans font-bold text-stone-400 dark:text-stone-500 mr-1 shrink-0">
+            Mes mondes
+          </span>
+          {PILLAR_DOMAINS.map(domain => {
+            const active = domainFilter === domain;
+            return (
+              <button
+                key={domain}
+                onClick={() => setDomainFilter(active ? null : domain)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-sans font-bold border transition shrink-0 ${
+                  active
+                    ? 'border-current'
+                    : 'border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800'
+                }`}
+                style={active ? { color: DOMAIN_COLORS[domain], backgroundColor: DOMAIN_COLORS[domain] + '15' } : undefined}
+              >
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: DOMAIN_COLORS[domain] }} />
+                {SHORT_DOMAIN[domain]}
+              </button>
+            );
+          })}
+          {domainFilter && (
+            <button
+              onClick={() => setDomainFilter(null)}
+              className="ml-1 text-[11px] font-sans font-bold text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 shrink-0"
+            >
+              Tout
+            </button>
+          )}
+        </div>
+      )}
+
       {isEmpty ? (
         isPreview ? (
           <div className="flex-1 flex flex-col items-center justify-center p-4 text-center select-none pointer-events-none">
@@ -687,9 +849,10 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                     if (!u || !v) return null;
 
                     const style = EDGE_STYLES[edge.type] || { stroke: '#a8a29e', strokeWidth: 1, opacity: 0.4 };
-                    const isHighlighted = selectedNodeId 
+                    const isHighlighted = selectedNodeId
                       ? (edge.source === selectedNodeId || edge.target === selectedNodeId)
                       : true;
+                    const edgeInDomain = !domainFilter || (u.domain === domainFilter && v.domain === domainFilter);
 
                     return (
                       <line
@@ -701,7 +864,9 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                         stroke={style.stroke}
                         strokeWidth={style.strokeWidth}
                         opacity={
-                          todayTasksOnlyHighlight 
+                          domainFilter && !edgeInDomain
+                            ? 0.04
+                            : todayTasksOnlyHighlight
                             ? 0.05
                             : (selectedNodeId ? (isHighlighted ? 0.8 : 0.05) : style.opacity || 0.4)
                         }
@@ -717,15 +882,22 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                     const isSelected = selectedNodeId === node.id;
                     const isConnected = connectedNodeIds.has(node.id);
                     const isTodayTask = node.type === 'task' && node.date === todayStr;
+                    const isPillar = node.type === 'pillar';
+                    const isEmptyPillar = isPillar && (node.count || 0) === 0;
+                    const isStalled = node.type === 'goal' && stalledSet.has(node.id);
 
                     // Dimming logic
                     let opacity = 1;
-                    if (todayTasksOnlyHighlight) {
+                    if (domainFilter && node.domain !== domainFilter) {
+                      opacity = 0.08;
+                    } else if (todayTasksOnlyHighlight) {
                       opacity = isTodayTask ? 1 : 0.15;
                     } else if (selectedNodeId) {
                       opacity = isSelected || isConnected ? 1 : 0.2;
+                    } else if (isEmptyPillar) {
+                      opacity = 0.4;
                     } else {
-                      opacity = node.isCompleted ? 1 : 0.75;
+                      opacity = node.isCompleted ? 1 : 0.8;
                     }
 
                     return (
@@ -749,6 +921,31 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                           className="pointer-events-auto"
                         />
 
+                        {/* Objectif en sommeil : halo qui respire doucement */}
+                        {isStalled && (
+                          <circle
+                            r={node.radius + 7}
+                            fill="none"
+                            stroke={node.color}
+                            strokeWidth={2.5}
+                            opacity={0.5}
+                            className="animate-pulse pointer-events-none"
+                          />
+                        )}
+
+                        {/* Pilier : anneau distinctif (pointillé si aucun objectif) */}
+                        {isPillar && (
+                          <circle
+                            r={node.radius + 4}
+                            fill="none"
+                            stroke={node.color}
+                            strokeWidth={1.5}
+                            strokeDasharray={isEmptyPillar ? '3 4' : undefined}
+                            opacity={isEmptyPillar ? 0.5 : 0.35}
+                            className="pointer-events-none"
+                          />
+                        )}
+
                         {/* Selected White Halo Ring */}
                         {isSelected && (
                           <circle
@@ -764,8 +961,9 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                         <circle
                           r={node.radius}
                           fill={node.color}
+                          fillOpacity={isEmptyPillar ? 0.25 : 1}
                           style={{
-                            filter: node.type === 'goal' ? 'drop-shadow(0px 2px 5px rgba(0,0,0,0.2))' : undefined,
+                            filter: node.type === 'goal' || isPillar ? 'drop-shadow(0px 2px 5px rgba(0,0,0,0.2))' : undefined,
                           }}
                           className="transition-transform duration-200 group-hover:scale-[1.12]"
                         />
@@ -801,7 +999,9 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                 {/* 3. Text Labels Layer */}
                 <g id="labels-layer">
                   {nodes.map(node => {
-                    const isVisible = scale > 0.7 || hoveredNodeId === node.id || selectedNodeId === node.id;
+                    const isPillar = node.type === 'pillar';
+                    // Les piliers gardent toujours leur nom (ce sont les repères).
+                    const isVisible = isPillar || scale > 0.7 || hoveredNodeId === node.id || selectedNodeId === node.id;
                     if (!isVisible) return null;
 
                     const isHovered = hoveredNodeId === node.id;
@@ -811,23 +1011,31 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
 
                     // Dimming labels
                     let opacity = 1;
-                    if (todayTasksOnlyHighlight) {
+                    if (domainFilter && node.domain !== domainFilter) {
+                      opacity = 0.08;
+                    } else if (todayTasksOnlyHighlight) {
                       opacity = isTodayTask ? 1 : 0.15;
                     } else if (selectedNodeId) {
                       opacity = isSelected || isConnected ? 1 : 0.15;
                     }
 
-                    const displayText = isHovered ? node.fullTitle : truncated20(node.label);
+                    const displayText = isPillar
+                      ? node.fullTitle
+                      : isHovered ? node.fullTitle : truncated20(node.label);
 
                     return (
                       <text
                         key={`label-${node.id}`}
                         x={node.x}
-                        y={node.y + node.radius + 15}
+                        y={node.y + node.radius + (isPillar ? 18 : 15)}
                         textAnchor="middle"
-                        className="font-sans select-none pointer-events-none fill-stone-600 dark:fill-stone-300 font-medium tracking-tight"
+                        className={`font-sans select-none pointer-events-none tracking-tight ${
+                          isPillar
+                            ? 'fill-stone-700 dark:fill-stone-200 font-bold'
+                            : 'fill-stone-600 dark:fill-stone-300 font-medium'
+                        }`}
                         style={{
-                          fontSize: '10px',
+                          fontSize: isPillar ? '12px' : '10px',
                           opacity,
                           transition: 'opacity 0.2s ease',
                         }}
@@ -855,20 +1063,32 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                     </button>
                   </div>
                   <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
+                    <span className="w-4 h-4 rounded-full border-2 border-stone-400 inline-block flex-shrink-0" />
+                    <span className="font-medium">Pilier de vie</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
                     <span className="w-3.5 h-3.5 rounded-full bg-violet-600 inline-block flex-shrink-0" />
-                    <span className="font-medium">Objectif (28px)</span>
+                    <span className="font-medium">Objectif</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
                     <span className="w-2.5 h-2.5 rounded-full bg-stone-400 inline-block flex-shrink-0" />
-                    <span className="font-medium">Étape (18px)</span>
+                    <span className="font-medium">Étape</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block flex-shrink-0" />
-                    <span className="font-medium">Action (12px)</span>
+                    <span className="font-medium">Action</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-emerald-200 dark:ring-emerald-500/30 inline-block flex-shrink-0" />
+                    <span className="font-medium">Habitude</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block flex-shrink-0" />
-                    <span className="font-medium">Journal (10px)</span>
+                    <span className="font-medium">Journal</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-stone-500 dark:text-stone-400 pt-1.5 mt-0.5 border-t border-stone-100 dark:border-stone-800">
+                    <span className="w-3 h-3 rounded-full border-2 border-amber-400 animate-pulse inline-block flex-shrink-0" />
+                    <span>En sommeil</span>
                   </div>
                 </div>
               ) : (
@@ -897,7 +1117,9 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                 >
                   {selectedNode.type === 'goal' ? 'Objectif' :
                    selectedNode.type === 'milestone' ? 'Étape' :
-                   selectedNode.type === 'task' ? 'Action' : 'Journal'}
+                   selectedNode.type === 'task' ? 'Action' :
+                   selectedNode.type === 'pillar' ? 'Pilier de vie' :
+                   selectedNode.type === 'habit' ? 'Habitude' : 'Journal'}
                 </span>
                 <button
                   onClick={() => setSelectedNodeId(null)}
@@ -912,8 +1134,17 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                 {selectedNode.fullTitle}
               </h3>
 
+              {/* Pilier : nombre d'objectifs rattachés */}
+              {selectedNode.type === 'pillar' && (
+                <p className="text-xs text-stone-500 dark:text-stone-400 mb-4">
+                  {(selectedNode.count || 0) === 0
+                    ? "Ce pilier n'a aucun objectif pour l'instant. Un petit geste pour lui ?"
+                    : `${selectedNode.count} objectif${(selectedNode.count || 0) > 1 ? 's' : ''} rattaché${(selectedNode.count || 0) > 1 ? 's' : ''}.`}
+                </p>
+              )}
+
               {/* Status Section */}
-              {selectedNode.type !== 'journal' && (
+              {(selectedNode.type === 'goal' || selectedNode.type === 'milestone' || selectedNode.type === 'task') && (
                 <div className="flex items-center gap-2 mb-4 text-xs text-stone-500 dark:text-stone-400">
                   {selectedNode.isCompleted ? (
                     <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
@@ -956,7 +1187,9 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
                         <span className="text-[9px] text-stone-400 dark:text-stone-500 select-none bg-stone-50 dark:bg-stone-800 px-1.5 py-0.5 rounded">
                           {connectedItem.type === 'goal' ? 'Obj' :
                            connectedItem.type === 'milestone' ? 'Étape' :
-                           connectedItem.type === 'task' ? 'Act' : 'Jour'}
+                           connectedItem.type === 'task' ? 'Act' :
+                           connectedItem.type === 'pillar' ? 'Pilier' :
+                           connectedItem.type === 'habit' ? 'Hab' : 'Jour'}
                         </span>
                       </button>
                     ))}
