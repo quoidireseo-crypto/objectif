@@ -15,6 +15,7 @@ import { ReviewView } from './views/ReviewView';
 import { CalendarView } from './views/CalendarView';
 import { SettingsView } from './views/SettingsView';
 import { NotificationToast } from './components/NotificationToast';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { useReminder } from './hooks/useReminder';
 import { SkoposLogo } from './components/SkoposLogo';
 import { LandingView } from './views/LandingView';
@@ -218,7 +219,9 @@ export default function App() {
             )}
             
             <div className="flex-1">
-              {renderView()}
+              <ErrorBoundary key={currentView}>
+                {renderView()}
+              </ErrorBoundary>
             </div>
           </div>
         </main>
