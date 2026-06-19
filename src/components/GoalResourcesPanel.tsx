@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { BookOpen, ExternalLink, Lightbulb, ChevronDown, Sparkles } from 'lucide-react';
-import { LifeDomain } from '../types';
-import { getResourcesForDomain, Resource } from '../lib/resources';
+import { Goal } from '../types';
+import { getResourcesForGoal, Resource } from '../lib/resources';
 
 interface GoalResourcesPanelProps {
-  domain: LifeDomain;
+  goal: Pick<Goal, 'title' | 'why' | 'domain'>;
 }
 
 // Petite icône selon le type de ressource.
@@ -17,9 +17,9 @@ function ResourceIcon({ type }: { type: Resource['type'] }) {
 // Panneau « Pour aller plus loin » : suggestions de livres, liens et conseils
 // rattachés au domaine de l'objectif. Replié par défaut pour ne pas alourdir la
 // fiche — l'utilisateur l'ouvre quand il cherche de l'inspiration.
-export function GoalResourcesPanel({ domain }: GoalResourcesPanelProps) {
+export function GoalResourcesPanel({ goal }: GoalResourcesPanelProps) {
   const [open, setOpen] = useState(false);
-  const resources = getResourcesForDomain(domain);
+  const resources = getResourcesForGoal(goal);
 
   if (resources.length === 0) return null;
 
@@ -85,7 +85,7 @@ export function GoalResourcesPanel({ domain }: GoalResourcesPanelProps) {
           })}
           <li className="pt-1">
             <p className="text-[10px] text-stone-400 dark:text-stone-500 italic leading-snug">
-              Suggestions générales selon le domaine. À prendre ou à laisser. 🌱
+              Suggestions liées au thème de ton objectif. À prendre ou à laisser. 🌱
             </p>
           </li>
         </ul>

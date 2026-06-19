@@ -575,7 +575,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                   onClose={() => {}}
                 />
 
-                <GoalResourcesPanel domain={goal.domain} />
+                <GoalResourcesPanel goal={goal} />
 
                 <div className="mt-5 flex items-center justify-between border-t border-stone-100/50 dark:border-stone-800 pt-5">
                   <div className="flex items-center gap-2">
