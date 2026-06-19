@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { AlertCircle, ChevronDown } from 'lucide-react';
-import { AppData, OrphanItem, ViewType } from '../types';
+import { AppData, Goal, OrphanItem, ViewType } from '../types';
 import { useOrphans } from '../hooks/useOrphans';
+import { useGoalHistory } from '../hooks/useGoalHistory';
 import { OrphanCard } from './OrphanCard';
 
 interface OrphansPanelProps {
@@ -10,8 +11,18 @@ interface OrphansPanelProps {
   onChangeView: (view: ViewType) => void;
 }
 
+// Retrouve l'id réel de l'objet derrière l'id synthétique d'un orphelin.
+const GOAL_ORPHAN_PREFIXES = ['orphan-goal-inactive-', 'orphan-goal-no-action-', 'orphan-goal-no-milestone-'];
+const extractRealId = (orphanId: string): string => {
+  for (const prefix of [...GOAL_ORPHAN_PREFIXES, 'orphan-task-no-goal-', 'orphan-ms-abandoned-']) {
+    if (orphanId.startsWith(prefix)) return orphanId.slice(prefix.length);
+  }
+  return orphanId;
+};
+
 export function OrphansPanel({ data, updateData, onChangeView }: OrphansPanelProps) {
   const orphans = useOrphans(data);
+  const { addHistoryEntry } = useGoalHistory(data, updateData);
   const [isExpanded, setIsExpanded] = useState(false);
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
 
@@ -22,6 +33,26 @@ export function OrphansPanel({ data, updateData, onChangeView }: OrphansPanelPro
   if (visibleOrphans.length === 0) {
     return null;
   }
+
+  // Droit de lâcher : mettre un objectif en pause, en douceur et sans confirmation
+  // brutale. Le geste est honoré et tracé dans l'historique.
+  const handlePauseGoal = (orphan: OrphanItem) => {
+    const realId = extractRealId(orphan.id);
+    const goal = data.goals.find((g: Goal) => g.id === realId);
+    if (!goal) return;
+    const oldStatus = goal.status;
+    updateData({
+      goals: data.goals.map((g: Goal) => (g.id === realId ? { ...g, status: 'En pause' as const } : g)),
+    });
+    addHistoryEntry(realId, 'paused', oldStatus, 'En pause');
+    setDismissedIds(prev => [...prev, orphan.id]);
+  };
+
+  // Découper : aller poser une petite action concrète pour relancer l'objectif.
+  const handleBreakDown = (orphan: OrphanItem) => {
+    onChangeView('tasks');
+    setDismissedIds(prev => [...prev, orphan.id]);
+  };
 
   const handleReactivate = (orphan: OrphanItem) => {
     // Extract real item id from synthetic orphan id (e.g. "orphan-goal-inactive-xxx" or "orphan-task-no-goal-xxx")
@@ -114,11 +145,13 @@ export function OrphansPanel({ data, updateData, onChangeView }: OrphansPanelPro
           </p>
           <div className="space-y-3 px-5 pb-5">
             {visibleOrphans.map(orphan => (
-              <OrphanCard 
-                key={orphan.id} 
-                orphan={orphan} 
-                onReactivate={handleReactivate} 
-                onArchive={handleArchive} 
+              <OrphanCard
+                key={orphan.id}
+                orphan={orphan}
+                onReactivate={handleReactivate}
+                onArchive={handleArchive}
+                onPauseGoal={handlePauseGoal}
+                onBreakDown={handleBreakDown}
               />
             ))}
           </div>
