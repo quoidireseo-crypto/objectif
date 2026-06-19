@@ -14,6 +14,7 @@ import { NextActionNudge } from '../components/NextActionNudge';
 import { LifeBalancePanel } from '../components/LifeBalancePanel';
 import { WeekInsightsPanel } from '../components/WeekInsightsPanel';
 import { GoalRelationsPanel } from '../components/GoalRelationsPanel';
+import { DailyWordBanner } from '../components/DailyWordBanner';
 
 interface DashboardProps {
   data: AppData;
@@ -426,6 +427,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </div>
         </div>
       </div>
+
+      {/* Le mot du jour : rappel intelligent, fiable à l'ouverture de l'app */}
+      <DailyWordBanner data={data} onChangeView={onChangeView} />
 
       {/* ZONE 1 (suite) — agenda, habitudes, bilan ; ordre adaptatif matin/soir */}
       <div className="flex flex-col">
