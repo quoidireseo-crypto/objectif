@@ -14,6 +14,11 @@ interface State {
 // détail de l'erreur, au lieu d'une page entièrement blanche. Indispensable sur
 // une PWA, où un crash silencieux est très déroutant pour l'utilisateur.
 export class ErrorBoundary extends Component<Props, State> {
+  // props / setState sont déclarés ici car les typings de React résolus dans ce
+  // projet n'exposent pas correctement les membres hérités de Component.
+  declare props: Props;
+  declare setState: (state: Partial<State>) => void;
+
   state: State = { hasError: false };
 
   static getDerivedStateFromError(error: Error): State {
