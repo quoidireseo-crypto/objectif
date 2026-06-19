@@ -670,6 +670,47 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
     setScale(newScale);
   };
 
+  // Tactile : pan à un doigt, zoom au pincement à deux doigts.
+  const touchRef = useRef<{ mode: 'none' | 'pan' | 'pinch'; lastX: number; lastY: number; startDist: number; startScale: number }>({
+    mode: 'none', lastX: 0, lastY: 0, startDist: 0, startScale: 1,
+  });
+
+  const handleTouchStart = (e: React.TouchEvent<SVGSVGElement>) => {
+    const t = e.touches;
+    if (t.length === 1) {
+      const target = e.target as Element;
+      // Un tap sur un nœud doit le sélectionner, pas démarrer un pan.
+      if (target.closest('.node-element')) { touchRef.current.mode = 'none'; return; }
+      touchRef.current = { mode: 'pan', lastX: t[0].clientX, lastY: t[0].clientY, startDist: 0, startScale: scale };
+    } else if (t.length === 2) {
+      const dist = Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+      touchRef.current = { mode: 'pinch', lastX: 0, lastY: 0, startDist: dist, startScale: scale };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<SVGSVGElement>) => {
+    const t = e.touches;
+    if (touchRef.current.mode === 'pan' && t.length === 1) {
+      const dx = t[0].clientX - touchRef.current.lastX;
+      const dy = t[0].clientY - touchRef.current.lastY;
+      touchRef.current.lastX = t[0].clientX;
+      touchRef.current.lastY = t[0].clientY;
+      setOffset(o => ({ x: o.x + dx, y: o.y + dy }));
+    } else if (touchRef.current.mode === 'pinch' && t.length === 2) {
+      const dist = Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+      const ratio = dist / (touchRef.current.startDist || 1);
+      setScale(Math.min(2.5, Math.max(0.3, touchRef.current.startScale * ratio)));
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<SVGSVGElement>) => {
+    if (e.touches.length === 0) {
+      touchRef.current.mode = 'none';
+    } else if (e.touches.length === 1) {
+      touchRef.current = { mode: 'pan', lastX: e.touches[0].clientX, lastY: e.touches[0].clientY, startDist: 0, startScale: scale };
+    }
+  };
+
   // Truncate labels for SVG Under-Labels
   const truncated20 = (text: string) => {
     if (!text) return '';
@@ -830,13 +871,16 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
               width="100%"
               height="100%"
               viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
-              style={{ display: 'block' }}
+              style={{ display: 'block', touchAction: 'none' }}
               className="bg-stone-50/40 dark:bg-stone-900/40 cursor-grab active:cursor-grabbing outline-none"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
               onWheel={handleWheel}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
               onClick={() => setSelectedNodeId(null)}
             >
               {/* Main Transform Group */}
@@ -1103,9 +1147,9 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
             )}
           </div>
 
-          {/* Floating Details Sidebar Panel (Bottom Right) */}
+          {/* Floating Details Panel — feuille basse sur mobile (au-dessus de la nav), encart sur desktop */}
           {!isPreview && selectedNode && (
-            <div className="fixed bottom-6 right-6 bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-3xl shadow-xl p-6 w-80 z-50 animate-in fade-in slide-in-from-bottom-4 duration-200">
+            <div className="fixed left-3 right-3 bottom-[calc(6rem+env(safe-area-inset-bottom))] sm:left-auto sm:right-6 sm:bottom-6 w-auto sm:w-80 bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-3xl shadow-xl p-6 z-50 animate-in fade-in slide-in-from-bottom-4 duration-200">
               <div className="flex justify-between items-start mb-4">
                 {/* Colored Badge */}
                 <span

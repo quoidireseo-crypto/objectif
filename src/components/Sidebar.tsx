@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon, LayoutGrid, X, Network, Repeat, LogOut } from 'lucide-react';
+import { LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon, LayoutGrid, X, Network, Repeat, LogOut, Plus } from 'lucide-react';
 import { ViewType } from '../types';
 import { SkoposLogo } from './SkoposLogo';
 
@@ -7,9 +7,10 @@ interface SidebarProps {
   currentView: ViewType;
   onChangeView: (view: ViewType) => void;
   onLogout: () => void;
+  onOpenCapture: () => void;
 }
 
-export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
+export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture }: SidebarProps) {
   const [isSpaceMenuOpen, setIsSpaceMenuOpen] = useState(false);
 
   const navItems: { id: ViewType; label: string; icon: any }[] = [
@@ -31,7 +32,7 @@ export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
       label: 'Mes Habitudes',
       description: 'Construire la régularité, jour après jour',
       icon: Repeat,
-      colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20',
       iconColor: 'text-emerald-600'
     },
     {
@@ -39,7 +40,7 @@ export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
       label: 'Calendrier', 
       description: 'Planifier et voir vos journées', 
       icon: CalendarIcon,
-      colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20',
       iconColor: 'text-emerald-600'
     },
     { 
@@ -47,7 +48,7 @@ export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
       label: 'Journal de bord', 
       description: 'Consigner vos réflexions et vos progrès', 
       icon: BookHeart,
-      colorClass: 'bg-rose-50 text-rose-700 border-rose-100',
+      colorClass: 'bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20',
       iconColor: 'text-rose-600'
     },
     { 
@@ -55,7 +56,7 @@ export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
       label: 'Ma Carte Mentale', 
       description: 'Visualiser les liens objectifs et actions', 
       icon: Network,
-      colorClass: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+      colorClass: 'bg-indigo-50 text-indigo-700 border-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20',
       iconColor: 'text-indigo-600'
     },
     { 
@@ -63,7 +64,7 @@ export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
       label: 'Mon Bilan', 
       description: 'Analyser l’évolution et les statistiques', 
       icon: PieChart,
-      colorClass: 'bg-amber-50 text-amber-700 border-amber-100',
+      colorClass: 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
       iconColor: 'text-amber-600'
     },
     { 
@@ -71,7 +72,7 @@ export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
       label: 'Paramètres', 
       description: 'Rappels, sauvegardes et configuration', 
       icon: Settings,
-      colorClass: 'bg-stone-100 text-stone-700 border-stone-200',
+      colorClass: 'bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700',
       iconColor: 'text-stone-600'
     },
   ];
@@ -131,51 +132,62 @@ export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation (Highly optimized 4 primary tabs) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 flex p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-50 shadow-lg">
-        <div className="flex justify-around w-full px-2">
+      {/* Mobile Bottom Navigation — 4 onglets + capture centrale */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 flex px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-50 shadow-lg">
+        <div className="flex items-end justify-around w-full">
           {/* Dashboard Tab */}
           <button
             onClick={() => handleSelectMobileView('dashboard')}
-            className={`flex flex-col items-center justify-center p-2 min-w-[4.5rem] transition-all duration-200 cursor-pointer ${
-              currentView === 'dashboard' ? 'text-emerald-400' : 'text-stone-500'
-            }`}
+            className="flex flex-col items-center justify-center min-w-[3.75rem] min-h-[3.25rem] transition-all duration-200 cursor-pointer"
           >
-            <LayoutDashboard className="w-5 h-5 mb-1 shrink-0" />
-            <span className="text-[10px] font-sans font-medium leading-none">Tableau de bord</span>
+            <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${currentView === 'dashboard' ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
+              <LayoutDashboard className="w-5 h-5 shrink-0" />
+            </span>
+            <span className={`text-[11px] font-sans leading-none ${currentView === 'dashboard' ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Accueil</span>
           </button>
 
           {/* Goals Tab */}
           <button
             onClick={() => handleSelectMobileView('goals')}
-            className={`flex flex-col items-center justify-center p-2 min-w-[4.5rem] transition-all duration-200 cursor-pointer ${
-              currentView === 'goals' ? 'text-emerald-400' : 'text-stone-500'
-            }`}
+            className="flex flex-col items-center justify-center min-w-[3.75rem] min-h-[3.25rem] transition-all duration-200 cursor-pointer"
           >
-            <Flag className="w-5 h-5 mb-1 shrink-0" />
-            <span className="text-[10px] font-sans font-medium leading-none">Objectifs</span>
+            <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${currentView === 'goals' ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
+              <Flag className="w-5 h-5 shrink-0" />
+            </span>
+            <span className={`text-[11px] font-sans leading-none ${currentView === 'goals' ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Objectifs</span>
+          </button>
+
+          {/* Capture centrale (zone du pouce) */}
+          <button
+            onClick={onOpenCapture}
+            aria-label="Capturer une pensée"
+            className="flex flex-col items-center justify-center -mt-5 cursor-pointer group"
+          >
+            <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-900/40 ring-4 ring-stone-900/95 group-active:scale-95 transition">
+              <Plus className="w-7 h-7" />
+            </span>
           </button>
 
           {/* Tasks Tab */}
           <button
             onClick={() => handleSelectMobileView('tasks')}
-            className={`flex flex-col items-center justify-center p-2 min-w-[4.5rem] transition-all duration-200 cursor-pointer ${
-              currentView === 'tasks' ? 'text-emerald-400' : 'text-stone-500'
-            }`}
+            className="flex flex-col items-center justify-center min-w-[3.75rem] min-h-[3.25rem] transition-all duration-200 cursor-pointer"
           >
-            <CheckSquare className="w-5 h-5 mb-1 shrink-0" />
-            <span className="text-[10px] font-sans font-medium leading-none">Quotidien</span>
+            <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${currentView === 'tasks' ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
+              <CheckSquare className="w-5 h-5 shrink-0" />
+            </span>
+            <span className={`text-[11px] font-sans leading-none ${currentView === 'tasks' ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Quotidien</span>
           </button>
 
           {/* Mon Espace Drawer Menu Tab */}
           <button
             onClick={() => setIsSpaceMenuOpen(true)}
-            className={`flex flex-col items-center justify-center p-2 min-w-[4.5rem] transition-all duration-200 cursor-pointer ${
-              isMoreSpaceActive ? 'text-emerald-400' : 'text-stone-500'
-            }`}
+            className="flex flex-col items-center justify-center min-w-[3.75rem] min-h-[3.25rem] transition-all duration-200 cursor-pointer"
           >
-            <LayoutGrid className="w-5 h-5 mb-1 shrink-0" />
-            <span className="text-[10px] font-sans font-medium leading-none">Mon Espace</span>
+            <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${isMoreSpaceActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
+              <LayoutGrid className="w-5 h-5 shrink-0" />
+            </span>
+            <span className={`text-[11px] font-sans leading-none ${isMoreSpaceActive ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Espace</span>
           </button>
         </div>
       </nav>
@@ -217,18 +229,18 @@ export function Sidebar({ currentView, onChangeView, onLogout }: SidebarProps) {
                   <button
                     key={view.id}
                     onClick={() => handleSelectMobileView(view.id)}
-                    className={`w-full hover:bg-white text-left p-4 rounded-2xl border transition-all duration-200 flex items-start gap-3.5 cursor-pointer ${
-                      isCurrent 
-                        ? 'bg-white border-emerald-500/65 shadow-xs' 
-                        : 'bg-white/50 hover:shadow-xs border-stone-200/70'
+                    className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-start gap-3.5 cursor-pointer ${
+                      isCurrent
+                        ? 'bg-white dark:bg-stone-800 border-emerald-500/65 dark:border-emerald-500/40 shadow-xs'
+                        : 'bg-white/50 dark:bg-stone-800/50 hover:bg-white dark:hover:bg-stone-800 hover:shadow-xs border-stone-200/70 dark:border-stone-700'
                     }`}
                   >
                     <div className={`p-2 rounded-xl shrink-0 border ${view.colorClass}`}>
                       <Icon className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-sans font-bold text-stone-800">{view.label}</h4>
-                      <p className="text-[11px] font-sans text-stone-500 leading-normal mt-0.5">{view.description}</p>
+                      <h4 className="text-sm font-sans font-bold text-stone-800 dark:text-stone-100">{view.label}</h4>
+                      <p className="text-xs font-sans text-stone-500 dark:text-stone-400 leading-normal mt-0.5">{view.description}</p>
                     </div>
                   </button>
                 );

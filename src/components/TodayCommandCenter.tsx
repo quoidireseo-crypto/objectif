@@ -171,7 +171,7 @@ export function TodayCommandCenter({ data, updateData, onChangeView }: TodayComm
             <button
               key={e.level}
               onClick={() => setEnergy(e.level)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-sans font-bold transition cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-2 min-h-[2.25rem] rounded-lg border text-xs font-sans font-bold transition cursor-pointer ${
                 selected
                   ? e.active
                   : 'bg-stone-50 dark:bg-stone-800 border-stone-100 dark:border-stone-700 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300'

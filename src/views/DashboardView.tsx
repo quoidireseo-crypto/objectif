@@ -15,6 +15,7 @@ import { LifeBalancePanel } from '../components/LifeBalancePanel';
 import { WeekInsightsPanel } from '../components/WeekInsightsPanel';
 import { GoalRelationsPanel } from '../components/GoalRelationsPanel';
 import { DailyWordBanner } from '../components/DailyWordBanner';
+import { CollapsibleZone } from '../components/CollapsibleZone';
 
 interface DashboardProps {
   data: AppData;
@@ -50,20 +51,6 @@ const WEEKLY_CHALLENGES = [
 ];
 
 // Petit intitulé de section pour donner une hiérarchie claire au tableau de bord
-function SectionLabel({ children, help }: { children: ReactNode; help?: string }) {
-  return (
-    <div className="flex items-center gap-4 mb-5 mt-4">
-      <div className="flex items-center gap-2 shrink-0">
-        <h3 className="text-[11px] font-sans font-bold uppercase tracking-[0.22em] text-stone-400 dark:text-stone-500">
-          {children}
-        </h3>
-        {help && <HelpTooltip text={help} />}
-      </div>
-      <div className="h-px flex-1 bg-stone-200/70 dark:bg-stone-800" />
-    </div>
-  );
-}
-
 export function DashboardView({ data, updateData, onChangeView, userProfile }: DashboardProps) {
   const inProgressGoals = data.goals.filter(g => g.status === 'En cours');
   const activeGoals = inProgressGoals.length;
@@ -644,7 +631,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       {/* fin ZONE 1 adaptative */}
 
       {/* ===================== ZONE 2 — MA PROGRESSION ===================== */}
-      <SectionLabel help="Une vue d'ensemble de tes objectifs en cours et de ta constance dans la durée.">Ma progression</SectionLabel>
+      <CollapsibleZone title="Ma progression" help="Une vue d'ensemble de tes objectifs en cours et de ta constance dans la durée.">
 
       {/* Rappel doux : objectifs en cours sans prochaine action */}
       <NextActionNudge data={data} onChangeView={onChangeView} />
@@ -799,9 +786,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           onChangeView={onChangeView}
         />
       </div>
+      </CollapsibleZone>
 
       {/* ===================== ZONE 3 — PRENDRE DU RECUL ===================== */}
-      <SectionLabel help="Des graphiques et des repères pour observer ton évolution sur la durée.">Prendre du recul</SectionLabel>
+      <CollapsibleZone title="Prendre du recul" help="Des graphiques et des repères pour observer ton évolution sur la durée.">
 
       {/* Charge de la semaine + habitude-levier */}
       <WeekInsightsPanel data={data} onChangeView={onChangeView} />
@@ -880,6 +868,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </div>
         </div>
       )}
+      </CollapsibleZone>
 
       {/* Première intention (aucun objectif, et bandeau d'intro déjà masqué) */}
       {data.goals.length === 0 && !showIntro && (

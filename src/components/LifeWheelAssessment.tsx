@@ -56,7 +56,7 @@ export function LifeWheelAssessment({
                     onClick={() => setScore(pillar.domain, v)}
                     title={`${v} sur 5`}
                     aria-label={`${pillar.domain} : ${v} sur 5`}
-                    className={`w-5 h-7 sm:w-6 rounded-md transition-all hover:scale-110 cursor-pointer ${
+                    className={`w-7 h-9 sm:w-8 rounded-md transition-all hover:scale-110 cursor-pointer ${
                       v <= current ? pillar.bar : 'bg-stone-200 dark:bg-stone-700'
                     }`}
                   />
