@@ -1,7 +1,7 @@
 import { useState, FormEvent, useMemo } from 'react';
 import { AppData, LifeDomain } from '../types';
 import { useHabits, isHabitDueOn } from '../hooks/useHabits';
-import { Repeat, Plus, Circle, CheckCircle2, Flame, Trash2, Archive, Tag } from 'lucide-react';
+import { Repeat, Plus, Circle, CheckCircle2, Sprout, Trash2, Archive, Tag } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
 
 interface HabitsProps {
@@ -24,7 +24,7 @@ const DAY_LABELS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
 const todayStr = () => new Date().toISOString().split('T')[0];
 
 export function HabitsView({ data, updateData }: HabitsProps) {
-  const { activeHabits, todaysHabits, isCompletedOn, addHabit, deleteHabit, archiveHabit, toggleCompletion, getStreak } = useHabits(data, updateData);
+  const { activeHabits, todaysHabits, isCompletedOn, addHabit, deleteHabit, archiveHabit, toggleCompletion, getRegularity } = useHabits(data, updateData);
 
   const [title, setTitle] = useState('');
   const [frequency, setFrequency] = useState<'daily' | 'weekly'>('daily');
@@ -69,10 +69,10 @@ export function HabitsView({ data, updateData }: HabitsProps) {
     setDomain('');
   };
 
-  const getStreakStyle = (streak: number) => {
-    if (streak >= 7) return 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
-    if (streak >= 3) return 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
-    if (streak > 0) return 'bg-stone-50 text-stone-600 border-stone-100 dark:bg-stone-800 dark:text-stone-400 dark:border-stone-700';
+  const getRegularityStyle = (count: number) => {
+    if (count >= 20) return 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
+    if (count >= 8) return 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
+    if (count > 0) return 'bg-stone-50 text-stone-600 border-stone-100 dark:bg-stone-800 dark:text-stone-400 dark:border-stone-700';
     return 'bg-stone-50 text-stone-400 border-stone-100 dark:bg-stone-800 dark:text-stone-500 dark:border-stone-700';
   };
 
@@ -176,7 +176,7 @@ export function HabitsView({ data, updateData }: HabitsProps) {
           <div className="space-y-4">
             {todaysHabits.map(habit => {
               const done = isCompletedOn(habit.id, today);
-              const streak = getStreak(habit.id);
+              const regularity = getRegularity(habit.id);
               return (
                 <div key={habit.id} className="group bg-stone-50/50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 p-5 rounded-2xl flex items-center gap-4 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-sm transition-all">
                   <button
@@ -196,9 +196,12 @@ export function HabitsView({ data, updateData }: HabitsProps) {
                       </div>
                     )}
                   </div>
-                  <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-sans font-bold shrink-0 ${getStreakStyle(streak)}`}>
-                    <Flame className="w-3.5 h-3.5" />
-                    {streak}
+                  <div
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-sans font-bold shrink-0 ${getRegularityStyle(regularity)}`}
+                    title={`${regularity} jour${regularity > 1 ? 's' : ''} sur les 30 derniers`}
+                  >
+                    <Sprout className="w-3.5 h-3.5" />
+                    {regularity}
                   </div>
                 </div>
               );

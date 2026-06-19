@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, ReactNode } from 'react';
 import { AppData, ViewType } from '../types';
-import { Target, CheckCircle2, Sparkles, Flame, RefreshCw, Feather, Moon, Award, Pencil, Repeat, Circle, Sunrise, ArrowRight, X } from 'lucide-react';
+import { Target, CheckCircle2, Sparkles, Sprout, RefreshCw, Feather, Moon, Award, Pencil, Repeat, Circle, Sunrise, ArrowRight, X } from 'lucide-react';
 import { ProgressChart } from '../components/ProgressChart';
 import { GoalDomainChart } from '../components/GoalDomainChart';
 import { useStreak } from '../hooks/useStreak';
@@ -70,7 +70,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
   const todayDate = new Date().toISOString().split('T')[0];
   const todayTasks = data.tasks.filter(t => t.date === todayDate);
   const completedToday = todayTasks.filter(t => t.isCompleted).length;
-  const { currentStreak } = useStreak(data.tasks);
+  const { activeDays30 } = useStreak(data.tasks);
   const { todaysHabits, isCompletedOn, toggleCompletion } = useHabits(data, updateData);
   const completedHabitsToday = todaysHabits.filter(h => isCompletedOn(h.id, todayDate)).length;
 
@@ -241,10 +241,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
     return QUOTES[dayOfYear % QUOTES.length];
   }, []);
 
-  let streakMessage = "Commence aujourd'hui.";
-  if (currentStreak >= 7) streakMessage = "Remarquable constance.";
-  else if (currentStreak >= 3) streakMessage = "Tu tiens le rythme !";
-  else if (currentStreak > 0) streakMessage = "Continue sur ta lancée.";
+  let streakMessage = "Chaque jour compte. Commence quand tu veux.";
+  if (activeDays30 >= 20) streakMessage = "Une belle constance, à ton rythme.";
+  else if (activeDays30 >= 10) streakMessage = "Tu avances régulièrement. Bravo.";
+  else if (activeDays30 >= 1) streakMessage = "Tu es en chemin.";
 
   const todayLabel = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
 
@@ -408,9 +408,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
             </button>
 
             <div className="bg-white/10 border border-white/10 rounded-2xl p-4" title={streakMessage}>
-              <Flame className="w-5 h-5 text-amber-300 mb-2.5" />
+              <Sprout className="w-5 h-5 text-amber-300 mb-2.5" />
               <p className="text-2xl font-light leading-none">
-                {currentStreak}<span className="text-base text-emerald-200/50"> j</span>
+                {activeDays30}<span className="text-base text-emerald-200/50"> / 30 j</span>
               </p>
               <p className="text-[10px] uppercase tracking-wider font-sans font-bold text-emerald-200/70 mt-1.5">
                 Régularité

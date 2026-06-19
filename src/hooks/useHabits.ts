@@ -55,28 +55,18 @@ export function useHabits(data: AppData, updateData: (newData: Partial<AppData>)
     }
   }, [completions, updateData]);
 
-  const getStreak = useCallback((habitId: string) => {
-    const habit = habits.find(h => h.id === habitId);
-    if (!habit) return 0;
-
-    let streak = 0;
+  // Régularité douce : nombre de fois où l'habitude a été tenue sur les 30
+  // derniers jours. Un jour manqué ne remet jamais le compteur à zéro.
+  const getRegularity = useCallback((habitId: string) => {
     const cursor = new Date();
     cursor.setHours(0, 0, 0, 0);
-    const cutoffYear = cursor.getFullYear() - 3;
-
-    while (cursor.getFullYear() >= cutoffYear) {
-      const dateStr = cursor.toISOString().split('T')[0];
-      if (isHabitDueOn(habit, cursor)) {
-        if (isCompletedOn(habitId, dateStr)) {
-          streak++;
-        } else if (dateStr !== todayStr()) {
-          break;
-        }
-      }
+    let count = 0;
+    for (let i = 0; i < 30; i++) {
+      if (isCompletedOn(habitId, cursor.toISOString().split('T')[0])) count++;
       cursor.setDate(cursor.getDate() - 1);
     }
-    return streak;
-  }, [habits, isCompletedOn]);
+    return count;
+  }, [isCompletedOn]);
 
   return {
     habits,
@@ -88,6 +78,6 @@ export function useHabits(data: AppData, updateData: (newData: Partial<AppData>)
     archiveHabit,
     deleteHabit,
     toggleCompletion,
-    getStreak,
+    getRegularity,
   };
 }
