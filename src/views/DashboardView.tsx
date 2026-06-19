@@ -11,6 +11,7 @@ import { SkoposLogo } from '../components/SkoposLogo';
 import { HelpTooltip } from '../components/HelpTooltip';
 import { TodayCommandCenter } from '../components/TodayCommandCenter';
 import { NextActionNudge } from '../components/NextActionNudge';
+import { LifeBalancePanel } from '../components/LifeBalancePanel';
 
 interface DashboardProps {
   data: AppData;
@@ -777,6 +778,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           )}
         </div>
       </div>
+
+      {/* Équilibre de vie — roue des piliers */}
+      <LifeBalancePanel data={data} updateData={updateData} onChangeView={onChangeView} />
 
       {/* Intentions en sommeil */}
       <div className="mb-2">

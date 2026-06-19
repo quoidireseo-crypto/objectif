@@ -2,9 +2,14 @@ import { useState } from 'react';
 import { SkoposLogo } from '../components/SkoposLogo';
 import { ArrowRight, User, Compass, Sparkles, Target, BookmarkCheck } from 'lucide-react';
 import { motion } from 'motion/react';
+import { LifeDomain } from '../types';
+import { LifeWheelAssessment } from '../components/LifeWheelAssessment';
 
 interface LandingViewProps {
-  onComplete: (profile: { name: string; ageGroup?: string; focusArea?: string }) => void;
+  onComplete: (
+    profile: { name: string; ageGroup?: string; focusArea?: string },
+    initialAssessment?: Partial<Record<LifeDomain, number>>
+  ) => void;
 }
 
 export function LandingView({ onComplete }: LandingViewProps) {
@@ -24,14 +29,16 @@ export function LandingView({ onComplete }: LandingViewProps) {
     if (step === 1 && name.trim().length >= 2) {
       setStep(2);
     } else if (step === 2) {
-      // Complete profile and save
-      onComplete({
-        name: name.trim(),
-        ageGroup: ageGroup || undefined,
-        focusArea: focusArea || undefined,
-      });
+      // On enchaîne sur la roue de la vie avant de créer l'espace
+      setStep(3);
     }
   };
+
+  const profile = () => ({
+    name: name.trim(),
+    ageGroup: ageGroup || undefined,
+    focusArea: focusArea || undefined,
+  });
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] dark:bg-stone-950 flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden font-serif selection:bg-emerald-200 selection:text-emerald-900">
@@ -153,9 +160,9 @@ export function LandingView({ onComplete }: LandingViewProps) {
               <ArrowRight className="w-4 h-4" />
             </button>
           </motion.div>
-        ) : (
+        ) : step === 2 ? (
           /* STEP 2: MOTIVATION / ANCHOR */
-          <motion.div 
+          <motion.div
             key="step2"
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -205,10 +212,41 @@ export function LandingView({ onComplete }: LandingViewProps) {
                 onClick={handleNext}
                 className="flex-[2] bg-[#047857] text-[#FFFBEB] py-3.5 px-6 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-[#059669] active:scale-98 transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
-                Créer mon espace
+                Suivant
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
+          </motion.div>
+        ) : (
+          /* STEP 3: ROUE DE LA VIE */
+          <motion.div
+            key="step3"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-6"
+          >
+            <div className="text-center space-y-2">
+              <h2 className="text-xl md:text-2xl font-light text-stone-800 dark:text-stone-100 leading-snug">
+                Où en êtes-vous aujourd'hui, {name} ?
+              </h2>
+              <p className="text-stone-500 dark:text-stone-400 font-sans text-xs md:text-sm leading-relaxed max-w-md mx-auto">
+                Avant de fixer un cap, prenons une photo de votre vie. Notez votre ressenti, de 1 à 5, sur chaque pilier — il n'y a pas de bonne réponse, juste la vôtre.
+              </p>
+            </div>
+
+            <LifeWheelAssessment
+              onSave={(scores) => onComplete(profile(), scores)}
+              onSkip={() => onComplete(profile(), undefined)}
+              saveLabel="Créer mon espace"
+              skipLabel="Plus tard"
+            />
+
+            <button
+              onClick={() => setStep(2)}
+              className="w-full text-center text-[11px] font-sans font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition cursor-pointer"
+            >
+              Retour
+            </button>
           </motion.div>
         )}
 

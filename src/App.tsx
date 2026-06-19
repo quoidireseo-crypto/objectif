@@ -3,7 +3,7 @@ import { useStorage } from './hooks/useStorage';
 import { useMorningRitual } from './hooks/useMorningRitual';
 import { useTheme } from './hooks/useTheme';
 import { useAuth } from './hooks/useAuth';
-import { ViewType, AppData } from './types';
+import { ViewType, AppData, LifeDomain } from './types';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './views/DashboardView';
 import { GoalsView } from './views/GoalsView';
@@ -46,6 +46,26 @@ export default function App() {
     setUserProfile(profile);
   };
 
+  // Fin de l'onboarding : on enregistre le profil et, si l'utilisateur a fait sa
+  // roue de la vie, un premier bilan d'équilibre.
+  const handleCompleteOnboarding = (
+    profile: { name: string; ageGroup?: string; focusArea?: string },
+    initialAssessment?: Partial<Record<LifeDomain, number>>
+  ) => {
+    handleUpdateProfile(profile);
+    if (initialAssessment && Object.keys(initialAssessment).length > 0) {
+      updateData({
+        lifeAssessments: [
+          {
+            id: Date.now().toString(),
+            date: new Date().toISOString().split('T')[0],
+            scores: initialAssessment,
+          },
+        ],
+      });
+    }
+  };
+
   useReminder();
 
   const handleImportData = (importedData: AppData) => {
@@ -61,6 +81,7 @@ export default function App() {
       habits: importedData.habits || [],
       habitCompletions: importedData.habitCompletions || [],
       weeklyReviews: importedData.weeklyReviews || [],
+      lifeAssessments: importedData.lifeAssessments || [],
     };
     updateData(sanitizedData);
   };
@@ -104,7 +125,7 @@ export default function App() {
   };
 
   if (!userProfile) {
-    return <LandingView onComplete={handleUpdateProfile} />;
+    return <LandingView onComplete={handleCompleteOnboarding} />;
   }
 
   if (!isUnlocked) {

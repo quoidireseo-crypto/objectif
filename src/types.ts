@@ -55,6 +55,15 @@ export interface AppData {
   habits: Habit[];
   habitCompletions: HabitCompletion[];
   weeklyReviews: WeeklyReview[];
+  lifeAssessments: LifeAssessment[];
+}
+
+// Bilan d'équilibre de vie : ressenti de satisfaction (1 à 5) sur chaque pilier,
+// à un instant donné. On garde l'historique pour voir l'évolution dans le temps.
+export interface LifeAssessment {
+  id: string;
+  date: string; // format YYYY-MM-DD
+  scores: Partial<Record<LifeDomain, number>>; // 1..5 par pilier évalué
 }
 
 export type HabitFrequency = 'daily' | 'weekly';
