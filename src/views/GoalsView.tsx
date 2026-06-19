@@ -3,7 +3,6 @@ import { AppData, Goal, LifeDomain, Milestone, Task } from '../types';
 import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle } from 'lucide-react';
 import { useGoalHistory } from '../hooks/useGoalHistory';
 import { GoalHistoryTimeline } from '../components/GoalHistoryTimeline';
-import { GoalResourcesPanel } from '../components/GoalResourcesPanel';
 import { HelpTooltip } from '../components/HelpTooltip';
 
 interface GoalsProps {
@@ -574,8 +573,6 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                   updateData={updateData}
                   onClose={() => {}}
                 />
-
-                <GoalResourcesPanel goal={goal} />
 
                 <div className="mt-5 flex items-center justify-between border-t border-stone-100/50 dark:border-stone-800 pt-5">
                   <div className="flex items-center gap-2">
