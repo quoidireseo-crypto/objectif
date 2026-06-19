@@ -218,13 +218,20 @@ export function GoalsView({ data, updateData }: GoalsProps) {
   };
 
   // Date d'obtention d'un trophée : on la lit dans l'historique (événement
-  // « achieved »). À défaut, on retombe sur la date de création de l'objectif.
+  // « achieved »). Cette date est déjà une chaîne française lisible
+  // (« JJ/MM/AAAA HH:MM:SS »), on en garde juste la partie date — surtout pas
+  // de re-parsing via new Date(), qui échoue sur le format français.
   const getAchievedDate = (goal: Goal): string => {
     const entry = (data.goalsHistory || [])
       .filter(h => h.goalId === goal.id && h.changeType === 'achieved')
-      .sort((a, b) => b.date.localeCompare(a.date))[0];
-    const raw = entry?.date?.split(' ')[0] || goal.createdAt;
-    return new Intl.DateTimeFormat('fr-FR').format(new Date(raw));
+      .sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0))[0];
+    if (entry?.date) return entry.date.split(' ')[0];
+    // Repli : la date de création est au format ISO, parsable sans risque.
+    try {
+      return new Intl.DateTimeFormat('fr-FR').format(new Date(goal.createdAt));
+    } catch {
+      return '';
+    }
   };
 
   const getDeadlineBadge = (goal: Goal) => {
@@ -675,7 +682,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
 
                 <div className="mt-auto pt-3 border-t border-amber-100/60 dark:border-amber-500/10 flex items-center justify-center gap-2">
                   <span className="text-[10px] text-stone-500 dark:text-stone-400 font-sans uppercase tracking-wide">
-                    Atteint le {getAchievedDate(goal)}
+                    {getAchievedDate(goal) ? `Atteint le ${getAchievedDate(goal)}` : 'Atteint'}
                   </span>
                   <button
                     onClick={() => handleStatusChange(goal.id, 'En cours')}
