@@ -138,7 +138,7 @@ export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture }: 
           {/* Dashboard Tab */}
           <button
             onClick={() => handleSelectMobileView('dashboard')}
-            className="flex flex-col items-center justify-center min-w-[3.75rem] min-h-[3.25rem] transition-all duration-200 cursor-pointer"
+            className="flex flex-col items-center justify-center flex-1 min-w-0 min-h-[3.25rem] transition-all duration-200 cursor-pointer"
           >
             <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${currentView === 'dashboard' ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
               <LayoutDashboard className="w-5 h-5 shrink-0" />
@@ -149,7 +149,7 @@ export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture }: 
           {/* Goals Tab */}
           <button
             onClick={() => handleSelectMobileView('goals')}
-            className="flex flex-col items-center justify-center min-w-[3.75rem] min-h-[3.25rem] transition-all duration-200 cursor-pointer"
+            className="flex flex-col items-center justify-center flex-1 min-w-0 min-h-[3.25rem] transition-all duration-200 cursor-pointer"
           >
             <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${currentView === 'goals' ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
               <Flag className="w-5 h-5 shrink-0" />
@@ -171,7 +171,7 @@ export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture }: 
           {/* Tasks Tab */}
           <button
             onClick={() => handleSelectMobileView('tasks')}
-            className="flex flex-col items-center justify-center min-w-[3.75rem] min-h-[3.25rem] transition-all duration-200 cursor-pointer"
+            className="flex flex-col items-center justify-center flex-1 min-w-0 min-h-[3.25rem] transition-all duration-200 cursor-pointer"
           >
             <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${currentView === 'tasks' ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
               <CheckSquare className="w-5 h-5 shrink-0" />
@@ -182,7 +182,7 @@ export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture }: 
           {/* Mon Espace Drawer Menu Tab */}
           <button
             onClick={() => setIsSpaceMenuOpen(true)}
-            className="flex flex-col items-center justify-center min-w-[3.75rem] min-h-[3.25rem] transition-all duration-200 cursor-pointer"
+            className="flex flex-col items-center justify-center flex-1 min-w-0 min-h-[3.25rem] transition-all duration-200 cursor-pointer"
           >
             <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${isMoreSpaceActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
               <LayoutGrid className="w-5 h-5 shrink-0" />

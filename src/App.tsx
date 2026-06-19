@@ -166,7 +166,7 @@ export default function App() {
         {/* Mobile Top Header — contextuel : où suis-je */}
         <header className="md:hidden flex items-center gap-2.5 px-5 py-3 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0 z-40 shadow-xs">
           <SkoposLogo className="text-[#047857] dark:text-emerald-400 shrink-0" size={22} />
-          <span className="text-lg font-serif font-light text-stone-800 dark:text-stone-100 truncate">
+          <span className="text-lg font-serif font-light text-stone-800 dark:text-stone-100 truncate min-w-0">
             {VIEW_TITLES[currentView]}
           </span>
         </header>
@@ -180,7 +180,7 @@ export default function App() {
           />
         )}
 
-        <main className="flex-1 px-4 py-6 sm:p-6 md:p-8 lg:p-12 pb-44 md:pb-8 lg:pb-12 overflow-y-auto relative h-full">
+        <main className="flex-1 px-4 py-6 sm:p-6 md:p-8 lg:p-12 pb-44 md:pb-8 lg:pb-12 overflow-y-auto overflow-x-hidden relative h-full">
           <div className="max-w-[1024px] mx-auto min-h-full flex flex-col">
             {shouldRemindExport && (
               <div className="mb-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0 shadow-sm animate-in fade-in">
