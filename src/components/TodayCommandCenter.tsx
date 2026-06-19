@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { AppData, Task, ViewType } from '../types';
+import { AppData, EnergyLevel, Task, ViewType } from '../types';
 import {
   CheckCircle2,
   Circle,
@@ -10,8 +10,22 @@ import {
   Sunrise,
   ArrowRight,
   Target,
+  BatteryLow,
+  BatteryMedium,
+  BatteryFull,
   X,
 } from 'lucide-react';
+
+const ENERGY_LEVELS: {
+  level: EnergyLevel;
+  label: string;
+  icon: typeof BatteryLow;
+  active: string;
+}[] = [
+  { level: 'low', label: 'Basse', icon: BatteryLow, active: 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/30' },
+  { level: 'medium', label: 'Moyenne', icon: BatteryMedium, active: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30' },
+  { level: 'high', label: 'Haute', icon: BatteryFull, active: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/40' },
+];
 
 interface TodayCommandCenterProps {
   data: AppData;
@@ -53,6 +67,28 @@ export function TodayCommandCenter({ data, updateData, onChangeView }: TodayComm
 
   const remainingToday = todayTasks.filter(t => !t.isCompleted).length;
   const completedToday = todayTasks.filter(t => t.isCompleted).length;
+
+  // Énergie du jour : ressenti qui adapte les suggestions.
+  const todayEnergy = useMemo(
+    () => (data.energyLogs || []).find(e => e.date === todayDate)?.level,
+    [data.energyLogs, todayDate]
+  );
+
+  const setEnergy = (level: EnergyLevel) => {
+    const others = (data.energyLogs || []).filter(e => e.date !== todayDate);
+    updateData({
+      energyLogs: [...others, { id: Date.now().toString(), date: todayDate, level }],
+    });
+  };
+
+  // Jour « basse énergie » : on suggère une seule action, la plus importante.
+  const suggestedAction = useMemo(
+    () =>
+      todayTasks.find(t => !t.isCompleted && t.isImportant) ||
+      todayTasks.find(t => !t.isCompleted) ||
+      null,
+    [todayTasks]
+  );
 
   const toggleTask = (id: string) => {
     updateData({
@@ -122,6 +158,59 @@ export function TodayCommandCenter({ data, updateData, onChangeView }: TodayComm
           Tout voir &rarr;
         </button>
       </div>
+
+      {/* Énergie du jour */}
+      <div className="flex items-center gap-2 flex-wrap mb-6">
+        <span className="text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-stone-400 dark:text-stone-500 mr-1">
+          Mon énergie
+        </span>
+        {ENERGY_LEVELS.map(e => {
+          const Icon = e.icon;
+          const selected = todayEnergy === e.level;
+          return (
+            <button
+              key={e.level}
+              onClick={() => setEnergy(e.level)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-sans font-bold transition cursor-pointer ${
+                selected
+                  ? e.active
+                  : 'bg-stone-50 dark:bg-stone-800 border-stone-100 dark:border-stone-700 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {e.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Jour basse énergie : une seule action suffit */}
+      {todayEnergy === 'low' && suggestedAction && (
+        <div className="mb-6 p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/20">
+          <p className="text-xs font-sans font-bold text-amber-700 dark:text-amber-400 flex items-center gap-2">
+            <BatteryLow className="w-4 h-4" />
+            Journée à énergie douce — sois doux avec toi.
+          </p>
+          <p className="text-sm text-stone-600 dark:text-stone-300 font-sans mt-1.5 mb-3">
+            Si tu ne fais qu'une seule chose aujourd'hui, que ce soit celle-là :
+          </p>
+          <button
+            onClick={() => toggleTask(suggestedAction.id)}
+            className="w-full flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-stone-800 border border-amber-200 dark:border-amber-500/30 hover:border-emerald-300 dark:hover:border-emerald-700 transition text-left"
+          >
+            <Circle className="w-5 h-5 text-stone-300 dark:text-stone-600 shrink-0" />
+            <span className="flex-1 font-sans text-sm font-bold text-stone-700 dark:text-stone-200 truncate">
+              {suggestedAction.title}
+            </span>
+            {suggestedAction.isImportant && (
+              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />
+            )}
+          </button>
+          <p className="text-[11px] text-stone-400 dark:text-stone-500 font-sans mt-2.5">
+            Le reste peut attendre demain. Avancer doucement, c'est avancer quand même.
+          </p>
+        </div>
+      )}
 
       {/* À reprendre (en retard) */}
       {overdueTasks.length > 0 && (

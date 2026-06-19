@@ -56,6 +56,17 @@ export interface AppData {
   habitCompletions: HabitCompletion[];
   weeklyReviews: WeeklyReview[];
   lifeAssessments: LifeAssessment[];
+  energyLogs: EnergyLog[];
+}
+
+export type EnergyLevel = 'low' | 'medium' | 'high';
+
+// Niveau d'énergie ressenti pour un jour donné. Sert à adapter les suggestions
+// (les jours « basse énergie », l'app invite à n'en faire qu'une).
+export interface EnergyLog {
+  id: string;
+  date: string; // format YYYY-MM-DD
+  level: EnergyLevel;
 }
 
 // Bilan d'équilibre de vie : ressenti de satisfaction (1 à 5) sur chaque pilier,

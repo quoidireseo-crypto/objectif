@@ -82,6 +82,7 @@ export default function App() {
       habitCompletions: importedData.habitCompletions || [],
       weeklyReviews: importedData.weeklyReviews || [],
       lifeAssessments: importedData.lifeAssessments || [],
+      energyLogs: importedData.energyLogs || [],
     };
     updateData(sanitizedData);
   };
