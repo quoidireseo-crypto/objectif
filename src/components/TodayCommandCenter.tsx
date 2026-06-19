@@ -348,7 +348,7 @@ export function TodayCommandCenter({ data, updateData, onChangeView }: TodayComm
                     <select
                       value=""
                       onChange={(e) => attachToGoal(task.id, e.target.value)}
-                      className="appearance-none pl-7 pr-3 py-1.5 rounded-lg bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-stone-600 dark:text-stone-300 text-[11px] font-sans font-bold cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-600 transition outline-none focus:ring-1 focus:ring-emerald-500"
+                      className="appearance-none max-w-[9rem] truncate pl-7 pr-3 py-1.5 rounded-lg bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-stone-600 dark:text-stone-300 text-[11px] font-sans font-bold cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-600 transition outline-none focus:ring-1 focus:ring-emerald-500"
                       title="Rattacher à un objectif"
                     >
                       <option value="">Rattacher…</option>
