@@ -134,60 +134,62 @@ export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture }: 
 
       {/* Mobile Bottom Navigation — 4 onglets + capture centrale */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 flex px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-50 shadow-lg">
-        <div className="flex items-end justify-around w-full">
+        <div className="flex items-end w-full h-[3.25rem]">
           {/* Dashboard Tab */}
           <button
             onClick={() => handleSelectMobileView('dashboard')}
-            className="flex flex-col items-center justify-center flex-1 min-w-0 min-h-[3.25rem] transition-all duration-200 cursor-pointer"
+            className="flex flex-col items-center justify-center flex-1 min-w-0 h-full transition-all duration-200 cursor-pointer"
           >
             <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${currentView === 'dashboard' ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
               <LayoutDashboard className="w-5 h-5 shrink-0" />
             </span>
-            <span className={`text-[11px] font-sans leading-none ${currentView === 'dashboard' ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Accueil</span>
+            <span className={`text-[11px] font-sans leading-none whitespace-nowrap ${currentView === 'dashboard' ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Accueil</span>
           </button>
 
           {/* Goals Tab */}
           <button
             onClick={() => handleSelectMobileView('goals')}
-            className="flex flex-col items-center justify-center flex-1 min-w-0 min-h-[3.25rem] transition-all duration-200 cursor-pointer"
+            className="flex flex-col items-center justify-center flex-1 min-w-0 h-full transition-all duration-200 cursor-pointer"
           >
             <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${currentView === 'goals' ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
               <Flag className="w-5 h-5 shrink-0" />
             </span>
-            <span className={`text-[11px] font-sans leading-none ${currentView === 'goals' ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Objectifs</span>
+            <span className={`text-[11px] font-sans leading-none whitespace-nowrap ${currentView === 'goals' ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Objectifs</span>
           </button>
 
           {/* Capture centrale (zone du pouce) */}
-          <button
-            onClick={onOpenCapture}
-            aria-label="Capturer une pensée"
-            className="flex flex-col items-center justify-center -mt-5 cursor-pointer group"
-          >
-            <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-900/40 ring-4 ring-stone-900/95 group-active:scale-95 transition">
-              <Plus className="w-7 h-7" />
-            </span>
-          </button>
+          <div className="flex-1 flex justify-center">
+            <button
+              onClick={onOpenCapture}
+              aria-label="Capturer une pensée"
+              className="flex items-center justify-center -mt-5 cursor-pointer group"
+            >
+              <span className="flex items-center justify-center w-14 h-14 rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-900/40 ring-4 ring-stone-900/95 group-active:scale-95 transition">
+                <Plus className="w-7 h-7" />
+              </span>
+            </button>
+          </div>
 
           {/* Tasks Tab */}
           <button
             onClick={() => handleSelectMobileView('tasks')}
-            className="flex flex-col items-center justify-center flex-1 min-w-0 min-h-[3.25rem] transition-all duration-200 cursor-pointer"
+            className="flex flex-col items-center justify-center flex-1 min-w-0 h-full transition-all duration-200 cursor-pointer"
           >
             <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${currentView === 'tasks' ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
               <CheckSquare className="w-5 h-5 shrink-0" />
             </span>
-            <span className={`text-[11px] font-sans leading-none ${currentView === 'tasks' ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Quotidien</span>
+            <span className={`text-[11px] font-sans leading-none whitespace-nowrap ${currentView === 'tasks' ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Quotidien</span>
           </button>
 
           {/* Mon Espace Drawer Menu Tab */}
           <button
             onClick={() => setIsSpaceMenuOpen(true)}
-            className="flex flex-col items-center justify-center flex-1 min-w-0 min-h-[3.25rem] transition-all duration-200 cursor-pointer"
+            className="flex flex-col items-center justify-center flex-1 min-w-0 h-full transition-all duration-200 cursor-pointer"
           >
             <span className={`flex items-center justify-center w-11 h-7 rounded-full mb-0.5 transition ${isMoreSpaceActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-stone-500'}`}>
               <LayoutGrid className="w-5 h-5 shrink-0" />
             </span>
-            <span className={`text-[11px] font-sans leading-none ${isMoreSpaceActive ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Espace</span>
+            <span className={`text-[11px] font-sans leading-none whitespace-nowrap ${isMoreSpaceActive ? 'text-emerald-400 font-bold' : 'text-stone-500 font-medium'}`}>Espace</span>
           </button>
         </div>
       </nav>
