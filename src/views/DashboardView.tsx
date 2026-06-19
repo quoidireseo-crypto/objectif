@@ -13,6 +13,7 @@ import { TodayCommandCenter } from '../components/TodayCommandCenter';
 import { NextActionNudge } from '../components/NextActionNudge';
 import { LifeBalancePanel } from '../components/LifeBalancePanel';
 import { WeekInsightsPanel } from '../components/WeekInsightsPanel';
+import { GoalRelationsPanel } from '../components/GoalRelationsPanel';
 
 interface DashboardProps {
   data: AppData;
@@ -782,6 +783,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
 
       {/* Équilibre de vie — roue des piliers */}
       <LifeBalancePanel data={data} updateData={updateData} onChangeView={onChangeView} />
+
+      {/* Tensions & synergies entre objectifs */}
+      <GoalRelationsPanel data={data} onChangeView={onChangeView} />
 
       {/* Intentions en sommeil */}
       <div className="mb-2">

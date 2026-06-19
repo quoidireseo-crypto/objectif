@@ -1,12 +1,20 @@
 import { useEffect } from 'react';
+import { AppData } from '../types';
+import { getHolisticReminderMessage } from '../lib/holisticReminder';
 
-const REMINDER_MESSAGES = [
-  "Bonjour ! Une petite action t'attend aujourd'hui. 🌱",
-  "C'est le moment de prendre un instant pour toi. Qu'est-ce que tu choisis ?",
-  "Un pas, même petit, c'est déjà avancer. Qu'est-ce que tu fais aujourd'hui ?",
-  "Jette un œil à tes objectifs du jour, quand tu veux.",
-  "Petit rappel : tes objectifs t'attendent. Sans pression, juste un coup d'œil."
-];
+const FALLBACK_MESSAGE = "Petit rappel : ta journée t'attend. Sans pression, juste un coup d'œil.";
+
+// Lit les données courantes (stockage local) pour composer un rappel contextuel.
+const buildMessage = (): string => {
+  try {
+    const raw = window.localStorage.getItem('didier_boussole_data');
+    if (!raw) return FALLBACK_MESSAGE;
+    const data = JSON.parse(raw) as AppData;
+    return getHolisticReminderMessage(data);
+  } catch {
+    return FALLBACK_MESSAGE;
+  }
+};
 
 export function useReminder() {
   useEffect(() => {
@@ -40,7 +48,7 @@ export function useReminder() {
     };
 
     const showNotification = () => {
-      const msg = REMINDER_MESSAGES[Math.floor(Math.random() * REMINDER_MESSAGES.length)];
+      const msg = buildMessage();
       if ('Notification' in window && Notification.permission === 'granted') {
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.ready.then((registration) => {

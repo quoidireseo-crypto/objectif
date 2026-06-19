@@ -2,7 +2,8 @@ import { useRef, useState, ChangeEvent, useEffect } from 'react';
 import { AppData } from '../types';
 import { ThemeMode } from '../hooks/useTheme';
 import { SkoposLogo } from '../components/SkoposLogo';
-import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw, Smartphone, Info, Sun, Moon, Clock, Lock, LogOut, KeyRound } from 'lucide-react';
+import { getHolisticReminderMessage } from '../lib/holisticReminder';
+import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw, Smartphone, Info, Sun, Moon, Clock, Lock, LogOut, KeyRound, Bell } from 'lucide-react';
 
 interface SettingsProps {
   data: AppData;
@@ -555,9 +556,22 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile,
 
         <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm">
           <h3 className="text-lg font-bold font-sans uppercase tracking-widest text-stone-800 dark:text-stone-100 mb-2">Mes rappels</h3>
-          <p className="text-stone-500 dark:text-stone-400 leading-relaxed mb-6 font-light">
-            Chaque jour à l'heure choisie, tu recevras un petit mot pour t'inviter à regarder ta journée.
+          <p className="text-stone-500 dark:text-stone-400 leading-relaxed mb-4 font-light">
+            Chaque jour à l'heure choisie, tu recevras un petit mot adapté à ta situation du moment.
           </p>
+
+          {/* Aperçu du rappel contextuel */}
+          <div className="flex items-start gap-3 bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl p-4 mb-6">
+            <Bell className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-[10px] uppercase tracking-widest font-sans font-bold text-emerald-700 dark:text-emerald-400 mb-1">
+                Ton rappel, en ce moment
+              </p>
+              <p className="text-sm text-stone-600 dark:text-stone-300 font-serif italic leading-relaxed">
+                « {getHolisticReminderMessage(data)} »
+              </p>
+            </div>
+          </div>
 
           <div className="flex flex-col gap-6">
             <label className="flex items-center gap-3 cursor-pointer w-max">
