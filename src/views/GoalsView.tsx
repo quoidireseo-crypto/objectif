@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AppData, Goal, LifeDomain, Milestone, Task } from '../types';
-import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle } from 'lucide-react';
+import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle, Trophy, RotateCcw } from 'lucide-react';
 import { useGoalHistory } from '../hooks/useGoalHistory';
 import { GoalHistoryTimeline } from '../components/GoalHistoryTimeline';
 import { HelpTooltip } from '../components/HelpTooltip';
@@ -215,6 +215,16 @@ export function GoalsView({ data, updateData }: GoalsProps) {
 
   const getDomainTheme = (domainLabel: string) => {
     return DOMAINS.find(c => c.label === domainLabel) || DOMAINS[0];
+  };
+
+  // Date d'obtention d'un trophée : on la lit dans l'historique (événement
+  // « achieved »). À défaut, on retombe sur la date de création de l'objectif.
+  const getAchievedDate = (goal: Goal): string => {
+    const entry = (data.goalsHistory || [])
+      .filter(h => h.goalId === goal.id && h.changeType === 'achieved')
+      .sort((a, b) => b.date.localeCompare(a.date))[0];
+    const raw = entry?.date?.split(' ')[0] || goal.createdAt;
+    return new Intl.DateTimeFormat('fr-FR').format(new Date(raw));
   };
 
   const getDeadlineBadge = (goal: Goal) => {
@@ -633,37 +643,51 @@ export function GoalsView({ data, updateData }: GoalsProps) {
 
       {achievedGoals.length > 0 && (
         <div className="mt-16 pt-10 border-t border-stone-200 dark:border-stone-800">
-          <h3 className="text-lg font-light text-stone-500 dark:text-stone-400 mb-6 flex items-center gap-2">
-            <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            Objectifs atteints
-          </h3>
+          <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
+            <h3 className="text-lg font-light text-stone-600 dark:text-stone-300 flex items-center gap-2.5">
+              <Trophy className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+              Mes trophées
+            </h3>
+            <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 px-3 py-1.5 rounded-full">
+              {achievedGoals.length} objectif{achievedGoals.length > 1 ? 's' : ''} atteint{achievedGoals.length > 1 ? 's' : ''}
+            </span>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {achievedGoals.map(goal => {
-              const theme = getDomainTheme(goal.domain);
+            {achievedGoals.map(goal => (
+              <div
+                key={goal.id}
+                className="relative bg-gradient-to-b from-amber-50/70 to-white dark:from-amber-500/10 dark:to-stone-900 border border-amber-100 dark:border-amber-500/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full group text-center"
+              >
+                <button
+                  onClick={() => deleteGoal(goal.id)}
+                  title="Supprimer ce trophée"
+                  className="absolute top-3 right-3 text-stone-300 dark:text-stone-600 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
 
-              return (
-                <div key={goal.id} className="bg-stone-50/50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-2xl p-5 opacity-70 hover:opacity-100 transition-opacity flex flex-col h-full group">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-[9px] font-sans font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider">{goal.domain}</span>
-                    <button onClick={() => deleteGoal(goal.id)} className="text-stone-300 dark:text-stone-600 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <h4 className="text-lg font-medium text-stone-800 dark:text-stone-200 line-through mb-2">{goal.title}</h4>
-                  <div className="mt-auto pt-3 border-t border-stone-100/50 dark:border-stone-800 flex items-center justify-between gap-2">
-                    <select
-                      value={goal.status}
-                      onChange={(e) => handleStatusChange(goal.id, e.target.value as Goal['status'])}
-                      className="text-xs font-sans uppercase font-bold tracking-wider px-3 py-1.5 rounded-full border cursor-pointer outline-none transition text-emerald-850 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100/50 dark:hover:bg-emerald-500/20"
-                    >
-                      <option value="En cours">En cours</option>
-                      <option value="En pause">En pause</option>
-                      <option value="Atteint">Atteint</option>
-                    </select>
-                  </div>
+                <div className="mx-auto mb-3 w-14 h-14 rounded-full bg-amber-100/80 dark:bg-amber-500/15 flex items-center justify-center ring-4 ring-amber-50 dark:ring-amber-500/5">
+                  <Trophy className="w-7 h-7 text-amber-500 dark:text-amber-400" />
                 </div>
-              );
-            })}
+
+                <span className="text-[9px] font-sans font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1.5">{goal.domain}</span>
+                <h4 className="text-lg font-medium text-stone-800 dark:text-stone-100 leading-snug mb-3">{goal.title}</h4>
+
+                <div className="mt-auto pt-3 border-t border-amber-100/60 dark:border-amber-500/10 flex items-center justify-center gap-2">
+                  <span className="text-[10px] text-stone-500 dark:text-stone-400 font-sans uppercase tracking-wide">
+                    Atteint le {getAchievedDate(goal)}
+                  </span>
+                  <button
+                    onClick={() => handleStatusChange(goal.id, 'En cours')}
+                    title="Replacer parmi les objectifs en cours"
+                    className="flex items-center gap-1 text-[10px] font-sans font-bold uppercase tracking-wide text-stone-400 dark:text-stone-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Réactiver
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
