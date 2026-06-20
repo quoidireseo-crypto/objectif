@@ -11,7 +11,7 @@ interface LifeBalancePanelProps {
   onChangeView: (view: ViewType) => void;
 }
 
-// Tableau de bord — Équilibre de vie : croise le ressenti sur chaque pilier
+// Tableau de bord — Comment je me sens : croise le ressenti sur chaque domaine
 // (roue de la vie) avec l'investissement réel (objectifs en cours), et invite
 // doucement à prendre soin des piliers à la fois fragiles et délaissés.
 export function LifeBalancePanel({ data, updateData, onChangeView }: LifeBalancePanelProps) {
@@ -63,7 +63,7 @@ export function LifeBalancePanel({ data, updateData, onChangeView }: LifeBalance
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Équilibre de vie</h3>
+            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Comment je me sens</h3>
             <HelpTooltip text="Ta roue de la vie : ton ressenti sur chaque pilier, croisé avec les objectifs que tu y as posés. Une façon de prendre soin de l'ensemble, pas d'un seul morceau." />
           </div>
           <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-0.5">
@@ -95,7 +95,7 @@ export function LifeBalancePanel({ data, updateData, onChangeView }: LifeBalance
           <div className="flex items-start gap-3">
             <HelpCircle className="w-5 h-5 text-indigo-500 dark:text-indigo-400 shrink-0 mt-0.5" />
             <p className="text-sm font-sans text-stone-600 dark:text-stone-300 leading-relaxed">
-              Fais le point sur tes piliers de vie en une minute. Tu verras d'un coup d'œil ce qui t'épanouit
+              Fais le point sur tes domaines de vie en une minute. Tu verras d'un coup d'œil ce qui t'épanouit
               et ce qui demande peut-être un peu d'attention.
             </p>
           </div>

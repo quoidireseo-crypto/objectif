@@ -10,7 +10,7 @@ export interface PillarMeta {
   soft: string; // fond doux pour la pastille d'icône
 }
 
-// Les 6 piliers de vie évaluables dans la « roue de la vie ».
+// Les 6 domaines de vie évaluables dans la « roue de la vie ».
 // On exclut volontairement « Autre », qui n'est pas un pilier à part entière.
 export const LIFE_PILLARS: PillarMeta[] = [
   { domain: 'Santé & Bien-être', short: 'Corps, esprit, énergie', icon: Activity, bar: 'bg-amber-400', text: 'text-amber-600 dark:text-amber-400', soft: 'bg-amber-50 dark:bg-amber-500/10' },

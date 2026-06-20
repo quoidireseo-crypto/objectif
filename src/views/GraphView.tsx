@@ -45,7 +45,7 @@ const DOMAIN_COLORS: Record<LifeDomain, string> = {
   'Autre': '#a8a29e',                // stone light
 };
 
-// Les 6 piliers de vie deviennent les cœurs de la carte (« Autre » n'en est pas un).
+// Les 6 domaines de vie deviennent les cœurs de la carte (« Autre » n'en est pas un).
 const PILLAR_DOMAINS: LifeDomain[] = [
   'Santé & Bien-être', 'Projet Personnel', 'Relations & Famille', 'Apprentissage', 'Finances', 'Spiritualité',
 ];
@@ -236,7 +236,7 @@ export function buildGraphData(data: AppData) {
     });
   });
 
-  // 5. Add Habits (rattachées à leur pilier — l'« habitude-levier » devient visible)
+  // 5. Add Habits (rattachées à leur domaine — l'« habitude centrale » devient visible)
   (data.habits || []).forEach(habit => {
     if (habit.isArchived || !habit.domain || !PILLAR_SET.has(habit.domain)) return;
     nodes.push({
@@ -731,7 +731,7 @@ export function GraphView({ data, onChangeView, isPreview = false }: GraphViewPr
               <span>La carte de ma vie</span>
             </h1>
             <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
-              Tes piliers de vie au centre, et tout ce qui les nourrit : objectifs, étapes, actions et habitudes.
+              Tes domaines de vie au centre, et tout ce qui les nourrit : objectifs, étapes, actions et habitudes.
             </p>
           </div>
 

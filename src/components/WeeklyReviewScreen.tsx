@@ -41,7 +41,7 @@ export function WeeklyReviewScreen({ onComplete, onClose }: WeeklyReviewScreenPr
           <div className="space-y-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="space-y-2">
               <Sparkles className="w-7 h-7 text-amber-500 mx-auto mb-2" />
-              <h2 className="text-xl md:text-2xl font-serif text-stone-800 dark:text-stone-200">Quelle a été ta plus grande réussite cette semaine ?</h2>
+              <h2 className="text-xl md:text-2xl font-serif text-stone-800 dark:text-stone-200">Quel a été ton meilleur moment cette semaine ?</h2>
               <p className="italic text-stone-400 dark:text-stone-500 font-serif font-light text-sm max-w-md mx-auto">
                 Même modeste. Ce qui compte, c'est que tu en sois fier(e).
               </p>

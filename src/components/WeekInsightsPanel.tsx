@@ -10,8 +10,8 @@ interface WeekInsightsPanelProps {
 
 const toStr = (d: Date) => d.toISOString().split('T')[0];
 
-// Deux lectures « recul » de la semaine : la charge (prévenir la surcharge) et
-// l'habitude-levier (le petit geste régulier qui soutient le plus).
+// Deux lectures « recul » de la semaine : le rythme (prévenir la surcharge) et
+// l'habitude centrale (le petit geste régulier qui soutient le plus).
 export function WeekInsightsPanel({ data, onChangeView }: WeekInsightsPanelProps) {
   const { weekStart, weekEnd } = useMemo(() => {
     const now = new Date();
@@ -36,7 +36,7 @@ export function WeekInsightsPanel({ data, onChangeView }: WeekInsightsPanelProps
     return { planned, done, remaining, level };
   }, [data.tasks, weekStart, weekEnd]);
 
-  // Habitude-levier : celle dont le domaine porte le plus d'objectifs en cours ;
+  // Habitude centrale : celle dont le domaine porte le plus d'objectifs en cours ;
   // à défaut, l'ancre la plus régulière des 14 derniers jours.
   const lever = useMemo(() => {
     const habits = (data.habits || []).filter(h => !h.isArchived);
@@ -92,7 +92,7 @@ export function WeekInsightsPanel({ data, onChangeView }: WeekInsightsPanelProps
             <Gauge className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Charge de la semaine</h3>
+            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Ma semaine</h3>
             <p className={`text-xs font-sans uppercase tracking-widest mt-0.5 ${loadMeta.text}`}>
               {loadMeta.label}
             </p>
@@ -137,7 +137,7 @@ export function WeekInsightsPanel({ data, onChangeView }: WeekInsightsPanelProps
             <Repeat className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Ton habitude-levier</h3>
+            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Ton petit geste qui compte</h3>
             <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-0.5">
               Petit geste, grand effet
             </p>
@@ -153,7 +153,7 @@ export function WeekInsightsPanel({ data, onChangeView }: WeekInsightsPanelProps
               onClick={() => onChangeView('habits')}
               className="self-start inline-flex items-center gap-1.5 text-sm text-emerald-700 dark:text-emerald-400 font-sans uppercase tracking-widest hover:text-emerald-800 dark:hover:text-emerald-300 transition"
             >
-              Créer une habitude
+              Prendre une habitude
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

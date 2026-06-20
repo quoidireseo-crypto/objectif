@@ -261,7 +261,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </div>
 
           <p className="text-stone-600 dark:text-stone-300 font-serif text-base md:text-lg leading-relaxed max-w-2xl">
-            SKOPOS t'aide à transformer ce qui compte pour toi en petits gestes concrets, jour après jour et à ton rythme.
+            SKOPOS t'aide à traduire ce qui compte pour toi en petites actions simples, jour après jour et à ton rythme.
             Le principe tient en trois temps :
           </p>
 
@@ -298,7 +298,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                 <span className="font-sans font-bold text-sm text-stone-800 dark:text-stone-100">3 · Faire le point</span>
               </div>
               <p className="text-xs text-stone-500 dark:text-stone-400 font-sans leading-relaxed">
-                Célébrer mes réussites et ajuster ma direction.
+                Garder mes bons moments et ajuster ma direction.
               </p>
             </div>
           </div>
@@ -473,7 +473,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       )}
       </div>
 
-      {/* Ma réussite du jour (bilan du soir) — remonte en premier le soir */}
+      {/* Mon bon moment du jour (bilan du soir) — remonte en premier le soir */}
       <div className={isEvening ? 'order-1' : 'order-3'}>
       <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 md:p-8 mb-2 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500/20"></div>
@@ -488,10 +488,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                 <h3 className="text-xs uppercase font-sans font-bold tracking-widest text-stone-400 dark:text-stone-500">
                   À noter en fin de journée
                 </h3>
-                <HelpTooltip text="Le soir, note une réussite — même modeste. Au fil des jours, tu construis une collection de petites victoires qui confortent ta direction." />
+                <HelpTooltip text="Le soir, note un bon moment — même modeste. Au fil des jours, tu construis une collection de petits moments qui confortent ta direction." />
               </div>
               <p className="text-lg font-serif italic text-stone-800 dark:text-stone-200">
-                Ma réussite du jour
+                Mon bon moment du jour
               </p>
             </div>
           </div>
@@ -512,10 +512,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
               <div className="space-y-4">
                 <div className="space-y-1">
                   <h4 className="text-base font-sans font-semibold text-stone-800 dark:text-stone-200">
-                    Quelle est ta réussite d'aujourd'hui ?
+                    Quel est ton bon moment du jour ?
                   </h4>
                   <p className="text-xs text-stone-500 dark:text-stone-400">
-                    Note un seul fait, une action, un moment précieux ou un accomplissement dont tu es fier(e) aujourd'hui, aussi modeste soit-il.
+                    Note un instant, une action ou un moment dont tu es content(e) aujourd'hui, aussi modeste soit-il.
                   </p>
                 </div>
 
@@ -533,7 +533,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                     disabled={!successInput.trim()}
                     className="px-6 py-3 bg-stone-900 dark:bg-emerald-700 text-amber-300 dark:text-amber-200 rounded-2xl font-sans text-xs uppercase tracking-widest font-bold hover:bg-stone-800 dark:hover:bg-emerald-800 disabled:opacity-55 disabled:hover:bg-stone-900 dark:disabled:hover:bg-emerald-700 transition flex items-center justify-center gap-2 shadow-xs shrink-0 cursor-pointer"
                   >
-                    Célébrer &rarr;
+                    Garder ce moment &rarr;
                   </button>
                 </div>
               </div>
@@ -548,7 +548,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                 </div>
 
                 <span className="text-[10px] uppercase tracking-widest text-amber-700 dark:text-amber-400 font-sans font-bold bg-amber-100 dark:bg-amber-500/20 px-3 py-1 rounded-full mb-3">
-                  Réussite du jour notée
+                  Bon moment noté
                 </span>
 
                 <p className="font-serif italic text-lg md:text-xl text-stone-900 dark:text-stone-100 max-w-xl px-2 leading-relaxed">
@@ -556,7 +556,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                 </p>
 
                 <p className="text-xs text-stone-500 dark:text-stone-400 font-sans mt-4 max-w-sm">
-                  Chaque réussite, petite ou grande, conforte ta direction. Chaque jour est un nouveau départ.
+                  Chaque bon moment, petit ou grand, compte pour ta direction. Chaque jour est un nouveau départ.
                 </p>
 
                 <button
@@ -564,13 +564,13 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                   className="mt-6 flex items-center gap-2 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 text-xs font-sans font-medium hover:underline transition cursor-pointer"
                 >
                   <Pencil className="w-3.5 h-3.5" />
-                  Modifier ma réussite
+                  Modifier mon moment
                 </button>
               </div>
             )}
           </div>
 
-          {/* Réussites des 7 derniers jours */}
+          {/* Bons moments des 7 derniers jours */}
           <div className="lg:col-span-4 bg-stone-50 dark:bg-stone-800 rounded-2xl p-5 border border-stone-100 dark:border-stone-700">
             <h4 className="text-[10px] uppercase tracking-wider font-sans font-bold text-stone-400 dark:text-stone-500 mb-4 text-center lg:text-left">
               Mes 7 derniers jours
@@ -583,7 +583,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
                   className={`flex flex-col lg:flex-row items-center lg:justify-between gap-1.5 lg:gap-3 p-1 rounded-xl transition ${
                     day.isToday ? 'bg-white/80 dark:bg-stone-700/80 shadow-2xs border border-stone-200/50 dark:border-stone-600/50' : ''
                   }`}
-                  title={day.success ? `Réussite : ${day.success}` : "Pas de réussite notée pour ce jour"}
+                  title={day.success ? `Bon moment : ${day.success}` : "Pas de bon moment noté pour ce jour"}
                 >
                   <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2.5">
                     {day.success ? (
@@ -713,7 +713,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         {/* Régularité du rituel du matin */}
         <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-100 dark:border-stone-800 shadow-sm">
           <div className="flex items-center gap-2">
-            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Régularité du rituel</h3>
+            <h3 className="text-xl font-light text-stone-900 dark:text-stone-100">Mes matins</h3>
             <HelpTooltip text="Le rituel du matin est un court moment pour poser ta priorité du jour. Chaque pastille indique ton humeur lors de ce moment sur les 7 derniers jours." />
           </div>
           <p className="text-xs font-sans uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-0.5">7 derniers jours</p>
@@ -807,10 +807,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
               <h3 className="text-xl font-serif font-light text-stone-800 dark:text-stone-200">
                 La carte de ma vie
               </h3>
-              <HelpTooltip text="Tes piliers de vie au centre, entourés des objectifs, étapes, actions et habitudes qui les nourrissent." />
+              <HelpTooltip text="Tes domaines de vie au centre, entourés des objectifs, étapes, actions et habitudes qui les nourrissent." />
             </div>
             <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
-              Tes piliers de vie et tout ce qui les fait grandir.
+              Tes domaines de vie et tout ce qui les fait grandir.
             </p>
           </div>
           <button

@@ -95,7 +95,7 @@ export function LandingView({ onComplete }: LandingViewProps) {
               {[
                 { icon: Target, label: 'Mes objectifs', desc: 'Ce qui compte' },
                 { icon: BookmarkCheck, label: 'Agir au quotidien', desc: 'À mon rythme' },
-                { icon: Sparkles, label: 'Faire le point', desc: 'Mes réussites' },
+                { icon: Sparkles, label: 'Faire le point', desc: 'Mes bons moments' },
               ].map((pillar) => {
                 const Icon = pillar.icon;
                 return (

@@ -69,7 +69,7 @@ export interface EnergyLog {
   level: EnergyLevel;
 }
 
-// Bilan d'équilibre de vie : ressenti de satisfaction (1 à 5) sur chaque pilier,
+// Bilan d'équilibre de vie : ressenti de satisfaction (1 à 5) sur chaque domaine,
 // à un instant donné. On garde l'historique pour voir l'évolution dans le temps.
 export interface LifeAssessment {
   id: string;
