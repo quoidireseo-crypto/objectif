@@ -164,12 +164,18 @@ export default function App() {
       <Sidebar currentView={currentView} onChangeView={setCurrentView} onLogout={logout} onOpenCapture={() => setCaptureOpen(true)} />
 
       <div className="flex-1 flex flex-col h-[100dvh] md:ml-64 relative overflow-hidden">
-        {/* Mobile Top Header — contextuel : où suis-je */}
+        {/* Mobile Top Header — « SKOPOS » sur l'Accueil, nom de la page ailleurs */}
         <header className="md:hidden flex items-center gap-2.5 px-5 py-3 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0 z-40 shadow-xs">
           <SkoposLogo className="text-[#047857] dark:text-emerald-400 shrink-0" size={22} />
-          <span className="text-lg font-serif font-light text-stone-800 dark:text-stone-100 truncate min-w-0">
-            {VIEW_TITLES[currentView]}
-          </span>
+          {currentView === 'dashboard' ? (
+            <span className="text-lg font-sans font-bold tracking-widest uppercase text-stone-800 dark:text-stone-100 truncate min-w-0">
+              SKOPOS
+            </span>
+          ) : (
+            <span className="text-lg font-serif font-light text-stone-800 dark:text-stone-100 truncate min-w-0">
+              {VIEW_TITLES[currentView]}
+            </span>
+          )}
         </header>
 
         {shouldShowRitual && (
