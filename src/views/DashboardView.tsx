@@ -13,6 +13,7 @@ import { TodayCommandCenter } from '../components/TodayCommandCenter';
 import { NextActionNudge } from '../components/NextActionNudge';
 import { LifeBalancePanel } from '../components/LifeBalancePanel';
 import { WeekInsightsPanel } from '../components/WeekInsightsPanel';
+import { InsightCard } from '../components/InsightCard';
 import { GoalRelationsPanel } from '../components/GoalRelationsPanel';
 import { DailyWordBanner } from '../components/DailyWordBanner';
 import { CollapsibleZone } from '../components/CollapsibleZone';
@@ -791,7 +792,10 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       {/* ===================== ZONE 3 — PRENDRE DU RECUL ===================== */}
       <CollapsibleZone title="Prendre du recul" help="Des graphiques et des repères pour observer ton évolution sur la durée.">
 
-      {/* Charge de la semaine + habitude-levier */}
+      {/* Ce que je remarque — version courte, renvoie vers le bilan complet */}
+      <InsightCard data={data} period="weekly" variant="compact" onSeeMore={onChangeView} />
+
+      {/* Ma semaine + petit geste qui compte */}
       <WeekInsightsPanel data={data} onChangeView={onChangeView} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
