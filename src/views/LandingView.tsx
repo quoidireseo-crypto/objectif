@@ -19,10 +19,10 @@ export function LandingView({ onComplete }: LandingViewProps) {
   const [step, setStep] = useState(1);
 
   const focusOptions = [
-    { id: 'Sante', label: 'Santé & Bien-être', desc: 'Prendre soin de son corps, de son esprit et de son énergie.' },
-    { id: 'Projet', label: 'Projets Personnels', desc: 'Concrétiser un rêve, une passion ou une nouvelle activité.' },
-    { id: 'Relations', label: 'Relations & Famille', desc: 'Consolider les liens essentiels avec ses proches.' },
-    { id: 'Apprentissage', label: 'Nouveaux Apprentissages', desc: 'Nourrir sa curiosité et apprendre de nouvelles choses.' },
+    { id: 'Sante', label: 'Santé & Bien-être', desc: 'Prendre soin de son corps, de soi et retrouver de l\'énergie.' },
+    { id: 'Projet', label: 'Projets Personnels', desc: 'Réaliser un rêve, une passion ou lancer une nouvelle activité.' },
+    { id: 'Relations', label: 'Relations & Famille', desc: 'Prendre du temps pour ceux qu\'on aime et resserrer les liens.' },
+    { id: 'Apprentissage', label: 'Nouveaux Apprentissages', desc: 'Nourrir sa curiosité et découvrir de nouvelles choses.' },
   ];
 
   const handleNext = () => {
@@ -68,7 +68,7 @@ export function LandingView({ onComplete }: LandingViewProps) {
             SKOPOS
           </h1>
           <p className="text-xs text-[#047857] dark:text-emerald-400 uppercase tracking-widest font-sans font-bold mt-1">
-            Garder en vue ce qui compte
+            Garder en vue ce qui compte.
           </p>
         </div>
 
@@ -83,10 +83,10 @@ export function LandingView({ onComplete }: LandingViewProps) {
           >
             <div className="text-center space-y-2">
               <h2 className="text-xl md:text-2xl font-light text-stone-800 dark:text-stone-100 leading-snug">
-                Donnez une direction à votre quotidien.
+                Donnez une direction à vos journées.
               </h2>
               <p className="text-stone-500 dark:text-stone-400 font-sans text-xs md:text-sm leading-relaxed max-w-md mx-auto">
-                Skopos vous aide à transformer ce qui compte pour vous en petits gestes concrets, jour après jour et à votre rythme.
+                Skopos vous aide à traduire vos projets en actions simples, jour après jour et à votre rythme.
               </p>
             </div>
 
@@ -170,10 +170,10 @@ export function LandingView({ onComplete }: LandingViewProps) {
           >
             <div className="text-center space-y-2">
               <h2 className="text-xl md:text-2xl font-light text-stone-800 dark:text-stone-100 leading-snug">
-                Ravi de faire votre connaissance, {name}.
+                Ravi de vous rencontrer, {name}.
               </h2>
               <p className="text-stone-500 dark:text-stone-400 font-sans text-xs md:text-sm leading-relaxed max-w-sm mx-auto">
-                Qu'est-ce qui compte le plus pour vous en ce moment ? Cela nous aidera à personnaliser votre tableau de bord.
+                Qu'est-ce qui compte le plus pour vous en ce moment ? Cela nous aidera à bien préparer votre espace.
               </p>
             </div>
 
