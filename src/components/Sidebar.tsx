@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon, LayoutGrid, X, Network, Repeat, LogOut, Plus } from 'lucide-react';
+import { LayoutDashboard, Flag, CheckSquare, BookHeart, PieChart, Settings, Calendar as CalendarIcon, LayoutGrid, X, Network, Repeat, LogOut, Plus, HelpCircle } from 'lucide-react';
 import { ViewType } from '../types';
 import { SkoposLogo } from './SkoposLogo';
 
@@ -8,9 +8,10 @@ interface SidebarProps {
   onChangeView: (view: ViewType) => void;
   onLogout: () => void;
   onOpenCapture: () => void;
+  onOpenHowItWorks: () => void;
 }
 
-export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture }: SidebarProps) {
+export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture, onOpenHowItWorks }: SidebarProps) {
   const [isSpaceMenuOpen, setIsSpaceMenuOpen] = useState(false);
 
   const navItems: { id: ViewType; label: string; icon: any }[] = [
@@ -117,7 +118,14 @@ export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture }: 
           })}
         </nav>
 
-        <div className="px-4 pt-4 border-t border-stone-800">
+        <div className="px-4 pt-4 border-t border-stone-800 space-y-1">
+          <button
+            onClick={onOpenHowItWorks}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm text-stone-400 hover:bg-stone-800/60 hover:text-stone-200 cursor-pointer"
+          >
+            <HelpCircle className="w-5 h-5 text-stone-500" />
+            Comment ça marche ?
+          </button>
           <button
             onClick={onLogout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm text-stone-400 hover:bg-stone-800/60 hover:text-stone-200 cursor-pointer"
@@ -250,8 +258,15 @@ export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture }: 
             </div>
 
             <button
-              onClick={() => { setIsSpaceMenuOpen(false); onLogout(); }}
+              onClick={() => { setIsSpaceMenuOpen(false); onOpenHowItWorks(); }}
               className="w-full mt-4 flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 dark:border-stone-700 bg-white/60 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-sans text-xs uppercase tracking-widest font-bold hover:bg-white dark:hover:bg-stone-700 active:scale-98 transition cursor-pointer"
+            >
+              <HelpCircle className="w-4 h-4" />
+              Comment ça marche ?
+            </button>
+            <button
+              onClick={() => { setIsSpaceMenuOpen(false); onLogout(); }}
+              className="w-full mt-3 flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 dark:border-stone-700 bg-white/60 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-sans text-xs uppercase tracking-widest font-bold hover:bg-white dark:hover:bg-stone-700 active:scale-98 transition cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
               Se déconnecter

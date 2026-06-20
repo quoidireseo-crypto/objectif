@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { HelpCircle } from 'lucide-react';
 import { useStorage } from './hooks/useStorage';
 import { useMorningRitual } from './hooks/useMorningRitual';
 import { useTheme } from './hooks/useTheme';
@@ -16,6 +17,7 @@ import { CalendarView } from './views/CalendarView';
 import { SettingsView } from './views/SettingsView';
 import { NotificationToast } from './components/NotificationToast';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { HowItWorksModal } from './components/HowItWorksModal';
 import { useReminder } from './hooks/useReminder';
 import { SkoposLogo } from './components/SkoposLogo';
 import { LandingView } from './views/LandingView';
@@ -38,6 +40,7 @@ const VIEW_TITLES: Record<ViewType, string> = {
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [captureOpen, setCaptureOpen] = useState(false);
+  const [howItWorksOpen, setHowItWorksOpen] = useState(false);
   const { data, updateData, shouldRemindExport, dismissExportReminder } = useStorage();
   const { shouldShowRitual, completeRitual, skipRitual } = useMorningRitual(data, updateData);
   const { mode: themeMode, setThemeMode } = useTheme();
@@ -161,7 +164,7 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-[#F5F5F0] dark:bg-stone-950 font-serif text-stone-800 dark:text-stone-200 selection:bg-emerald-200 selection:text-emerald-900">
-      <Sidebar currentView={currentView} onChangeView={setCurrentView} onLogout={logout} onOpenCapture={() => setCaptureOpen(true)} />
+      <Sidebar currentView={currentView} onChangeView={setCurrentView} onLogout={logout} onOpenCapture={() => setCaptureOpen(true)} onOpenHowItWorks={() => setHowItWorksOpen(true)} />
 
       <div className="flex-1 flex flex-col h-[100dvh] md:ml-64 relative overflow-hidden">
         {/* Mobile Top Header — « SKOPOS » sur l'Accueil, nom de la page ailleurs */}
@@ -176,6 +179,14 @@ export default function App() {
               {VIEW_TITLES[currentView]}
             </span>
           )}
+          <button
+            onClick={() => setHowItWorksOpen(true)}
+            aria-label="Comment ça marche ?"
+            title="Comment ça marche ?"
+            className="ml-auto shrink-0 p-1.5 rounded-full text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
         </header>
 
         {shouldShowRitual && (
@@ -232,6 +243,8 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      <HowItWorksModal open={howItWorksOpen} onClose={() => setHowItWorksOpen(false)} />
 
       <NotificationToast data={data} />
 

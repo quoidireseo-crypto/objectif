@@ -14,6 +14,7 @@ import { NextActionNudge } from '../components/NextActionNudge';
 import { LifeBalancePanel } from '../components/LifeBalancePanel';
 import { WeekInsightsPanel } from '../components/WeekInsightsPanel';
 import { InsightCard } from '../components/InsightCard';
+import { FirstStepsCard } from '../components/FirstStepsCard';
 import { GoalRelationsPanel } from '../components/GoalRelationsPanel';
 import { DailyWordBanner } from '../components/DailyWordBanner';
 import { CollapsibleZone } from '../components/CollapsibleZone';
@@ -100,6 +101,14 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
     setIntroDismissed(true);
   };
   const showIntro = !introDismissed && data.goals.length === 0;
+
+  // Parcours « Premiers pas » : checklist guidée tant qu'elle n'est pas masquée
+  // ni entièrement accomplie (la carte gère elle-même son auto-disparition).
+  const [firstStepsDismissed, setFirstStepsDismissed] = useState(() => window.localStorage.getItem('skopos_first_steps_dismissed') === 'true');
+  const dismissFirstSteps = () => {
+    window.localStorage.setItem('skopos_first_steps_dismissed', 'true');
+    setFirstStepsDismissed(true);
+  };
 
   const handleSaveSuccess = () => {
     const value = successInput.trim();
@@ -415,6 +424,16 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
           </div>
         </div>
       </div>
+
+      {/* Premiers pas — checklist guidée pour les nouveaux utilisateurs */}
+      {!firstStepsDismissed && (
+        <FirstStepsCard
+          data={data}
+          userProfile={userProfile}
+          onChangeView={onChangeView}
+          onDismiss={dismissFirstSteps}
+        />
+      )}
 
       {/* Ce que je remarque — petit résumé d'accueil, juste sous le bonjour */}
       <InsightCard data={data} period="weekly" variant="compact" onSeeMore={onChangeView} />

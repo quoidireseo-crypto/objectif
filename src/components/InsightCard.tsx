@@ -18,6 +18,10 @@ export function InsightCard({ data, period, variant = 'full', onSeeMore }: Insig
   // Rien d'utile à dire et pas de message de secours : on n'affiche rien.
   if (isSparse && !insight) return null;
 
+  // Sur l'Accueil (version courte), on n'affiche pas le message « tu débutes » :
+  // la carte « Premiers pas » couvre déjà ce moment. Il reste visible dans le Bilan.
+  if (isSparse && variant === 'compact') return null;
+
   // En version courte, on ne montre que la première observation (la plus marquante).
   const shownObservations = variant === 'compact' ? observations.slice(0, 1) : observations;
   const paragraph = shownObservations.join(' ');
