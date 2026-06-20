@@ -2,6 +2,7 @@ import { useState, FormEvent, useEffect, useRef } from 'react';
 import { AppData, Task, LifeDomain } from '../types';
 import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag, Trash2 } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
+import { EmptyState } from '../components/EmptyState';
 
 interface TasksProps {
   data: AppData;
@@ -210,11 +211,12 @@ export function TasksView({ data, updateData }: TasksProps) {
         </div>
 
         {todayTasks.length === 0 ? (
-          <div className="text-center py-16 bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800">
-            <CheckSquare className="w-10 h-10 text-stone-300 dark:text-stone-600 mx-auto mb-3" />
-            <p className="text-stone-500 dark:text-stone-400 font-sans font-bold">Ta journée est vierge.</p>
-            <p className="text-stone-400 dark:text-stone-500 text-sm mt-1 italic">Ajoute une petite action réalisable pour avancer.</p>
-          </div>
+          <EmptyState
+            icon={CheckSquare}
+            title="Ta journée est vierge"
+            description="Le Quotidien, c'est l'avancée concrète : de petites actions du jour, faites à ton rythme."
+            hint="Ajoute une action ci-dessus ↑ — tu peux la relier à un objectif pour lui donner du sens."
+          />
         ) : (
           <div className="space-y-4">
             {todayTasks.filter(t => !t.isCompleted).map(task => {

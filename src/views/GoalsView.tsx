@@ -478,8 +478,10 @@ export function GoalsView({ data, updateData }: GoalsProps) {
       {data.goals.length === 0 && !isAdding ? (
         <div className="text-center py-20 bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800">
           <Target className="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto mb-3" />
-          <p className="text-stone-500 dark:text-stone-400 font-sans font-bold">Aucun objectif défini.</p>
-          <p className="text-stone-400 dark:text-stone-500 text-sm mt-1 mb-6 italic">Il est temps de choisir une direction.</p>
+          <p className="text-stone-500 dark:text-stone-400 font-sans font-bold">Aucun objectif pour l'instant</p>
+          <p className="text-stone-400 dark:text-stone-500 text-sm mt-1.5 mb-6 italic max-w-sm mx-auto leading-relaxed">
+            Un objectif, c'est ta direction : ce qui compte pour toi, et pourquoi. Tout part d'ici — tes étapes et tes actions s'y rattachent ensuite.
+          </p>
           <button
             onClick={() => setIsAdding(true)}
             className="text-emerald-800 dark:text-emerald-400 font-sans text-xs uppercase tracking-widest font-bold hover:underline"

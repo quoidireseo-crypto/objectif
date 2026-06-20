@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { AppData, JournalEntry } from '../types';
 import { BookHeart, Send, Smile, Meh, Frown, Sparkles, Trash2, CloudLightning } from 'lucide-react';
+import { EmptyState } from '../components/EmptyState';
 
 interface JournalProps {
   data: AppData;
@@ -216,9 +217,12 @@ export function JournalView({ data, updateData }: JournalProps) {
           })}
         </div>
       ) : (
-        <div className="text-center py-16 bg-[#F5F5F0] dark:bg-stone-950">
-          <p className="text-stone-400 dark:text-stone-500 italic">Aucune réflexion enregistrée pour le moment.</p>
-        </div>
+        <EmptyState
+          icon={BookHeart}
+          title="Ton journal est encore vierge"
+          description="Le journal garde une trace de ton cheminement : ressentis, idées, petits progrès."
+          hint="Écris une première note quand tu veux, même une seule phrase."
+        />
       )}
     </div>
   );

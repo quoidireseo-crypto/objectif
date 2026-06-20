@@ -3,6 +3,7 @@ import { AppData, LifeDomain } from '../types';
 import { useHabits, isHabitDueOn } from '../hooks/useHabits';
 import { Repeat, Plus, Circle, CheckCircle2, Sprout, Trash2, Archive, Tag } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
+import { EmptyState } from '../components/EmptyState';
 
 interface HabitsProps {
   data: AppData;
@@ -167,11 +168,12 @@ export function HabitsView({ data, updateData }: HabitsProps) {
         <h3 className="text-xl font-light text-stone-800 dark:text-stone-200 mb-6">Aujourd'hui</h3>
 
         {todaysHabits.length === 0 ? (
-          <div className="text-center py-16 bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800">
-            <Repeat className="w-10 h-10 text-stone-300 dark:text-stone-600 mx-auto mb-3" />
-            <p className="text-stone-500 dark:text-stone-400 font-sans font-bold">Aucune habitude prévue aujourd'hui.</p>
-            <p className="text-stone-400 dark:text-stone-500 text-sm mt-1 italic">Ajoute une habitude pour commencer à construire ta régularité.</p>
-          </div>
+          <EmptyState
+            icon={Repeat}
+            title="Aucune habitude pour aujourd'hui"
+            description="Une habitude est un petit geste régulier qui soutient tes objectifs dans la durée."
+            hint="Ajoute-en une ci-dessus ↑ — la régularité compte plus que l'intensité."
+          />
         ) : (
           <div className="space-y-4">
             {todaysHabits.map(habit => {

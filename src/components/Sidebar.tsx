@@ -14,16 +14,31 @@ interface SidebarProps {
 export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture, onOpenHowItWorks }: SidebarProps) {
   const [isSpaceMenuOpen, setIsSpaceMenuOpen] = useState(false);
 
-  const navItems: { id: ViewType; label: string; icon: any }[] = [
-    { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
-    { id: 'goals', label: 'Mes Objectifs', icon: Flag },
-    { id: 'tasks', label: 'Mon Quotidien', icon: CheckSquare },
-    { id: 'habits', label: 'Mes Habitudes', icon: Repeat },
-    { id: 'calendar', label: 'Calendrier', icon: CalendarIcon },
-    { id: 'journal', label: 'Journal de bord', icon: BookHeart },
-    { id: 'review', label: 'Mon Bilan', icon: PieChart },
-    { id: 'graph', label: 'Ma Carte Mentale', icon: Network },
-    { id: 'settings', label: 'Paramètres', icon: Settings },
+  // Navigation desktop regroupée par étapes du flux SKOPOS, pour rendre la
+  // logique de l'app lisible dans la barre elle-même.
+  const navSections: { title?: string; items: { id: ViewType; label: string; icon: any }[] }[] = [
+    { items: [{ id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard }] },
+    {
+      title: 'Définir',
+      items: [{ id: 'goals', label: 'Mes Objectifs', icon: Flag }],
+    },
+    {
+      title: 'Agir au quotidien',
+      items: [
+        { id: 'tasks', label: 'Mon Quotidien', icon: CheckSquare },
+        { id: 'habits', label: 'Mes Habitudes', icon: Repeat },
+        { id: 'calendar', label: 'Calendrier', icon: CalendarIcon },
+      ],
+    },
+    {
+      title: 'Prendre du recul',
+      items: [
+        { id: 'review', label: 'Mon Bilan', icon: PieChart },
+        { id: 'journal', label: 'Journal de bord', icon: BookHeart },
+        { id: 'graph', label: 'Ma Carte Mentale', icon: Network },
+      ],
+    },
+    { items: [{ id: 'settings', label: 'Paramètres', icon: Settings }] },
   ];
 
   // Secondary views grouped under "Mon Espace" on mobile
@@ -97,25 +112,36 @@ export function Sidebar({ currentView, onChangeView, onLogout, onOpenCapture, on
           <p className="text-xs text-emerald-300 mt-2 font-serif italic tracking-wide">garder en vue ce qui compte</p>
         </div>
 
-        <nav className="flex-1 py-6 px-4 space-y-2 font-sans">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentView === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onChangeView(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm cursor-pointer ${
-                  isActive 
-                    ? 'bg-emerald-500/10 text-emerald-400 font-medium' 
-                    : 'hover:bg-stone-800/60 text-stone-400 hover:text-stone-200'
-                }`}
-              >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-emerald-400' : 'text-stone-500'}`} />
-                {item.label}
-              </button>
-            );
-          })}
+        <nav className="flex-1 py-5 px-4 overflow-y-auto font-sans">
+          {navSections.map((section, idx) => (
+            <div key={section.title || `sec-${idx}`} className={idx > 0 ? 'mt-5' : ''}>
+              {section.title && (
+                <p className="px-4 mb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-stone-600">
+                  {section.title}
+                </p>
+              )}
+              <div className="space-y-1">
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = currentView === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => onChangeView(item.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-sm cursor-pointer ${
+                        isActive
+                          ? 'bg-emerald-500/10 text-emerald-400 font-medium'
+                          : 'hover:bg-stone-800/60 text-stone-400 hover:text-stone-200'
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-emerald-400' : 'text-stone-500'}`} />
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         <div className="px-4 pt-4 border-t border-stone-800 space-y-1">
