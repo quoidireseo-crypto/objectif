@@ -416,6 +416,9 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
         </div>
       </div>
 
+      {/* Ce que je remarque — petit résumé d'accueil, juste sous le bonjour */}
+      <InsightCard data={data} period="weekly" variant="compact" onSeeMore={onChangeView} />
+
       {/* Le mot du jour : rappel intelligent, fiable à l'ouverture de l'app */}
       <DailyWordBanner data={data} onChangeView={onChangeView} />
 
@@ -791,9 +794,6 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
 
       {/* ===================== ZONE 3 — PRENDRE DU RECUL ===================== */}
       <CollapsibleZone title="Prendre du recul" help="Des graphiques et des repères pour observer ton évolution sur la durée.">
-
-      {/* Ce que je remarque — version courte, renvoie vers le bilan complet */}
-      <InsightCard data={data} period="weekly" variant="compact" onSeeMore={onChangeView} />
 
       {/* Ma semaine + petit geste qui compte */}
       <WeekInsightsPanel data={data} onChangeView={onChangeView} />
