@@ -1,5 +1,6 @@
 import { useState, FormEvent, useMemo } from 'react';
-import { AppData, LifeDomain } from '../types';
+import { AppData, LifeDomain, Habit } from '../types';
+import { newTrashEntry } from '../hooks/useTrash';
 import { useHabits, isHabitDueOn } from '../hooks/useHabits';
 import { Repeat, Plus, Circle, CheckCircle2, Sprout, Trash2, Archive, Tag, Pencil } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
@@ -25,7 +26,7 @@ const DAY_LABELS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
 const todayStr = () => new Date().toISOString().split('T')[0];
 
 export function HabitsView({ data, updateData }: HabitsProps) {
-  const { activeHabits, todaysHabits, isCompletedOn, addHabit, deleteHabit, archiveHabit, toggleCompletion, getRegularity } = useHabits(data, updateData);
+  const { activeHabits, todaysHabits, isCompletedOn, addHabit, archiveHabit, toggleCompletion, getRegularity } = useHabits(data, updateData);
 
   const [title, setTitle] = useState('');
   const [frequency, setFrequency] = useState<'daily' | 'weekly'>('daily');
@@ -41,6 +42,18 @@ export function HabitsView({ data, updateData }: HabitsProps) {
     }
     setEditingHabitId(null);
     setEditHabitTitle('');
+  };
+
+  // Suppression vers la corbeille (avec son historique de complétions).
+  const deleteHabitToTrash = (habit: Habit) => {
+    if (!window.confirm('Supprimer cette habitude ? Tu pourras la restaurer depuis la corbeille.')) return;
+    const completions = (data.habitCompletions || []).filter(c => c.habitId === habit.id);
+    const entry = newTrashEntry('habit', habit.title, { habit, completions });
+    updateData({
+      habits: (data.habits || []).filter(h => h.id !== habit.id),
+      habitCompletions: (data.habitCompletions || []).filter(c => c.habitId !== habit.id),
+      trash: [entry, ...(data.trash || [])],
+    });
   };
 
   const today = todayStr();
@@ -286,9 +299,9 @@ export function HabitsView({ data, updateData }: HabitsProps) {
                     <Archive className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => { if (window.confirm('Supprimer cette habitude et son historique ?')) deleteHabit(habit.id); }}
+                    onClick={() => deleteHabitToTrash(habit)}
                     className="text-stone-300 dark:text-stone-600 hover:text-red-500 p-2 transition-colors"
-                    title="Supprimer définitivement"
+                    title="Supprimer (récupérable dans la corbeille)"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

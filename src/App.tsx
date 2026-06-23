@@ -153,6 +153,7 @@ export default function App() {
         return (
           <SettingsView
             data={data}
+            updateData={updateData}
             onImportData={handleImportData}
             userProfile={userProfile}
             onUpdateProfile={handleUpdateProfile}

@@ -3,10 +3,12 @@ import { AppData } from '../types';
 import { ThemeMode } from '../hooks/useTheme';
 import { SkoposLogo } from '../components/SkoposLogo';
 import { getHolisticReminderMessage } from '../lib/holisticReminder';
+import { TrashPanel } from '../components/TrashPanel';
 import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw, Smartphone, Info, Sun, Moon, Clock, Lock, LogOut, KeyRound, Bell } from 'lucide-react';
 
 interface SettingsProps {
   data: AppData;
+  updateData: (data: Partial<AppData>) => void;
   onImportData: (data: AppData) => void;
   userProfile: { name: string; ageGroup?: string; focusArea?: string } | null;
   onUpdateProfile: (profile: { name: string; ageGroup?: string; focusArea?: string } | null) => void;
@@ -18,7 +20,7 @@ interface SettingsProps {
   onLogout: () => void;
 }
 
-export function SettingsView({ data, onImportData, userProfile, onUpdateProfile, themeMode, onChangeThemeMode, hasPassword, onSetPassword, onRemovePassword, onLogout }: SettingsProps) {
+export function SettingsView({ data, updateData, onImportData, userProfile, onUpdateProfile, themeMode, onChangeThemeMode, hasPassword, onSetPassword, onRemovePassword, onLogout }: SettingsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -506,6 +508,9 @@ export function SettingsView({ data, onImportData, userProfile, onUpdateProfile,
             </div>
           )}
         </div>
+
+        {/* CORBEILLE */}
+        <TrashPanel data={data} updateData={updateData} />
 
         {/* THEME SECTION */}
         <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 md:p-8 border border-stone-100 dark:border-stone-800 shadow-sm">

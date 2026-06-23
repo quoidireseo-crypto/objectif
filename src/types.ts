@@ -57,6 +57,19 @@ export interface AppData {
   weeklyReviews: WeeklyReview[];
   lifeAssessments: LifeAssessment[];
   energyLogs: EnergyLog[];
+  trash?: TrashEntry[];
+}
+
+// Corbeille : tout élément supprimé y est conservé pour pouvoir être restauré.
+// Le payload contient ce qu'il faut pour reconstituer l'élément (et ses liens).
+export type TrashKind = 'goal' | 'task' | 'milestone' | 'habit' | 'journal';
+
+export interface TrashEntry {
+  id: string;
+  kind: TrashKind;
+  label: string; // libellé lisible pour l'affichage
+  deletedAt: string; // ISO
+  payload: any; // données nécessaires à la restauration
 }
 
 export type EnergyLevel = 'low' | 'medium' | 'high';

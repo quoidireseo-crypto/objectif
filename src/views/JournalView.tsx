@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { AppData, JournalEntry } from '../types';
+import { newTrashEntry } from '../hooks/useTrash';
 import { BookHeart, Send, Smile, Meh, Frown, Sparkles, Trash2, CloudLightning, Pencil } from 'lucide-react';
 import { EmptyState } from '../components/EmptyState';
 
@@ -78,7 +79,9 @@ export function JournalView({ data, updateData }: JournalProps) {
 
   const deleteJournalEntry = (id: string) => {
     if (confirm("Supprimer cette réflexion ?")) {
-      updateData({ journal: data.journal.filter(j => j.id !== id) });
+      const entry = data.journal.find(j => j.id === id);
+      const te = entry ? newTrashEntry('journal', entry.content.slice(0, 40) || 'Note', { entry }) : null;
+      updateData({ journal: data.journal.filter(j => j.id !== id), ...(te ? { trash: [te, ...(data.trash || [])] } : {}) });
     }
   };
 

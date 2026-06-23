@@ -1,5 +1,6 @@
 import { useState, useMemo, FormEvent } from 'react';
 import { AppData, Task, LifeDomain } from '../types';
+import { newTrashEntry } from '../hooks/useTrash';
 import { ChevronLeft, ChevronRight, CheckCircle2, Circle, Plus, Tag, Trash2 } from 'lucide-react';
 
 interface CalendarProps {
@@ -68,7 +69,9 @@ export function CalendarView({ data, updateData }: CalendarProps) {
 
   const deleteTask = (id: string) => {
     if (!window.confirm("Supprimer cette action ?")) return;
-    updateData({ tasks: data.tasks.filter(t => t.id !== id) });
+    const task = data.tasks.find(t => t.id === id);
+    const entry = task ? newTrashEntry('task', task.title, { task }) : null;
+    updateData({ tasks: data.tasks.filter(t => t.id !== id), ...(entry ? { trash: [entry, ...(data.trash || [])] } : {}) });
   };
 
   const renderCalendarDays = () => {

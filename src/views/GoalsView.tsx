@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AppData, Goal, LifeDomain, Milestone, Task } from '../types';
 import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle, Trophy, RotateCcw, Maximize2, ArrowLeft, Circle, CheckCircle2, Pencil } from 'lucide-react';
 import { useGoalHistory } from '../hooks/useGoalHistory';
+import { newTrashEntry } from '../hooks/useTrash';
 import { GoalHistoryTimeline } from '../components/GoalHistoryTimeline';
 import { GoalEditModal } from '../components/GoalEditModal';
 import { HelpTooltip } from '../components/HelpTooltip';
@@ -162,14 +163,23 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
   };
 
   const deleteGoal = (id: string) => {
-    if (window.confirm("Supprimer cet objectif ?")) {
-      updateData({ 
-        goals: data.goals.filter(g => g.id !== id),
-        tasks: data.tasks.map(t => t.goalId === id ? { ...t, goalId: undefined, milestoneId: undefined } : t),
-        milestones: data.milestones.filter(m => m.goalId !== id),
-        goalsHistory: (data.goalsHistory || []).filter(h => h.goalId !== id)
-      });
-    }
+    const goal = data.goals.find(g => g.id === id);
+    if (!goal) return;
+    if (!window.confirm("Supprimer cet objectif ? Tu pourras le restaurer depuis la corbeille.")) return;
+
+    const goalMilestones = data.milestones.filter(m => m.goalId === id);
+    const goalHistory = (data.goalsHistory || []).filter(h => h.goalId === id);
+    const taskLinks = data.tasks.filter(t => t.goalId === id).map(t => ({ id: t.id, goalId: t.goalId, milestoneId: t.milestoneId }));
+    const entry = newTrashEntry('goal', goal.title, { goal, milestones: goalMilestones, history: goalHistory, taskLinks });
+
+    updateData({
+      goals: data.goals.filter(g => g.id !== id),
+      tasks: data.tasks.map(t => t.goalId === id ? { ...t, goalId: undefined, milestoneId: undefined } : t),
+      milestones: data.milestones.filter(m => m.goalId !== id),
+      goalsHistory: (data.goalsHistory || []).filter(h => h.goalId !== id),
+      trash: [entry, ...(data.trash || [])],
+    });
+    if (focusedGoalId === id) onFocusGoal?.(null);
   };
 
   const handleStatusChange = (goalId: string, newStatus: Goal['status']) => {
@@ -256,9 +266,13 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
 
   const deleteMilestone = (id: string) => {
     if (!window.confirm("Supprimer cette étape ?")) return;
+    const ms = data.milestones.find(m => m.id === id);
+    const taskLinks = data.tasks.filter(t => t.milestoneId === id).map(t => ({ id: t.id, milestoneId: t.milestoneId }));
+    const entry = ms ? newTrashEntry('milestone', ms.title, { milestone: ms, taskLinks }) : null;
     updateData({
       milestones: data.milestones.filter(m => m.id !== id),
-      tasks: data.tasks.map(t => t.milestoneId === id ? { ...t, milestoneId: undefined } : t)
+      tasks: data.tasks.map(t => t.milestoneId === id ? { ...t, milestoneId: undefined } : t),
+      ...(entry ? { trash: [entry, ...(data.trash || [])] } : {}),
     });
   };
 

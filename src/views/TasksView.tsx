@@ -1,5 +1,6 @@
 import { useState, FormEvent, useEffect, useRef } from 'react';
 import { AppData, Task, LifeDomain } from '../types';
+import { newTrashEntry } from '../hooks/useTrash';
 import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag, Trash2, Pencil } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
 import { EmptyState } from '../components/EmptyState';
@@ -120,7 +121,9 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
 
   const deleteTask = (id: string) => {
     if (!window.confirm("Supprimer cette action ?")) return;
-    updateData({ tasks: data.tasks.filter(t => t.id !== id) });
+    const task = data.tasks.find(t => t.id === id);
+    const entry = task ? newTrashEntry('task', task.title, { task }) : null;
+    updateData({ tasks: data.tasks.filter(t => t.id !== id), ...(entry ? { trash: [entry, ...(data.trash || [])] } : {}) });
   };
 
   return (
