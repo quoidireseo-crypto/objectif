@@ -589,7 +589,10 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                   <p className="text-stone-700 dark:text-stone-300 italic leading-snug mb-4">"{goal.why}"</p>
 
                   <div className="border-t border-stone-200/50 dark:border-stone-700 pt-4 mt-2">
-                    <p className="text-[10px] font-bold font-sans text-emerald-700/80 dark:text-emerald-400/80 uppercase tracking-widest mb-3">2 · Mes étapes</p>
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <p className="text-[10px] font-bold font-sans text-emerald-700/80 dark:text-emerald-400/80 uppercase tracking-widest">2 · Mes étapes</p>
+                      <HelpTooltip text="De grands paliers vers ton objectif (4 max). Ex. « Tenir une conversation de 5 minutes en espagnol »." />
+                    </div>
                     
                     {(() => {
                       const goalMilestones = (data.milestones || []).filter(m => m.goalId === goal.id).sort((a,b) => a.order - b.order);
@@ -656,12 +659,18 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                   </div>
 
                   <div className="border-t border-stone-200/50 dark:border-stone-700 pt-4 mt-4">
-                    <p className="text-[10px] font-bold font-sans text-emerald-700/80 dark:text-emerald-400/80 uppercase tracking-widest mb-3">3 · Ma prochaine action</p>
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <p className="text-[10px] font-bold font-sans text-emerald-700/80 dark:text-emerald-400/80 uppercase tracking-widest">3 · Ma prochaine action</p>
+                      <HelpTooltip text="De petits gestes du quotidien qui font avancer vers l'étape en cours. Ex. « 10 minutes de Duolingo aujourd'hui ». Elles rejoignent ton Quotidien." />
+                    </div>
 
                     {(() => {
                       const goalTasks = (data.tasks || []).filter(t => t.goalId === goal.id);
                       const todo = goalTasks.filter(t => !t.isCompleted);
                       const doneCount = goalTasks.length - todo.length;
+                      const currentMilestone = (data.milestones || [])
+                        .filter(m => m.goalId === goal.id && !m.isCompleted)
+                        .sort((a, b) => a.order - b.order)[0];
 
                       return (
                         <div className="space-y-2.5">
@@ -685,6 +694,12 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                           {doneCount > 0 && (
                             <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-sans flex items-center gap-1">
                               <CheckCircle2 className="w-3.5 h-3.5" /> {doneCount} action{doneCount > 1 ? 's' : ''} déjà faite{doneCount > 1 ? 's' : ''}
+                            </p>
+                          )}
+
+                          {currentMilestone && (
+                            <p className="text-[10px] text-stone-400 dark:text-stone-500 font-sans italic mt-1">
+                              → fait avancer l'étape : {currentMilestone.title}
                             </p>
                           )}
 
