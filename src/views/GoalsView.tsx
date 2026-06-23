@@ -609,25 +609,76 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                             </div>
                           )}
 
-                          {goalMilestones.map(ms => (
-                            <div key={ms.id} className="flex items-start gap-2 group">
-                              <button
-                                onClick={() => toggleMilestone(ms.id)}
-                                className={`mt-0.5 shrink-0 transition-colors ${ms.isCompleted ? 'text-emerald-500' : 'text-stone-300 dark:text-stone-600 hover:text-stone-400 dark:hover:text-stone-500'}`}
-                              >
-                                {ms.isCompleted ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
-                              </button>
-                              <span className={`text-sm font-sans flex-1 transition-all ${ms.isCompleted ? 'text-stone-400 dark:text-stone-500 line-through' : 'text-stone-700 dark:text-stone-300'}`}>
-                                {ms.title}
-                              </span>
-                              <button
-                                onClick={() => deleteMilestone(ms.id)}
-                                className="text-stone-300 dark:text-stone-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                          {goalMilestones.map(ms => {
+                            const msActions = (data.tasks || []).filter(t => t.goalId === goal.id && t.milestoneId === ms.id && !t.isCompleted);
+                            return (
+                            <div key={ms.id}>
+                              <div className="flex items-start gap-2 group">
+                                <button
+                                  onClick={() => toggleMilestone(ms.id)}
+                                  className={`mt-0.5 shrink-0 transition-colors ${ms.isCompleted ? 'text-emerald-500' : 'text-stone-300 dark:text-stone-600 hover:text-stone-400 dark:hover:text-stone-500'}`}
+                                >
+                                  {ms.isCompleted ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                                </button>
+                                <span className={`text-sm font-sans flex-1 transition-all ${ms.isCompleted ? 'text-stone-400 dark:text-stone-500 line-through' : 'text-stone-700 dark:text-stone-300'}`}>
+                                  {ms.title}
+                                </span>
+                                <button
+                                  onClick={() => deleteMilestone(ms.id)}
+                                  className="text-stone-300 dark:text-stone-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              {/* Actions imbriquées sous l'étape qu'elles servent */}
+                              {msActions.length > 0 && (
+                                <div className="ml-[22px] mt-1.5 pl-3 border-l border-stone-200 dark:border-stone-700 space-y-1.5">
+                                  {msActions.map(task => (
+                                    <div key={task.id} className="flex items-start gap-2">
+                                      <button
+                                        onClick={() => toggleTask(task.id)}
+                                        className="mt-0.5 shrink-0 text-stone-300 dark:text-stone-600 hover:text-emerald-500 transition-colors"
+                                        title="Marquer comme faite"
+                                      >
+                                        <Circle className="w-3.5 h-3.5" />
+                                      </button>
+                                      <span className="text-xs font-sans flex-1 text-stone-600 dark:text-stone-400">{task.title}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
-                          ))}
+                            );
+                          })}
+
+                          {/* Actions reliées à l'objectif mais à aucune étape précise */}
+                          {(() => {
+                            const looseActions = (data.tasks || []).filter(t => t.goalId === goal.id && !t.milestoneId && !t.isCompleted);
+                            if (looseActions.length === 0) return null;
+                            const hasMilestones = goalMilestones.length > 0;
+                            return (
+                              <div>
+                                {hasMilestones && (
+                                  <p className="text-[10px] text-stone-400 dark:text-stone-500 font-sans italic mb-1.5">Sans étape précise</p>
+                                )}
+                                <div className={`space-y-1.5 ${hasMilestones ? 'ml-[22px] pl-3 border-l border-stone-200 dark:border-stone-700' : ''}`}>
+                                  {looseActions.map(task => (
+                                    <div key={task.id} className="flex items-start gap-2">
+                                      <button
+                                        onClick={() => toggleTask(task.id)}
+                                        className="mt-0.5 shrink-0 text-stone-300 dark:text-stone-600 hover:text-emerald-500 transition-colors"
+                                        title="Marquer comme faite"
+                                      >
+                                        <Circle className="w-3.5 h-3.5" />
+                                      </button>
+                                      <span className="text-xs font-sans flex-1 text-stone-600 dark:text-stone-400">{task.title}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
 
                           {goalMilestones.length < 4 && (
                             <div className="flex flex-col gap-2 mt-2">
@@ -675,21 +726,8 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                       return (
                         <div className="space-y-2.5">
                           {goalTasks.length === 0 && (
-                            <p className="text-xs text-stone-400 dark:text-stone-500 italic">Quel petit pas concret cette semaine ? Note-le ci-dessous, il rejoindra ton Quotidien.</p>
+                            <p className="text-xs text-stone-400 dark:text-stone-500 italic">Quel petit pas concret cette semaine ? Note-le ci-dessous, il rejoindra ton Quotidien et l'étape en cours.</p>
                           )}
-
-                          {todo.map(task => (
-                            <div key={task.id} className="flex items-start gap-2">
-                              <button
-                                onClick={() => toggleTask(task.id)}
-                                className="mt-0.5 shrink-0 text-stone-300 dark:text-stone-600 hover:text-emerald-500 transition-colors"
-                                title="Marquer comme faite"
-                              >
-                                <Circle className="w-4 h-4" />
-                              </button>
-                              <span className="text-sm font-sans flex-1 text-stone-700 dark:text-stone-300">{task.title}</span>
-                            </div>
-                          ))}
 
                           {doneCount > 0 && (
                             <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-sans flex items-center gap-1">
