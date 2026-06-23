@@ -67,6 +67,7 @@ export function CalendarView({ data, updateData }: CalendarProps) {
   };
 
   const deleteTask = (id: string) => {
+    if (!window.confirm("Supprimer cette action ?")) return;
     updateData({ tasks: data.tasks.filter(t => t.id !== id) });
   };
 

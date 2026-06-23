@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { AppData, Goal, LifeDomain, Milestone, Task } from '../types';
-import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle, Trophy, RotateCcw, Maximize2, ArrowLeft, Circle, CheckCircle2 } from 'lucide-react';
+import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle, Trophy, RotateCcw, Maximize2, ArrowLeft, Circle, CheckCircle2, Pencil } from 'lucide-react';
 import { useGoalHistory } from '../hooks/useGoalHistory';
 import { GoalHistoryTimeline } from '../components/GoalHistoryTimeline';
+import { GoalEditModal } from '../components/GoalEditModal';
 import { HelpTooltip } from '../components/HelpTooltip';
 
 interface GoalsProps {
@@ -61,6 +62,9 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
   const [firstAction, setFirstAction] = useState('');
   const [newMilestoneTitles, setNewMilestoneTitles] = useState<{ [goalId: string]: string }>({});
   const [newActionTitles, setNewActionTitles] = useState<{ [goalId: string]: string }>({});
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
+  const [editMilestoneTitle, setEditMilestoneTitle] = useState('');
   const [celebrationMessage, setCelebrationMessage] = useState<{title: string} | null>(null);
   
   const [newGoal, setNewGoal] = useState<Partial<Goal>>({
@@ -196,6 +200,8 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
   };
 
   const markAsAchieved = (id: string) => {
+    const goal = data.goals.find(g => g.id === id);
+    if (!window.confirm(`Marquer « ${goal?.title ?? 'cet objectif'} » comme atteint ? 🎉`)) return;
     handleStatusChange(id, 'Atteint');
   };
 
@@ -249,10 +255,48 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
   };
 
   const deleteMilestone = (id: string) => {
+    if (!window.confirm("Supprimer cette étape ?")) return;
     updateData({
       milestones: data.milestones.filter(m => m.id !== id),
       tasks: data.tasks.map(t => t.milestoneId === id ? { ...t, milestoneId: undefined } : t)
     });
+  };
+
+  // Édition d'un objectif : applique les changements et trace l'historique des
+  // champs réellement modifiés.
+  const saveEditGoal = (changes: { title: string; why: string; domain: LifeDomain; deadline?: string }) => {
+    if (!editingGoal) return;
+    const before = editingGoal;
+
+    updateData({
+      goals: data.goals.map(g =>
+        g.id === before.id ? { ...g, title: changes.title, why: changes.why, domain: changes.domain, deadline: changes.deadline } : g
+      ),
+    });
+
+    if (changes.title !== before.title) addHistoryEntry(before.id, 'title-changed', before.title, changes.title);
+    if (changes.why !== before.why) addHistoryEntry(before.id, 'why-changed', before.why, changes.why);
+    if (changes.domain !== before.domain) addHistoryEntry(before.id, 'domain-changed', before.domain, changes.domain);
+    if ((changes.deadline || '') !== (before.deadline || '')) addHistoryEntry(before.id, 'deadline-changed', before.deadline, changes.deadline || 'aucune');
+
+    setEditingGoal(null);
+  };
+
+  // Édition du libellé d'une étape (inline).
+  const startEditMilestone = (m: Milestone) => {
+    setEditingMilestoneId(m.id);
+    setEditMilestoneTitle(m.title);
+  };
+
+  const saveEditMilestone = () => {
+    const title = editMilestoneTitle.trim();
+    if (editingMilestoneId && title) {
+      updateData({
+        milestones: data.milestones.map(m => (m.id === editingMilestoneId ? { ...m, title } : m)),
+      });
+    }
+    setEditingMilestoneId(null);
+    setEditMilestoneTitle('');
   };
 
   const getDomainTheme = (domainLabel: string) => {
@@ -350,6 +394,14 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {editingGoal && (
+        <GoalEditModal
+          goal={editingGoal}
+          onSave={saveEditGoal}
+          onClose={() => setEditingGoal(null)}
+        />
+      )}
+
       {celebrationMessage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-emerald-900/40 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-white dark:bg-stone-900 p-8 rounded-3xl shadow-xl max-w-sm text-center animate-in zoom-in-95 duration-500 border border-emerald-100 dark:border-emerald-500/20">
@@ -566,7 +618,10 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                         <Maximize2 className="w-4 h-4" />
                       </button>
                     )}
-                    <div className={`flex items-center gap-1 transition-opacity ${isFocusMode ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                    <div className={`flex items-center gap-1 transition-opacity ${isFocusMode ? 'opacity-100' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}>
+                      <button onClick={() => setEditingGoal(goal)} className="text-stone-300 dark:text-stone-600 hover:text-stone-700 dark:hover:text-stone-200 p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" title="Modifier l'objectif">
+                        <Pencil className="w-4 h-4" />
+                      </button>
                       <button onClick={() => markAsAchieved(goal.id)} className="text-stone-300 dark:text-stone-600 hover:text-emerald-600 dark:hover:text-emerald-400 p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors" title="Marquer comme atteint">
                         <CheckCircle className="w-5 h-5" />
                       </button>
@@ -620,12 +675,34 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                                 >
                                   {ms.isCompleted ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                                 </button>
-                                <span className={`text-sm font-sans flex-1 transition-all ${ms.isCompleted ? 'text-stone-400 dark:text-stone-500 line-through' : 'text-stone-700 dark:text-stone-300'}`}>
-                                  {ms.title}
-                                </span>
+                                {editingMilestoneId === ms.id ? (
+                                  <input
+                                    type="text"
+                                    autoFocus
+                                    value={editMilestoneTitle}
+                                    onChange={e => setEditMilestoneTitle(e.target.value)}
+                                    onKeyDown={e => { if (e.key === 'Enter') saveEditMilestone(); if (e.key === 'Escape') { setEditingMilestoneId(null); setEditMilestoneTitle(''); } }}
+                                    onBlur={saveEditMilestone}
+                                    className="flex-1 bg-transparent border-b border-emerald-400 text-sm py-0.5 outline-none font-sans text-stone-800 dark:text-stone-100"
+                                  />
+                                ) : (
+                                  <span
+                                    onClick={() => !ms.isCompleted && startEditMilestone(ms)}
+                                    className={`text-sm font-sans flex-1 transition-all ${ms.isCompleted ? 'text-stone-400 dark:text-stone-500 line-through' : 'text-stone-700 dark:text-stone-300 cursor-text'}`}
+                                  >
+                                    {ms.title}
+                                  </span>
+                                )}
+                                <button
+                                  onClick={() => startEditMilestone(ms)}
+                                  className="text-stone-300 dark:text-stone-600 hover:text-stone-600 dark:hover:text-stone-300 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity p-0.5"
+                                  title="Modifier l'étape"
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                </button>
                                 <button
                                   onClick={() => deleteMilestone(ms.id)}
-                                  className="text-stone-300 dark:text-stone-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
+                                  className="text-stone-300 dark:text-stone-600 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity p-0.5"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>

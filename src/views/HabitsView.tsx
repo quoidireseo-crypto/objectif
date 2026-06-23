@@ -1,7 +1,7 @@
 import { useState, FormEvent, useMemo } from 'react';
 import { AppData, LifeDomain } from '../types';
 import { useHabits, isHabitDueOn } from '../hooks/useHabits';
-import { Repeat, Plus, Circle, CheckCircle2, Sprout, Trash2, Archive, Tag } from 'lucide-react';
+import { Repeat, Plus, Circle, CheckCircle2, Sprout, Trash2, Archive, Tag, Pencil } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
 import { EmptyState } from '../components/EmptyState';
 
@@ -31,6 +31,17 @@ export function HabitsView({ data, updateData }: HabitsProps) {
   const [frequency, setFrequency] = useState<'daily' | 'weekly'>('daily');
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [domain, setDomain] = useState<LifeDomain | ''>('');
+  const [editingHabitId, setEditingHabitId] = useState<string | null>(null);
+  const [editHabitTitle, setEditHabitTitle] = useState('');
+
+  const saveEditHabit = () => {
+    const t = editHabitTitle.trim();
+    if (editingHabitId && t) {
+      updateData({ habits: (data.habits || []).map(h => (h.id === editingHabitId ? { ...h, title: t } : h)) });
+    }
+    setEditingHabitId(null);
+    setEditHabitTitle('');
+  };
 
   const today = todayStr();
 
@@ -220,7 +231,24 @@ export function HabitsView({ data, updateData }: HabitsProps) {
             {activeHabits.map(habit => (
               <div key={habit.id} className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="flex-1">
-                  <p className="font-sans font-bold text-stone-700 dark:text-stone-200 text-sm">{habit.title}</p>
+                  {editingHabitId === habit.id ? (
+                    <input
+                      type="text"
+                      autoFocus
+                      value={editHabitTitle}
+                      onChange={e => setEditHabitTitle(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') saveEditHabit(); if (e.key === 'Escape') { setEditingHabitId(null); setEditHabitTitle(''); } }}
+                      onBlur={saveEditHabit}
+                      className="w-full bg-transparent border-b border-emerald-400 text-stone-700 dark:text-stone-200 font-sans font-bold text-sm outline-none py-0.5"
+                    />
+                  ) : (
+                    <p
+                      onClick={() => { setEditingHabitId(habit.id); setEditHabitTitle(habit.title); }}
+                      className="font-sans font-bold text-stone-700 dark:text-stone-200 text-sm cursor-text"
+                    >
+                      {habit.title}
+                    </p>
+                  )}
                   <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">
                     {habit.frequency === 'daily' ? 'Tous les jours' : habit.daysOfWeek?.map(d => DAY_LABELS[d]).join(' ')}
                   </p>
@@ -243,6 +271,13 @@ export function HabitsView({ data, updateData }: HabitsProps) {
                 </div>
 
                 <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => { setEditingHabitId(habit.id); setEditHabitTitle(habit.title); }}
+                    className="text-stone-300 dark:text-stone-600 hover:text-stone-600 dark:hover:text-stone-300 p-2 transition-colors"
+                    title="Modifier l'habitude"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={() => archiveHabit(habit.id)}
                     className="text-stone-300 dark:text-stone-600 hover:text-stone-600 dark:hover:text-stone-300 p-2 transition-colors"

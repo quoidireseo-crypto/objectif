@@ -1,6 +1,6 @@
 import { useState, FormEvent, useEffect, useRef } from 'react';
 import { AppData, Task, LifeDomain } from '../types';
-import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag, Trash2 } from 'lucide-react';
+import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag, Trash2, Pencil } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
 import { EmptyState } from '../components/EmptyState';
 
@@ -26,6 +26,8 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
   const [selectedReference, setSelectedReference] = useState<string>(''); // format: goalId or goalId|milestoneId
   const [selectedDomain, setSelectedDomain] = useState<LifeDomain | ''>('');
   const [isNewTaskImportant, setIsNewTaskImportant] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editTaskTitle, setEditTaskTitle] = useState('');
 
   const todayDate = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(todayDate);
@@ -102,7 +104,22 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
     updateData({ tasks: newTasks });
   };
 
+  const startEditTask = (id: string, title: string) => {
+    setEditingTaskId(id);
+    setEditTaskTitle(title);
+  };
+
+  const saveEditTask = () => {
+    const title = editTaskTitle.trim();
+    if (editingTaskId && title) {
+      updateData({ tasks: data.tasks.map(t => (t.id === editingTaskId ? { ...t, title } : t)) });
+    }
+    setEditingTaskId(null);
+    setEditTaskTitle('');
+  };
+
   const deleteTask = (id: string) => {
+    if (!window.confirm("Supprimer cette action ?")) return;
     updateData({ tasks: data.tasks.filter(t => t.id !== id) });
   };
 
@@ -234,9 +251,24 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
                     <Circle className="w-6 h-6" />
                   </button>
                   <div className="flex-1">
-                    <p className={`font-sans font-bold ${task.isImportant ? 'text-amber-700 dark:text-amber-400' : 'text-stone-800 dark:text-stone-100'}`}>
-                      {task.title}
-                    </p>
+                    {editingTaskId === task.id ? (
+                      <input
+                        type="text"
+                        autoFocus
+                        value={editTaskTitle}
+                        onChange={e => setEditTaskTitle(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') saveEditTask(); if (e.key === 'Escape') { setEditingTaskId(null); setEditTaskTitle(''); } }}
+                        onBlur={saveEditTask}
+                        className="w-full bg-transparent border-b border-emerald-400 text-stone-800 dark:text-stone-100 font-sans font-bold outline-none py-0.5"
+                      />
+                    ) : (
+                      <p
+                        onClick={() => startEditTask(task.id, task.title)}
+                        className={`font-sans font-bold cursor-text ${task.isImportant ? 'text-amber-700 dark:text-amber-400' : 'text-stone-800 dark:text-stone-100'}`}
+                      >
+                        {task.title}
+                      </p>
+                    )}
                     <div className="flex flex-wrap gap-2 mt-2">
                        {linkedGoal && (
                         <button
@@ -267,8 +299,15 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
                     {task.isImportant ? <BellRing className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
                   </button>
                   <button
+                    onClick={() => startEditTask(task.id, task.title)}
+                    className="text-stone-300 dark:text-stone-600 hover:text-stone-600 dark:hover:text-stone-300 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity p-2"
+                    title="Modifier l'action"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => deleteTask(task.id)}
-                    className="text-stone-300 dark:text-stone-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2"
+                    className="text-stone-300 dark:text-stone-600 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity p-2"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>

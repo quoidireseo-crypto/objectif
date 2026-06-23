@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { AppData, JournalEntry } from '../types';
-import { BookHeart, Send, Smile, Meh, Frown, Sparkles, Trash2, CloudLightning } from 'lucide-react';
+import { BookHeart, Send, Smile, Meh, Frown, Sparkles, Trash2, CloudLightning, Pencil } from 'lucide-react';
 import { EmptyState } from '../components/EmptyState';
 
 interface JournalProps {
@@ -32,6 +32,24 @@ export function JournalView({ data, updateData }: JournalProps) {
   const [content, setContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<JournalEntry['mood']>('Bien');
   const [search, setSearch] = useState('');
+  const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
+  const [editMood, setEditMood] = useState<JournalEntry['mood']>('Bien');
+
+  const startEditEntry = (entry: JournalEntry) => {
+    setEditingEntryId(entry.id);
+    setEditContent(entry.content);
+    setEditMood(entry.mood);
+  };
+
+  const saveEditEntry = () => {
+    const c = editContent.trim();
+    if (editingEntryId && c) {
+      updateData({ journal: data.journal.map(j => (j.id === editingEntryId ? { ...j, content: c, mood: editMood } : j)) });
+    }
+    setEditingEntryId(null);
+    setEditContent('');
+  };
 
   const filteredJournal = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -206,12 +224,46 @@ export function JournalView({ data, updateData }: JournalProps) {
                       <MoodIcon className="w-3.5 h-3.5" />
                       {entry.mood}
                     </div>
+                    <button onClick={() => startEditEntry(entry)} className="text-stone-300 dark:text-stone-600 hover:text-stone-600 dark:hover:text-stone-300 p-1 transition-colors" title="Modifier">
+                      <Pencil className="w-4 h-4" />
+                    </button>
                     <button onClick={() => deleteJournalEntry(entry.id)} className="text-stone-300 dark:text-stone-600 hover:text-red-500 p-1 transition-colors" title="Supprimer">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-                <p className="text-stone-800 dark:text-stone-100 text-lg whitespace-pre-wrap leading-snug font-light italic">"{entry.content}"</p>
+                {editingEntryId === entry.id ? (
+                  <div className="space-y-3">
+                    <textarea
+                      autoFocus
+                      value={editContent}
+                      onChange={e => setEditContent(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-stone-200 dark:border-stone-700 outline-none focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 text-stone-800 dark:text-stone-100 bg-white dark:bg-stone-800 transition min-h-[100px] resize-y font-sans text-base"
+                    />
+                    <div className="flex flex-wrap gap-2">
+                      {MOODS.map(mood => {
+                        const MIcon = mood.icon;
+                        const sel = editMood === mood.label;
+                        return (
+                          <button
+                            key={mood.label}
+                            onClick={() => setEditMood(mood.label as JournalEntry['mood'])}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-sans font-bold transition ${sel ? 'border-emerald-700 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400' : 'border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800'}`}
+                          >
+                            <MIcon className="w-3.5 h-3.5" />
+                            {mood.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <button onClick={() => { setEditingEntryId(null); setEditContent(''); }} className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition">Annuler</button>
+                      <button onClick={saveEditEntry} disabled={!editContent.trim()} className="px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest bg-stone-800 dark:bg-emerald-700 text-white hover:bg-stone-900 dark:hover:bg-emerald-800 disabled:opacity-50 transition">Enregistrer</button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-stone-800 dark:text-stone-100 text-lg whitespace-pre-wrap leading-snug font-light italic">"{entry.content}"</p>
+                )}
               </div>
             )
           })}
