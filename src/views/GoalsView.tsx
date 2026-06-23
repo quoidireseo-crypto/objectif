@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AppData, Goal, LifeDomain, Milestone, Task } from '../types';
-import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle, Trophy, RotateCcw } from 'lucide-react';
+import { Plus, Target, Clock, Heart, Briefcase, Activity, Home, Trash2, X, Coins, Sparkles, CheckSquare, Square, CheckCircle, Trophy, RotateCcw, Maximize2, ArrowLeft, Circle, CheckCircle2 } from 'lucide-react';
 import { useGoalHistory } from '../hooks/useGoalHistory';
 import { GoalHistoryTimeline } from '../components/GoalHistoryTimeline';
 import { HelpTooltip } from '../components/HelpTooltip';
@@ -8,6 +8,10 @@ import { HelpTooltip } from '../components/HelpTooltip';
 interface GoalsProps {
   data: AppData;
   updateData: (data: Partial<AppData>) => void;
+  // Vue « focus » : quand un objectif est sélectionné, on n'affiche que lui,
+  // avec tout son cheminement. Géré par App pour permettre les liens entre vues.
+  focusedGoalId?: string | null;
+  onFocusGoal?: (id: string | null) => void;
 }
 
 const DOMAINS: { label: LifeDomain; icon: any; color: string }[] = [
@@ -49,13 +53,14 @@ const DEADLINE_OPTIONS = [
   { label: 'Dans 6 mois', getValue: () => addMonths(new Date(), 6) },
 ];
 
-export function GoalsView({ data, updateData }: GoalsProps) {
+export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: GoalsProps) {
   const { addHistoryEntry } = useGoalHistory(data, updateData);
   const [isAdding, setIsAdding] = useState(false);
   const [selectedVerb, setSelectedVerb] = useState(VERBS[0].id);
   const [goalComplement, setGoalComplement] = useState('');
   const [firstAction, setFirstAction] = useState('');
   const [newMilestoneTitles, setNewMilestoneTitles] = useState<{ [goalId: string]: string }>({});
+  const [newActionTitles, setNewActionTitles] = useState<{ [goalId: string]: string }>({});
   const [celebrationMessage, setCelebrationMessage] = useState<{title: string} | null>(null);
   
   const [newGoal, setNewGoal] = useState<Partial<Goal>>({
@@ -107,12 +112,49 @@ export function GoalsView({ data, updateData }: GoalsProps) {
     });
 
     addHistoryEntry(goal.id, 'created');
-    
+
     setIsAdding(false);
     setFirstAction('');
     setSelectedVerb(VERBS[0].id);
     setGoalComplement('');
     setNewGoal({ why: '', domain: 'Santé & Bien-être', deadline: '', status: 'En cours' });
+
+    // Prop 5 : on atterrit directement sur le nouvel objectif pour voir son
+    // cheminement et poser la suite.
+    onFocusGoal?.(goal.id);
+  };
+
+  // Prop 1 : ajouter une action reliée à l'objectif (et à son étape en cours)
+  // sans quitter la page.
+  const addAction = (goalId: string) => {
+    const title = newActionTitles[goalId]?.trim();
+    if (!title) return;
+
+    // Étape en cours = première étape non terminée (par ordre).
+    const currentMilestone = (data.milestones || [])
+      .filter(m => m.goalId === goalId && !m.isCompleted)
+      .sort((a, b) => a.order - b.order)[0];
+
+    const goal = data.goals.find(g => g.id === goalId);
+
+    const newTask: Task = {
+      id: 'task_' + Date.now().toString(),
+      title,
+      goalId,
+      isCompleted: false,
+      date: new Date().toISOString().split('T')[0],
+      ...(currentMilestone ? { milestoneId: currentMilestone.id } : {}),
+      ...(goal?.domain ? { domain: goal.domain } : {}),
+    };
+
+    updateData({ tasks: [...data.tasks, newTask] });
+    setNewActionTitles(prev => ({ ...prev, [goalId]: '' }));
+  };
+
+  const toggleTask = (id: string) => {
+    updateData({
+      tasks: data.tasks.map(t => (t.id === id ? { ...t, isCompleted: !t.isCompleted } : t)),
+    });
   };
 
   const deleteGoal = (id: string) => {
@@ -299,6 +341,12 @@ export function GoalsView({ data, updateData }: GoalsProps) {
 
   const activeGoals = data.goals.filter(g => g.status !== 'Atteint');
   const achievedGoals = data.goals.filter(g => g.status === 'Atteint');
+
+  // Vue « focus » : si un objectif est sélectionné et toujours actif, on n'affiche
+  // que lui (en pleine largeur) ; sinon, la grille habituelle.
+  const focusedGoal = focusedGoalId ? activeGoals.find(g => g.id === focusedGoalId) : null;
+  const isFocusMode = !!focusedGoal;
+  const goalsToShow = focusedGoal ? [focusedGoal] : activeGoals;
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -490,8 +538,18 @@ export function GoalsView({ data, updateData }: GoalsProps) {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {activeGoals.map(goal => {
+        <>
+        {isFocusMode && (
+          <button
+            onClick={() => onFocusGoal?.(null)}
+            className="flex items-center gap-2 mb-5 text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 font-sans text-xs uppercase tracking-widest font-bold transition cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Tous mes objectifs
+          </button>
+        )}
+        <div className={isFocusMode ? 'grid grid-cols-1 gap-6 max-w-2xl' : 'grid grid-cols-1 lg:grid-cols-2 gap-6'}>
+          {goalsToShow.map(goal => {
             const theme = getDomainTheme(goal.domain);
             const Icon = theme.icon;
 
@@ -502,24 +560,36 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                     <Icon className="w-4 h-4" />
                     <span className="text-[10px] font-sans font-bold uppercase tracking-wider">{goal.domain}</span>
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => markAsAchieved(goal.id)} className="text-stone-300 dark:text-stone-600 hover:text-emerald-600 dark:hover:text-emerald-400 p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors" title="Marquer comme atteint">
-                      <CheckCircle className="w-5 h-5" />
-                    </button>
-                    <button onClick={() => deleteGoal(goal.id)} className="text-stone-300 dark:text-stone-600 hover:text-red-500 p-1.5 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors" title="Supprimer">
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                  <div className="flex items-center gap-1">
+                    {!isFocusMode && onFocusGoal && (
+                      <button onClick={() => onFocusGoal(goal.id)} className="text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-200 p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" title="Voir le cheminement">
+                        <Maximize2 className="w-4 h-4" />
+                      </button>
+                    )}
+                    <div className={`flex items-center gap-1 transition-opacity ${isFocusMode ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                      <button onClick={() => markAsAchieved(goal.id)} className="text-stone-300 dark:text-stone-600 hover:text-emerald-600 dark:hover:text-emerald-400 p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors" title="Marquer comme atteint">
+                        <CheckCircle className="w-5 h-5" />
+                      </button>
+                      <button onClick={() => deleteGoal(goal.id)} className="text-stone-300 dark:text-stone-600 hover:text-red-500 p-1.5 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors" title="Supprimer">
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-light text-stone-900 dark:text-stone-100 mb-3">{goal.title}</h3>
+                <h3
+                  onClick={() => !isFocusMode && onFocusGoal?.(goal.id)}
+                  className={`text-2xl font-light text-stone-900 dark:text-stone-100 mb-3 ${!isFocusMode && onFocusGoal ? 'cursor-pointer hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors' : ''}`}
+                >
+                  {goal.title}
+                </h3>
 
                 <div className="bg-[#F5F5F0] dark:bg-stone-800 p-4 rounded-2xl mt-2 flex-grow border border-stone-200/50 dark:border-stone-700">
-                  <p className="text-[10px] font-bold font-sans text-stone-500 dark:text-stone-400 uppercase tracking-widest mb-2">Le sens profond</p>
+                  <p className="text-[10px] font-bold font-sans text-emerald-700/80 dark:text-emerald-400/80 uppercase tracking-widest mb-2">1 · Le sens profond</p>
                   <p className="text-stone-700 dark:text-stone-300 italic leading-snug mb-4">"{goal.why}"</p>
 
                   <div className="border-t border-stone-200/50 dark:border-stone-700 pt-4 mt-2">
-                    <p className="text-[10px] font-bold font-sans text-stone-500 dark:text-stone-400 uppercase tracking-widest mb-3">Mes prochaines étapes</p>
+                    <p className="text-[10px] font-bold font-sans text-emerald-700/80 dark:text-emerald-400/80 uppercase tracking-widest mb-3">2 · Mes étapes</p>
                     
                     {(() => {
                       const goalMilestones = (data.milestones || []).filter(m => m.goalId === goal.id).sort((a,b) => a.order - b.order);
@@ -580,6 +650,62 @@ export function GoalsView({ data, updateData }: GoalsProps) {
                               </div>
                             </div>
                           )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="border-t border-stone-200/50 dark:border-stone-700 pt-4 mt-4">
+                    <p className="text-[10px] font-bold font-sans text-emerald-700/80 dark:text-emerald-400/80 uppercase tracking-widest mb-3">3 · Ma prochaine action</p>
+
+                    {(() => {
+                      const goalTasks = (data.tasks || []).filter(t => t.goalId === goal.id);
+                      const todo = goalTasks.filter(t => !t.isCompleted);
+                      const doneCount = goalTasks.length - todo.length;
+
+                      return (
+                        <div className="space-y-2.5">
+                          {goalTasks.length === 0 && (
+                            <p className="text-xs text-stone-400 dark:text-stone-500 italic">Quel petit pas concret cette semaine ? Note-le ci-dessous, il rejoindra ton Quotidien.</p>
+                          )}
+
+                          {todo.map(task => (
+                            <div key={task.id} className="flex items-start gap-2">
+                              <button
+                                onClick={() => toggleTask(task.id)}
+                                className="mt-0.5 shrink-0 text-stone-300 dark:text-stone-600 hover:text-emerald-500 transition-colors"
+                                title="Marquer comme faite"
+                              >
+                                <Circle className="w-4 h-4" />
+                              </button>
+                              <span className="text-sm font-sans flex-1 text-stone-700 dark:text-stone-300">{task.title}</span>
+                            </div>
+                          ))}
+
+                          {doneCount > 0 && (
+                            <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-sans flex items-center gap-1">
+                              <CheckCircle2 className="w-3.5 h-3.5" /> {doneCount} action{doneCount > 1 ? 's' : ''} déjà faite{doneCount > 1 ? 's' : ''}
+                            </p>
+                          )}
+
+                          <div className="flex items-end gap-2 mt-1">
+                            <input
+                              type="text"
+                              placeholder="+ Ajouter une action pour cet objectif..."
+                              value={newActionTitles[goal.id] || ''}
+                              onChange={e => setNewActionTitles({ ...newActionTitles, [goal.id]: e.target.value })}
+                              onKeyDown={e => { if (e.key === 'Enter') addAction(goal.id); }}
+                              className="flex-1 bg-transparent border-b border-stone-200 dark:border-stone-700 text-sm py-1 outline-none focus:border-emerald-500 transition-colors font-sans placeholder:text-stone-400 dark:placeholder:text-stone-500 text-stone-800 dark:text-stone-100"
+                            />
+                            {newActionTitles[goal.id]?.trim() && (
+                              <button
+                                onClick={() => addAction(goal.id)}
+                                className="text-[10px] font-sans font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition"
+                              >
+                                Ajouter
+                              </button>
+                            )}
+                          </div>
                         </div>
                       );
                     })()}
@@ -648,6 +774,7 @@ export function GoalsView({ data, updateData }: GoalsProps) {
             )
           })}
         </div>
+        </>
       )}
 
       {achievedGoals.length > 0 && (

@@ -7,6 +7,8 @@ import { EmptyState } from '../components/EmptyState';
 interface TasksProps {
   data: AppData;
   updateData: (data: Partial<AppData>) => void;
+  // Ouvre l'objectif relié à une action dans sa vue détaillée (lien entre vues).
+  onOpenGoal?: (goalId: string) => void;
 }
 
 const DOMAINS: LifeDomain[] = [
@@ -19,7 +21,7 @@ const DOMAINS: LifeDomain[] = [
   'Autre'
 ];
 
-export function TasksView({ data, updateData }: TasksProps) {
+export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [selectedReference, setSelectedReference] = useState<string>(''); // format: goalId or goalId|milestoneId
   const [selectedDomain, setSelectedDomain] = useState<LifeDomain | ''>('');
@@ -237,11 +239,17 @@ export function TasksView({ data, updateData }: TasksProps) {
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
                        {linkedGoal && (
-                        <div className="flex items-center gap-1 text-[10px] text-emerald-800 dark:text-emerald-400 font-sans font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 w-max px-2 py-1 rounded-md">
+                        <button
+                          type="button"
+                          onClick={() => onOpenGoal?.(linkedGoal.id)}
+                          disabled={!onOpenGoal}
+                          title={onOpenGoal ? "Voir cet objectif" : undefined}
+                          className={`flex items-center gap-1 text-[10px] text-emerald-800 dark:text-emerald-400 font-sans font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 w-max px-2 py-1 rounded-md transition ${onOpenGoal ? 'hover:bg-emerald-100 dark:hover:bg-emerald-500/20 cursor-pointer' : ''}`}
+                        >
                           <ChevronRight className="w-3 h-3" />
                           {linkedGoal.title}
                           {linkedMilestone && ` ➔ ${linkedMilestone.title}`}
-                        </div>
+                        </button>
                       )}
                       {(task.domain || (linkedGoal && linkedGoal.domain)) && (
                         <div className="flex items-center gap-1 text-[9px] text-stone-500 dark:text-stone-400 font-sans font-bold uppercase tracking-widest bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 w-max px-2 py-1 rounded-md">

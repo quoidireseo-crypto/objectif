@@ -41,6 +41,21 @@ export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [captureOpen, setCaptureOpen] = useState(false);
   const [howItWorksOpen, setHowItWorksOpen] = useState(false);
+  // Objectif en « focus » (vue détaillée). Partagé ici pour permettre d'ouvrir un
+  // objectif précis depuis d'autres vues (ex. une action reliée dans le Quotidien).
+  const [focusedGoalId, setFocusedGoalId] = useState<string | null>(null);
+
+  // Navigation normale : change de vue et sort de tout focus objectif.
+  const navigate = (view: ViewType) => {
+    setFocusedGoalId(null);
+    setCurrentView(view);
+  };
+
+  // Ouvre un objectif précis dans sa vue détaillée (depuis n'importe où).
+  const openGoal = (goalId: string) => {
+    setFocusedGoalId(goalId);
+    setCurrentView('goals');
+  };
   const { data, updateData, shouldRemindExport, dismissExportReminder } = useStorage();
   const { shouldShowRitual, completeRitual, skipRitual } = useMorningRitual(data, updateData);
   const { mode: themeMode, setThemeMode } = useTheme();
@@ -119,11 +134,11 @@ export default function App() {
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
-        return <DashboardView data={data} updateData={updateData} onChangeView={setCurrentView} userProfile={userProfile} />;
+        return <DashboardView data={data} updateData={updateData} onChangeView={navigate} userProfile={userProfile} />;
       case 'goals':
-        return <GoalsView data={data} updateData={updateData} />;
+        return <GoalsView data={data} updateData={updateData} focusedGoalId={focusedGoalId} onFocusGoal={setFocusedGoalId} />;
       case 'tasks':
-        return <TasksView data={data} updateData={updateData} />;
+        return <TasksView data={data} updateData={updateData} onOpenGoal={openGoal} />;
       case 'habits':
         return <HabitsView data={data} updateData={updateData} />;
       case 'journal':
@@ -133,7 +148,7 @@ export default function App() {
       case 'review':
         return <ReviewView data={data} updateData={updateData} />;
       case 'graph':
-        return <GraphView data={data} onChangeView={setCurrentView} />;
+        return <GraphView data={data} onChangeView={navigate} />;
       case 'settings':
         return (
           <SettingsView
@@ -150,7 +165,7 @@ export default function App() {
           />
         );
       default:
-        return <DashboardView data={data} updateData={updateData} onChangeView={setCurrentView} userProfile={userProfile} />;
+        return <DashboardView data={data} updateData={updateData} onChangeView={navigate} userProfile={userProfile} />;
     }
   };
 
@@ -164,7 +179,7 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-[#F5F5F0] dark:bg-stone-950 font-serif text-stone-800 dark:text-stone-200 selection:bg-emerald-200 selection:text-emerald-900">
-      <Sidebar currentView={currentView} onChangeView={setCurrentView} onLogout={logout} onOpenCapture={() => setCaptureOpen(true)} onOpenHowItWorks={() => setHowItWorksOpen(true)} />
+      <Sidebar currentView={currentView} onChangeView={navigate} onLogout={logout} onOpenCapture={() => setCaptureOpen(true)} onOpenHowItWorks={() => setHowItWorksOpen(true)} />
 
       <div className="flex-1 flex flex-col h-[100dvh] md:ml-64 relative overflow-hidden">
         {/* Mobile Top Header — « SKOPOS » sur l'Accueil, nom de la page ailleurs */}
@@ -252,7 +267,7 @@ export default function App() {
         open={captureOpen}
         onClose={() => setCaptureOpen(false)}
         onAdd={handleQuickAdd}
-        onNewGoal={() => setCurrentView('goals')}
+        onNewGoal={() => navigate('goals')}
       />
     </div>
   );
