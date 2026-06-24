@@ -7,6 +7,7 @@ import { useGoalHistory } from '../hooks/useGoalHistory';
 import { useWeeklyReview } from '../hooks/useWeeklyReview';
 import { WeeklyReviewScreen } from '../components/WeeklyReviewScreen';
 import { InsightCard } from '../components/InsightCard';
+import { ReviewGuide } from '../components/ReviewGuide';
 import { HelpTooltip } from '../components/HelpTooltip';
 
 interface ReviewProps {
@@ -156,6 +157,9 @@ export function ReviewView({ data, updateData }: ReviewProps) {
 
       {/* Ce que je remarque — synthèse en mots, suit le sélecteur Hebdo/Mensuel */}
       <InsightCard data={data} period={period} variant="full" />
+
+      {/* Bilan-guide : sections repliables d'analyse (dynamique → conseils) */}
+      <ReviewGuide data={data} period={period} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-3xl p-6 border border-emerald-100 dark:border-emerald-500/20 flex flex-col justify-between">
