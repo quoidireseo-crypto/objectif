@@ -941,7 +941,7 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                 <button
                   onClick={() => deleteGoal(goal.id)}
                   title="Supprimer ce trophée"
-                  className="absolute top-3 right-3 text-stone-300 dark:text-stone-600 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-3 right-3 text-stone-300 dark:text-stone-600 hover:text-red-500 p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -953,17 +953,17 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                 <span className="text-[9px] font-sans font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1.5">{goal.domain}</span>
                 <h4 className="text-lg font-medium text-stone-800 dark:text-stone-100 leading-snug mb-3">{goal.title}</h4>
 
-                <div className="mt-auto pt-3 border-t border-amber-100/60 dark:border-amber-500/10 flex items-center justify-center gap-2">
+                <div className="mt-auto pt-3 border-t border-amber-100/60 dark:border-amber-500/10 flex flex-col items-center gap-3">
                   <span className="text-[10px] text-stone-500 dark:text-stone-400 font-sans uppercase tracking-wide">
                     {getAchievedDate(goal) ? `Atteint le ${getAchievedDate(goal)}` : 'Atteint'}
                   </span>
                   <button
                     onClick={() => handleStatusChange(goal.id, 'En cours')}
-                    title="Replacer parmi les objectifs en cours"
-                    className="flex items-center gap-1 text-[10px] font-sans font-bold uppercase tracking-wide text-stone-400 dark:text-stone-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors opacity-0 group-hover:opacity-100"
+                    title="Replacer cet objectif parmi ceux en cours"
+                    className="inline-flex items-center gap-1.5 text-[11px] font-sans font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/70 dark:border-emerald-500/20 px-3 py-1.5 rounded-full hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors"
                   >
-                    <RotateCcw className="w-3 h-3" />
-                    Réactiver
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    Reprendre cet objectif
                   </button>
                 </div>
               </div>
