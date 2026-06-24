@@ -64,6 +64,7 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
   const [newMilestoneTitles, setNewMilestoneTitles] = useState<{ [goalId: string]: string }>({});
   const [newActionTitles, setNewActionTitles] = useState<{ [goalId: string]: string }>({});
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [filterDomain, setFilterDomain] = useState<LifeDomain | null>(null);
   const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
   const [editMilestoneTitle, setEditMilestoneTitle] = useState('');
   const [celebrationMessage, setCelebrationMessage] = useState<{title: string} | null>(null);
@@ -400,11 +401,20 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
   const activeGoals = data.goals.filter(g => g.status !== 'Atteint');
   const achievedGoals = data.goals.filter(g => g.status === 'Atteint');
 
+  // Filtre par domaine (« page catégorie ») : clic sur une puce de domaine.
+  const filteredActive = filterDomain ? activeGoals.filter(g => g.domain === filterDomain) : activeGoals;
+  const filteredAchieved = filterDomain ? achievedGoals.filter(g => g.domain === filterDomain) : achievedGoals;
+
   // Vue « focus » : si un objectif est sélectionné et toujours actif, on n'affiche
-  // que lui (en pleine largeur) ; sinon, la grille habituelle.
+  // que lui (en pleine largeur) ; sinon, la grille (filtrée le cas échéant).
   const focusedGoal = focusedGoalId ? activeGoals.find(g => g.id === focusedGoalId) : null;
   const isFocusMode = !!focusedGoal;
-  const goalsToShow = focusedGoal ? [focusedGoal] : activeGoals;
+  const goalsToShow = focusedGoal ? [focusedGoal] : filteredActive;
+
+  const applyDomainFilter = (d: LifeDomain) => {
+    setFilterDomain(d);
+    onFocusGoal?.(null);
+  };
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -450,6 +460,21 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
           Nouvel objectif
         </button>
       </header>
+
+      {filterDomain && !isFocusMode && (
+        <div className="flex items-center justify-between gap-3 mb-6 bg-stone-100/70 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 rounded-2xl px-4 py-2.5 animate-in fade-in">
+          <span className="text-xs font-sans text-stone-600 dark:text-stone-300">
+            Catégorie : <span className="font-bold text-stone-800 dark:text-stone-100">{filterDomain}</span>
+          </span>
+          <button
+            onClick={() => setFilterDomain(null)}
+            className="flex items-center gap-1.5 text-[10px] font-sans font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 transition cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+            Tous les domaines
+          </button>
+        </div>
+      )}
 
       {isAdding && (
         <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 shadow-sm rounded-3xl p-8 mb-8 relative animate-in fade-in zoom-in-95">
@@ -614,6 +639,11 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
             Tous mes objectifs
           </button>
         )}
+        {!isFocusMode && filterDomain && goalsToShow.length === 0 && (
+          <div className="text-center py-12 bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800">
+            <p className="text-stone-500 dark:text-stone-400 font-sans text-sm italic">Aucun objectif en cours dans « {filterDomain} ».</p>
+          </div>
+        )}
         <div className={isFocusMode ? 'grid grid-cols-1 gap-6 max-w-2xl' : 'grid grid-cols-1 lg:grid-cols-2 gap-6'}>
           {goalsToShow.map(goal => {
             const theme = getDomainTheme(goal.domain);
@@ -622,10 +652,14 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
             return (
               <div key={goal.id} className="bg-white dark:bg-stone-900 border text-left border-stone-100 dark:border-stone-800 rounded-3xl p-6 shadow-sm hover:shadow-md transition duration-300 flex flex-col h-full group">
                 <div className="flex justify-between items-start mb-4">
-                  <div className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 w-max ${theme.color}`}>
+                  <button
+                    onClick={() => applyDomainFilter(goal.domain)}
+                    title={`Voir les objectifs : ${goal.domain}`}
+                    className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 w-max transition hover:brightness-95 hover:shadow-sm cursor-pointer ${theme.color}`}
+                  >
                     <Icon className="w-4 h-4" />
                     <span className="text-[10px] font-sans font-bold uppercase tracking-wider">{goal.domain}</span>
-                  </div>
+                  </button>
                   <div className="flex items-center gap-1">
                     {!isFocusMode && onFocusGoal && (
                       <button onClick={() => onFocusGoal(goal.id)} className="text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-200 p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" title="Voir le cheminement">
@@ -921,7 +955,7 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
         </>
       )}
 
-      {achievedGoals.length > 0 && (
+      {filteredAchieved.length > 0 && (
         <div className="mt-16 pt-10 border-t border-stone-200 dark:border-stone-800">
           <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
             <h3 className="text-lg font-light text-stone-600 dark:text-stone-300 flex items-center gap-2.5">
@@ -929,11 +963,11 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
               Mes trophées
             </h3>
             <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 px-3 py-1.5 rounded-full">
-              {achievedGoals.length} objectif{achievedGoals.length > 1 ? 's' : ''} atteint{achievedGoals.length > 1 ? 's' : ''}
+              {filteredAchieved.length} objectif{filteredAchieved.length > 1 ? 's' : ''} atteint{filteredAchieved.length > 1 ? 's' : ''}
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {achievedGoals.map(goal => (
+            {filteredAchieved.map(goal => (
               <div
                 key={goal.id}
                 className="relative bg-gradient-to-b from-amber-50/70 to-white dark:from-amber-500/10 dark:to-stone-900 border border-amber-100 dark:border-amber-500/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full group text-center"
@@ -950,7 +984,13 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
                   <Trophy className="w-7 h-7 text-amber-500 dark:text-amber-400" />
                 </div>
 
-                <span className="text-[9px] font-sans font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1.5">{goal.domain}</span>
+                <button
+                  onClick={() => applyDomainFilter(goal.domain)}
+                  title={`Voir les objectifs : ${goal.domain}`}
+                  className="text-[9px] font-sans font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1.5 hover:underline cursor-pointer"
+                >
+                  {goal.domain}
+                </button>
                 <h4 className="text-lg font-medium text-stone-800 dark:text-stone-100 leading-snug mb-3">{goal.title}</h4>
 
                 <div className="mt-auto pt-3 border-t border-amber-100/60 dark:border-amber-500/10 flex flex-col items-center gap-3">

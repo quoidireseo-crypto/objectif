@@ -1,7 +1,7 @@
 import { useState, FormEvent, useEffect, useRef } from 'react';
 import { AppData, Task, LifeDomain } from '../types';
 import { newTrashEntry } from '../hooks/useTrash';
-import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag, Trash2, Pencil } from 'lucide-react';
+import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag, Trash2, Pencil, X } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
 import { EmptyState } from '../components/EmptyState';
 
@@ -29,6 +29,10 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
   const [isNewTaskImportant, setIsNewTaskImportant] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editTaskTitle, setEditTaskTitle] = useState('');
+  const [filterDomain, setFilterDomain] = useState<LifeDomain | null>(null);
+
+  // Domaine effectif d'une action : le sien, sinon celui de son objectif.
+  const taskDomain = (t: Task): LifeDomain | undefined => t.domain || data.goals.find(g => g.id === t.goalId)?.domain;
 
   const todayDate = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(todayDate);
@@ -227,10 +231,25 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
           <h3 className="text-xl font-light text-stone-800 dark:text-stone-200 flex items-center gap-3">
             À faire aujourd'hui
             <span className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 font-sans uppercase border border-emerald-100 dark:border-emerald-500/20 text-xs px-2.5 py-1 rounded-full font-bold">
-              {todayTasks.filter(t => !t.isCompleted).length}
+              {todayTasks.filter(t => !t.isCompleted && (!filterDomain || taskDomain(t) === filterDomain)).length}
             </span>
           </h3>
         </div>
+
+        {filterDomain && (
+          <div className="flex items-center justify-between gap-3 mb-5 bg-stone-100/70 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 rounded-2xl px-4 py-2.5 animate-in fade-in">
+            <span className="text-xs font-sans text-stone-600 dark:text-stone-300">
+              Catégorie : <span className="font-bold text-stone-800 dark:text-stone-100">{filterDomain}</span>
+            </span>
+            <button
+              onClick={() => setFilterDomain(null)}
+              className="flex items-center gap-1.5 text-[10px] font-sans font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 transition cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+              Tous les domaines
+            </button>
+          </div>
+        )}
 
         {todayTasks.length === 0 ? (
           <EmptyState
@@ -241,10 +260,10 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
           />
         ) : (
           <div className="space-y-4">
-            {todayTasks.filter(t => !t.isCompleted).map(task => {
+            {todayTasks.filter(t => !t.isCompleted && (!filterDomain || taskDomain(t) === filterDomain)).map(task => {
               const linkedGoal = data.goals.find(g => g.id === task.goalId);
               const linkedMilestone = task.milestoneId ? data.milestones?.find(m => m.id === task.milestoneId) : undefined;
-              
+
               return (
                 <div key={task.id} className="group bg-stone-50/50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 p-5 rounded-2xl flex items-center gap-4 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-sm transition-all">
                   <button
@@ -287,10 +306,15 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
                         </button>
                       )}
                       {(task.domain || (linkedGoal && linkedGoal.domain)) && (
-                        <div className="flex items-center gap-1 text-[9px] text-stone-500 dark:text-stone-400 font-sans font-bold uppercase tracking-widest bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 w-max px-2 py-1 rounded-md">
+                        <button
+                          type="button"
+                          onClick={() => setFilterDomain((task.domain || linkedGoal?.domain) as LifeDomain)}
+                          title={`Filtrer : ${task.domain || linkedGoal?.domain}`}
+                          className="flex items-center gap-1 text-[9px] text-stone-500 dark:text-stone-400 font-sans font-bold uppercase tracking-widest bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 w-max px-2 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-700 cursor-pointer transition"
+                        >
                           <Tag className="w-3 h-3" />
                           {task.domain || (linkedGoal && linkedGoal.domain)}
-                        </div>
+                        </button>
                       )}
                     </div>
                   </div>
@@ -319,11 +343,11 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
             })}
 
             {/* Completed Tasks */}
-            {todayTasks.filter(t => t.isCompleted).length > 0 && (
+            {todayTasks.filter(t => t.isCompleted && (!filterDomain || taskDomain(t) === filterDomain)).length > 0 && (
               <div className="mt-10 pt-8 border-t border-stone-200 dark:border-stone-800">
                 <h4 className="text-xs font-bold font-sans text-stone-400 dark:text-stone-500 mb-5 uppercase tracking-widest">Accomplies</h4>
                 <div className="space-y-3 opacity-60">
-                  {todayTasks.filter(t => t.isCompleted).map(task => {
+                  {todayTasks.filter(t => t.isCompleted && (!filterDomain || taskDomain(t) === filterDomain)).map(task => {
                     const linkedGoal = data.goals.find(g => g.id === task.goalId);
                     const linkedMilestone = task.milestoneId ? data.milestones?.find(m => m.id === task.milestoneId) : undefined;
                     return (
