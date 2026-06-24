@@ -654,7 +654,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       {/* fin ZONE 1 adaptative */}
 
       {/* ===================== ZONE 2 — MA PROGRESSION ===================== */}
-      <CollapsibleZone title="Ma progression" help="Une vue d'ensemble de tes objectifs en cours et de ta constance dans la durée.">
+      <CollapsibleZone title="Ma progression" accent="blue" help="Une vue d'ensemble de tes objectifs en cours et de ta constance dans la durée.">
 
       {/* Rappel doux : objectifs en cours sans prochaine action */}
       <NextActionNudge data={data} onChangeView={onChangeView} />
@@ -812,7 +812,7 @@ export function DashboardView({ data, updateData, onChangeView, userProfile }: D
       </CollapsibleZone>
 
       {/* ===================== ZONE 3 — PRENDRE DU RECUL ===================== */}
-      <CollapsibleZone title="Prendre du recul" help="Des graphiques et des repères pour observer ton évolution sur la durée.">
+      <CollapsibleZone title="Prendre du recul" accent="indigo" help="Des graphiques et des repères pour observer ton évolution sur la durée.">
 
       {/* Ma semaine + petit geste qui compte */}
       <WeekInsightsPanel data={data} onChangeView={onChangeView} />

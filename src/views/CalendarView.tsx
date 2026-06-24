@@ -130,7 +130,11 @@ export function CalendarView({ data, updateData }: CalendarProps) {
       <div className="flex-1">
         <header className="flex items-center justify-between mb-8 pb-4 border-b border-stone-200 dark:border-stone-800">
           <div>
-            <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100 capitalize">
+            <div className="flex items-center gap-2.5 mb-2">
+              <span className="h-5 w-1.5 rounded-full bg-blue-500" />
+              <span className="text-[11px] font-sans font-bold uppercase tracking-[0.2em] text-blue-700 dark:text-blue-400">Calendrier</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100 capitalize leading-none">
               {currentMonth.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
             </h2>
             <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Vision globale.</p>

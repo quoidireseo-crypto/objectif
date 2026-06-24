@@ -4,6 +4,7 @@ import { newTrashEntry } from '../hooks/useTrash';
 import { useHabits, isHabitDueOn } from '../hooks/useHabits';
 import { Repeat, Plus, Circle, CheckCircle2, Sprout, Trash2, Archive, Tag, Pencil } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
+import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/EmptyState';
 
 interface HabitsProps {
@@ -103,15 +104,13 @@ export function HabitsView({ data, updateData }: HabitsProps) {
 
   return (
     <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="mb-6 md:mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
-        <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100 flex items-center gap-3">
-          Mes Habitudes
-          <HelpTooltip text="Une habitude est une action que tu veux répéter régulièrement (tous les jours ou certains jours). Coche-la chaque fois que tu l'accomplis : la flamme indique le nombre de jours d'affilée." />
-        </h2>
-        <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">
-          Construire la régularité, jour après jour.
-        </p>
-      </header>
+      <PageHeader
+        eyebrow="Agir au quotidien"
+        title="Mes Habitudes"
+        subtitle="Construire la régularité, jour après jour."
+        accent="teal"
+        help="Une habitude est une action que tu veux répéter régulièrement (tous les jours ou certains jours). Coche-la chaque fois que tu l'accomplis : la flamme indique le nombre de jours d'affilée."
+      />
 
       {/* Add Habit Form */}
       <form onSubmit={handleAddHabit} className="bg-white dark:bg-stone-900 p-5 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm mb-8 md:mb-10 space-y-4">

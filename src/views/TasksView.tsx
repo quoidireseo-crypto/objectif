@@ -3,6 +3,7 @@ import { AppData, Task, LifeDomain } from '../types';
 import { newTrashEntry } from '../hooks/useTrash';
 import { CheckSquare, Plus, Circle, CheckCircle2, ChevronRight, Bell, BellRing, Tag, Trash2, Pencil, X } from 'lucide-react';
 import { HelpTooltip } from '../components/HelpTooltip';
+import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/EmptyState';
 
 interface TasksProps {
@@ -132,13 +133,13 @@ export function TasksView({ data, updateData, onOpenGoal }: TasksProps) {
 
   return (
     <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="mb-6 md:mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
-        <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100 flex items-center gap-3">
-          Mon Quotidien
-          <HelpTooltip text="Tes actions concrètes du jour. Tu peux les relier à un objectif pour voir comment chaque petit geste fait avancer ce qui compte pour toi." />
-        </h2>
-        <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Ce que je choisis de faire aujourd'hui.</p>
-      </header>
+      <PageHeader
+        eyebrow="Agir au quotidien"
+        title="Mon Quotidien"
+        subtitle="Ce que je choisis de faire aujourd'hui."
+        accent="amber"
+        help="Tes actions concrètes du jour. Tu peux les relier à un objectif pour voir comment chaque petit geste fait avancer ce qui compte pour toi."
+      />
 
       {/* Add Task Form */}
       <form onSubmit={handleAddTask} className="bg-white dark:bg-stone-900 p-2 flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-8 md:mb-10 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm focus-within:ring-1 focus-within:ring-emerald-700 transition">

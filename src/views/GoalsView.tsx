@@ -5,6 +5,7 @@ import { useGoalHistory } from '../hooks/useGoalHistory';
 import { newTrashEntry } from '../hooks/useTrash';
 import { GoalHistoryTimeline } from '../components/GoalHistoryTimeline';
 import { GoalEditModal } from '../components/GoalEditModal';
+import { PageHeader } from '../components/PageHeader';
 import { HelpTooltip } from '../components/HelpTooltip';
 
 interface GoalsProps {
@@ -444,22 +445,21 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
         </div>
       )}
 
-      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100">Mes Objectifs</h2>
-            <HelpTooltip text="Un objectif décrit ce que tu veux atteindre et pourquoi c'est important pour toi. Tu peux le découper en petites étapes, puis le relier à tes actions du quotidien." />
-          </div>
-          <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Définir une direction. Pourquoi je fais les choses.</p>
-        </div>
+      <PageHeader
+        eyebrow="Définir"
+        title="Mes Objectifs"
+        subtitle="Définir une direction. Pourquoi je fais les choses."
+        accent="emerald"
+        help="Un objectif décrit ce que tu veux atteindre et pourquoi c'est important pour toi. Tu peux le découper en petites étapes, puis le relier à tes actions du quotidien."
+      >
         <button
           onClick={() => setIsAdding(true)}
-          className="bg-stone-800 dark:bg-emerald-700 w-full sm:w-auto justify-center hover:bg-stone-900 dark:hover:bg-emerald-800 text-white px-5 py-3 rounded-xl font-sans uppercase tracking-widest text-xs flex items-center gap-2 transition shadow-sm"
+          className="bg-emerald-700 dark:bg-emerald-700 w-full sm:w-auto justify-center hover:bg-emerald-800 dark:hover:bg-emerald-800 text-white px-5 py-3 rounded-xl font-sans uppercase tracking-widest text-xs flex items-center gap-2 transition shadow-sm"
         >
           <Plus className="w-4 h-4" />
           Nouvel objectif
         </button>
-      </header>
+      </PageHeader>
 
       {filterDomain && !isFocusMode && (
         <div className="flex items-center justify-between gap-3 mb-6 bg-stone-100/70 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 rounded-2xl px-4 py-2.5 animate-in fade-in">

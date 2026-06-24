@@ -3,6 +3,7 @@ import { AppData, JournalEntry } from '../types';
 import { newTrashEntry } from '../hooks/useTrash';
 import { BookHeart, Send, Smile, Meh, Frown, Sparkles, Trash2, CloudLightning, Pencil } from 'lucide-react';
 import { EmptyState } from '../components/EmptyState';
+import { PageHeader } from '../components/PageHeader';
 
 interface JournalProps {
   data: AppData;
@@ -129,14 +130,12 @@ export function JournalView({ data, updateData }: JournalProps) {
 
   return (
     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="mb-6 md:mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
-        <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100 flex items-center gap-3">
-          Vos sentiments et impressions du jour !
-        </h2>
-        <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide text-xs md:text-sm mt-3 leading-relaxed max-w-2xl font-light">
-          Prenez un moment pour vous. Cet espace est fait pour noter vos impressions, vos ressentis, ce qui a fonctionné ou qui n'a pas marché aujourd'hui.
-        </p>
-      </header>
+      <PageHeader
+        eyebrow="Prendre du recul"
+        title="Journal de bord"
+        subtitle="Noter ses impressions, ses ressentis, ce qui a marché — ou non — aujourd'hui."
+        accent="rose"
+      />
 
       {!hasEntryToday && (
         <div className="bg-[#EAE7E2] dark:bg-stone-900 rounded-3xl p-8 mb-10 border border-stone-200 dark:border-stone-800">

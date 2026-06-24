@@ -8,6 +8,7 @@ import { useWeeklyReview } from '../hooks/useWeeklyReview';
 import { WeeklyReviewScreen } from '../components/WeeklyReviewScreen';
 import { InsightCard } from '../components/InsightCard';
 import { ReviewGuide } from '../components/ReviewGuide';
+import { PageHeader } from '../components/PageHeader';
 import { HelpTooltip } from '../components/HelpTooltip';
 
 interface ReviewProps {
@@ -127,14 +128,13 @@ export function ReviewView({ data, updateData }: ReviewProps) {
         </div>
       )}
 
-      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100">Mon Bilan</h2>
-            <HelpTooltip text="Cet espace réunit tes statistiques, l'évolution de tes objectifs et ton bilan hebdomadaire guidé — un moment pour prendre du recul et ajuster ta direction." />
-          </div>
-          <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Prendre du recul pour mieux avancer.</p>
-        </div>
+      <PageHeader
+        eyebrow="Prendre du recul"
+        title="Mon Bilan"
+        subtitle="Prendre du recul pour mieux avancer."
+        accent="indigo"
+        help="Cet espace réunit tes statistiques, l'évolution de tes objectifs et ton bilan hebdomadaire guidé — un moment pour prendre du recul et ajuster ta direction."
+      >
         <div className="flex bg-stone-100 dark:bg-stone-800 p-1 rounded-xl w-full sm:w-auto">
           <button
             onClick={() => setPeriod('weekly')}
@@ -153,7 +153,7 @@ export function ReviewView({ data, updateData }: ReviewProps) {
             Mensuel
           </button>
         </div>
-      </header>
+      </PageHeader>
 
       {/* Ce que je remarque — synthèse en mots, suit le sélecteur Hebdo/Mensuel */}
       <InsightCard data={data} period={period} variant="full" />

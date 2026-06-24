@@ -4,6 +4,7 @@ import { ThemeMode } from '../hooks/useTheme';
 import { SkoposLogo } from '../components/SkoposLogo';
 import { getHolisticReminderMessage } from '../lib/holisticReminder';
 import { TrashPanel } from '../components/TrashPanel';
+import { PageHeader } from '../components/PageHeader';
 import { Download, Upload, AlertCircle, CheckCircle2, User, RefreshCw, Smartphone, Info, Sun, Moon, Clock, Lock, LogOut, KeyRound, Bell } from 'lucide-react';
 
 interface SettingsProps {
@@ -233,10 +234,12 @@ export function SettingsView({ data, updateData, onImportData, userProfile, onUp
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto">
-      <header className="mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
-        <h2 className="text-3xl md:text-4xl font-light text-stone-900 dark:text-stone-100">Paramètres</h2>
-        <p className="text-stone-500 dark:text-stone-400 font-sans tracking-wide uppercase text-[10px] md:text-xs mt-2 italic">Sauvegarde et gestion des données.</p>
-      </header>
+      <PageHeader
+        eyebrow="Espace"
+        title="Paramètres"
+        subtitle="Sauvegarde et gestion des données."
+        accent="stone"
+      />
 
       <div className="space-y-6">
         {/* INSTALL APP SECTION */}

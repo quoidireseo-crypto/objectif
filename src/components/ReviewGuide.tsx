@@ -28,7 +28,7 @@ export function ReviewGuide({ data, period }: ReviewGuideProps) {
   return (
     <div className="mb-8">
       {/* ② Ma dynamique */}
-      <CollapsibleZone title="Ma dynamique" help="L'évolution de ta régularité par rapport à la période précédente.">
+      <CollapsibleZone title="Ma dynamique" accent="amber" help="L'évolution de ta régularité par rapport à la période précédente.">
         {!g.dynamics.enough ? (
           patience("Pas encore d'action sur cette période — reviens quand tu auras avancé.")
         ) : (
@@ -62,7 +62,7 @@ export function ReviewGuide({ data, period }: ReviewGuideProps) {
       </CollapsibleZone>
 
       {/* ③ Mes rythmes */}
-      <CollapsibleZone title="Mes rythmes" help="Tes tendances dans le temps : les jours où tu accomplis le plus.">
+      <CollapsibleZone title="Mes rythmes" accent="blue" help="Tes tendances dans le temps : les jours où tu accomplis le plus.">
         {!g.rhythms.enough ? (
           patience("Encore un peu de patience — après ~2 semaines d'usage, tes rythmes apparaîtront ici.")
         ) : (
@@ -88,7 +88,7 @@ export function ReviewGuide({ data, period }: ReviewGuideProps) {
       </CollapsibleZone>
 
       {/* ④ Mon équilibre */}
-      <CollapsibleZone title="Mon équilibre" help="L'état de chaque domaine de vie : ressenti, objectifs et activité récente.">
+      <CollapsibleZone title="Mon équilibre" accent="indigo" help="L'état de chaque domaine de vie : ressenti, objectifs et activité récente.">
         <div className={card}>
           <div className="space-y-2.5">
             {g.balance.map(b => {
@@ -111,7 +111,7 @@ export function ReviewGuide({ data, period }: ReviewGuideProps) {
       </CollapsibleZone>
 
       {/* ⑤ Mes habitudes */}
-      <CollapsibleZone title="Mes habitudes" help="Lesquelles tiennent, lesquelles décrochent sur la période.">
+      <CollapsibleZone title="Mes habitudes" accent="teal" help="Lesquelles tiennent, lesquelles décrochent sur la période.">
         {!g.habits.enough ? (
           patience("Tu n'as pas encore d'habitude — en créer une te donnera un point d'appui.")
         ) : (
@@ -143,7 +143,7 @@ export function ReviewGuide({ data, period }: ReviewGuideProps) {
       </CollapsibleZone>
 
       {/* ⑥ Mes objectifs */}
-      <CollapsibleZone title="Mes objectifs" help="Un triage rapide : ce qui avance, ce qui dort, ce qui presse.">
+      <CollapsibleZone title="Mes objectifs" accent="emerald" help="Un triage rapide : ce qui avance, ce qui dort, ce qui presse.">
         <div className={card}>
           {g.goals.total === 0 ? (
             <p className="text-sm italic text-stone-400 dark:text-stone-500">Aucun objectif en cours.</p>
@@ -171,7 +171,7 @@ export function ReviewGuide({ data, period }: ReviewGuideProps) {
       </CollapsibleZone>
 
       {/* ⑦ Mon guide pour la suite */}
-      <CollapsibleZone title="Mon guide pour la suite" help="1 à 3 conseils concrets, déduits de tout ce qui précède." defaultOpenMobile>
+      <CollapsibleZone title="Mon guide pour la suite" accent="violet" help="1 à 3 conseils concrets, déduits de tout ce qui précède." defaultOpenMobile>
         <div className="bg-gradient-to-br from-emerald-50/70 to-white dark:from-emerald-500/10 dark:to-stone-900 rounded-3xl p-6 border border-emerald-100 dark:border-emerald-500/20 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <Compass className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
