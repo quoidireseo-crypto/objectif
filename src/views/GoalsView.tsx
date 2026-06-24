@@ -454,7 +454,7 @@ export function GoalsView({ data, updateData, focusedGoalId, onFocusGoal }: Goal
       >
         <button
           onClick={() => setIsAdding(true)}
-          className="bg-emerald-700 dark:bg-emerald-700 w-full sm:w-auto justify-center hover:bg-emerald-800 dark:hover:bg-emerald-800 text-white px-5 py-3 rounded-xl font-sans uppercase tracking-widest text-xs flex items-center gap-2 transition shadow-sm"
+          className="bg-white text-emerald-800 w-full sm:w-auto justify-center hover:bg-emerald-50 px-5 py-3 rounded-xl font-sans uppercase tracking-widest text-xs flex items-center gap-2 transition shadow-md font-bold"
         >
           <Plus className="w-4 h-4" />
           Nouvel objectif

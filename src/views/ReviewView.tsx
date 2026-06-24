@@ -135,11 +135,11 @@ export function ReviewView({ data, updateData }: ReviewProps) {
         accent="indigo"
         help="Cet espace réunit tes statistiques, l'évolution de tes objectifs et ton bilan hebdomadaire guidé — un moment pour prendre du recul et ajuster ta direction."
       >
-        <div className="flex bg-stone-100 dark:bg-stone-800 p-1 rounded-xl w-full sm:w-auto">
+        <div className="flex bg-white/15 backdrop-blur-sm p-1 rounded-xl w-full sm:w-auto border border-white/20">
           <button
             onClick={() => setPeriod('weekly')}
             className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-sans font-bold uppercase tracking-wider transition-all ${
-              period === 'weekly' ? 'bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-stone-100' : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
+              period === 'weekly' ? 'bg-white shadow-sm text-indigo-800' : 'text-white/80 hover:text-white'
             }`}
           >
             Hebdomadaire
@@ -147,7 +147,7 @@ export function ReviewView({ data, updateData }: ReviewProps) {
           <button
             onClick={() => setPeriod('monthly')}
             className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-sans font-bold uppercase tracking-wider transition-all ${
-              period === 'monthly' ? 'bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-stone-100' : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
+              period === 'monthly' ? 'bg-white shadow-sm text-indigo-800' : 'text-white/80 hover:text-white'
             }`}
           >
             Mensuel
